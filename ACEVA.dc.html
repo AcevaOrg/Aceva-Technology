@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,19 +8,81 @@
 <body>
 <x-dc>
 <helmet>
+<title>ACEVA Technology — Custom Software, Web &amp; Mobile Engineering</title>
+<meta name="description" content="ACEVA Technology is a premium software engineering company partnering with startups and enterprises to design, build, and scale reliable digital products — custom software, mobile apps, AI &amp; automation, and product rescue.">
+<meta name="theme-color" content="#0A0A0C">
+<meta property="og:title" content="ACEVA Technology — Custom Software, Web &amp; Mobile Engineering">
+<meta property="og:description" content="We design, build, and scale reliable digital products — custom software, web &amp; mobile apps, AI &amp; automation, and product rescue.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --void: #0A0A0C;
+    --charcoal: #141418;
+    --elevated: #1C1C22;
+    --hairline: #2A2A32;
+    --ink: #F5F6F8;
+    --muted: #9CA0AC;
+    --royal: #1E4FD9;
+    --electric: #3B7CFF;
+    --navy: #0F1E4D;
+    --ice: #7FB2FF;
+    --success: #2FBE7A;
+    --warning: #E0A93B;
+    --error: #E0503B;
+    --radius: 14px;
+    --radius-sm: 10px;
+  }
   * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body { margin: 0; background: #0A0A0C; color: #F5F6F8; -webkit-font-smoothing: antialiased; font-family: 'Instrument Sans', system-ui, sans-serif; }
-  a { color: #7FB2FF; text-decoration: none; }
-  a:hover { color: #3B7CFF; }
+  html { scroll-behavior: smooth; scroll-padding-top: 96px; text-rendering: optimizeLegibility; }
+  body { margin: 0; background: var(--void); color: var(--ink); -webkit-font-smoothing: antialiased; font-family: 'Instrument Sans', system-ui, sans-serif; }
+  h1, h2, h3, h4 { text-wrap: balance; }
+  a { color: var(--ice); text-decoration: none; }
+  a:hover { color: var(--electric); }
   button { font-family: inherit; cursor: pointer; }
-  ::selection { background: #1E4FD9; color: #fff; }
-  :focus-visible { outline: 2px solid #3B7CFF; outline-offset: 3px; border-radius: 4px; }
+  ::selection { background: var(--royal); color: #fff; }
+  :focus-visible { outline: 2px solid var(--electric); outline-offset: 3px; border-radius: 4px; box-shadow: 0 0 0 4px rgba(59,124,255,.16); }
   input, select, textarea { font-family: inherit; }
+  select, option { background: var(--elevated); color: var(--ink); }
+  ::-webkit-scrollbar { width: 11px; height: 11px; }
+  ::-webkit-scrollbar-track { background: #0C0C10; }
+  ::-webkit-scrollbar-thumb { background: #26262E; border: 3px solid #0C0C10; border-radius: 8px; }
+  ::-webkit-scrollbar-thumb:hover { background: #33333C; }
+  html { scrollbar-color: #26262E #0C0C10; scrollbar-width: thin; }
+  .ac-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .ac-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 24px; border-radius: var(--radius-sm); background: var(--royal); color: #fff; font-weight: 600; font-size: 15px; border: none; text-decoration: none; transition: background .18s ease, box-shadow .18s ease, transform .18s ease, color .18s ease; }
+  .ac-btn-primary:hover { background: var(--electric); box-shadow: 0 0 0 1px rgba(59,124,255,.35), 0 8px 30px rgba(59,124,255,.22); transform: translateY(-1px); color: #fff; }
+  .ac-btn-primary:active { transform: scale(.98); }
+  .ac-btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 24px; border-radius: var(--radius-sm); background: transparent; color: var(--ink); font-weight: 600; font-size: 15px; border: 1px solid #33333C; text-decoration: none; transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease; }
+  .ac-btn-ghost:hover { background: rgba(245,246,248,.05); border-color: #4A4A55; color: var(--ink); transform: translateY(-1px); }
+  .ac-btn-ghost:active { transform: scale(.98); }
+  .ac-btn-primary svg, .ac-btn-ghost svg { transition: transform .18s ease; }
+  .ac-btn-primary:hover svg, .ac-btn-ghost:hover svg { transform: translateX(3px); }
+  .ac-card { background: var(--charcoal); border: 1px solid var(--hairline); border-radius: var(--radius); transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease, background .22s ease; }
+  .ac-card:hover { transform: translateY(-4px); border-color: rgba(59,124,255,.42); box-shadow: 0 12px 40px rgba(0,0,0,.35), 0 0 0 1px rgba(59,124,255,.10); background: var(--elevated); }
+  .ac-card-flagship { background: linear-gradient(145deg, rgba(30,79,217,.13), rgba(106,79,224,.06) 55%, rgba(20,20,24,0)); border: 1px solid rgba(59,124,255,.30); border-radius: var(--radius); transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease; }
+  .ac-card-flagship:hover { transform: translateY(-4px); border-color: rgba(59,124,255,.55); box-shadow: 0 12px 40px rgba(0,0,0,.35), 0 0 24px rgba(59,124,255,.12); }
+  .ac-card-ghost { background: rgba(20,20,24,.4); border: 1px dashed #33333C; border-radius: var(--radius); transition: border-color .22s ease, background .22s ease, transform .22s ease; }
+  .ac-card-ghost:hover { border-color: rgba(59,124,255,.5); background: rgba(20,20,24,.7); transform: translateY(-4px); }
+  .ac-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: rgba(59,124,255,.1); color: var(--ice); border: 1px solid rgba(59,124,255,.22); font-size: 12px; font-weight: 500; font-family: 'JetBrains Mono', monospace; letter-spacing: .02em; }
+  .ac-hairline::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(59,124,255,.45), rgba(106,79,224,.35), transparent); }
+  .ac-scroll-cue { display: flex; align-items: center; gap: 9px; margin: clamp(30px,4vw,42px) 0 0; color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; animation: acFadeUp 800ms cubic-bezier(.16,1,.3,1) 380ms both; }
+  .ac-scroll-cue svg { animation: acScrollBob 2.4s ease-in-out infinite; }
+  @media (max-width: 640px) { .ac-scroll-cue { display: none; } }
+  .ac-link { display: inline-flex; align-items: center; gap: 6px; color: var(--ice); font-weight: 500; }
+  .ac-link svg { transition: transform .18s ease; }
+  .ac-link:hover { color: var(--electric); }
+  .ac-link:hover svg { transform: translateX(4px); }
+  .ac-nav-btn { display: inline-flex; align-items: center; padding: 8px 14px; border-radius: 8px; border: none; background: transparent; color: var(--muted); font-size: 14px; font-weight: 500; transition: background .16s ease, color .16s ease; }
+  .ac-nav-btn:hover { background: rgba(255,255,255,.05) !important; color: var(--ink) !important; }
+  .ac-more-grid button { position: relative; }
+  .ac-more-grid button::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%) scaleY(0); width: 2px; height: 55%; border-radius: 2px; background: var(--electric); transition: transform .18s ease; }
+  .ac-more-grid button:hover::before { transform: translateY(-50%) scaleY(1); }
+  @keyframes acPulseDot { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
+  @keyframes acScrollBob { 0%, 100% { transform: translateY(0); opacity: .9; } 50% { transform: translateY(6px); opacity: .5; } }
   @keyframes acFadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
   @keyframes acDrift { 0% { transform: translate(0,0) scale(1); } 50% { transform: translate(2%,-2%) scale(1.06); } 100% { transform: translate(0,0) scale(1); } }
   @keyframes acSpin { to { transform: rotate(360deg); } }
@@ -37,7 +99,7 @@
   @keyframes acBgGlow { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(3%,-4%) scale(1.14); } }
   @keyframes acBgGlowAlt { 0%, 100% { transform: translate(0,0) scale(1.05); } 50% { transform: translate(-4%,3%) scale(.94); } }
   @keyframes acBgFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-38px); } }
-  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; } html { scroll-behavior: auto !important; } }
 </style>
 </helmet>
 
@@ -148,9 +210,9 @@
     </sc-if>
   </div>
 
-  <header ref="{{ navRef }}" style="position:fixed;top:0;left:0;right:0;z-index:80;background:#0A0A0C;border-bottom:1px solid #2A2A32;transition:background 260ms ease,border-color 260ms ease,backdrop-filter 260ms ease">
+  <header ref="{{ navRef }}" class="ac-hairline" style="position:fixed;top:0;left:0;right:0;z-index:80;background:#0A0A0C;border-bottom:1px solid #2A2A32;transition:background 260ms ease,border-color 260ms ease,backdrop-filter 260ms ease,box-shadow 260ms ease">
     <div style="max-width:1280px;margin:0 auto;padding:0 clamp(20px,4vw,48px);height:72px;display:flex;align-items:center;gap:32px">
-      <button onClick="{{ nav.home }}" aria-label="ACEVA Technology — home" style="display:flex;align-items:center;gap:12px;background:none;border:0;padding:0;color:#F5F6F8">
+      <button onClick="{{ nav.home }}" aria-label="ACEVA Technology — home" style="display:flex;align-items:center;gap:12px;background:none;border:0;padding:0;color:#F5F6F8;transition:opacity 160ms ease" style-hover="opacity:.88">
         <!-- LOGO PLACEHOLDER — replace this <svg> with the real ACEVA mark (keep width/height) -->
         <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
           <defs><linearGradient id="acevaStroke" x1="0" y1="32" x2="32" y2="0"><stop offset="0" stop-color="#0F1E4D"></stop><stop offset="1" stop-color="#3B7CFF"></stop></linearGradient></defs>
@@ -164,16 +226,16 @@
       </button>
 
       <nav aria-label="Primary" style="display:none;align-items:center;gap:4px;margin-left:8px" data-desktop-nav>
-        <button onClick="{{ nav.services }}" style="background:none;border:0;color:#9CA0AC;font-size:14.5px;font-weight:500;padding:9px 13px;border-radius:8px;transition:color 160ms ease,background 160ms ease" style-hover="color:#F5F6F8;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">Capabilities</button>
-        <button onClick="{{ nav.work }}" style="background:none;border:0;color:#9CA0AC;font-size:14.5px;font-weight:500;padding:9px 13px;border-radius:8px;transition:color 160ms ease,background 160ms ease" style-hover="color:#F5F6F8;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">Experiments</button>
-        <button onClick="{{ nav.process }}" style="background:none;border:0;color:#9CA0AC;font-size:14.5px;font-weight:500;padding:9px 13px;border-radius:8px;transition:color 160ms ease,background 160ms ease" style-hover="color:#F5F6F8;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">How We Work</button>
-        <button onClick="{{ nav.about }}" style="background:none;border:0;color:#9CA0AC;font-size:14.5px;font-weight:500;padding:9px 13px;border-radius:8px;transition:color 160ms ease,background 160ms ease" style-hover="color:#F5F6F8;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">Why Aceva</button>
-        <button onClick="{{ toggleMore }}" aria-expanded="{{ moreOpen }}" style="background:none;border:0;color:#9CA0AC;font-size:14.5px;font-weight:500;padding:9px 13px;border-radius:8px;display:flex;align-items:center;gap:6px;transition:color 160ms ease,background 160ms ease" style-hover="color:#F5F6F8;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">More<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+        <button onClick="{{ nav.services }}" class="ac-nav-btn" style="color:{{ navPillStyles.services.color }};background:{{ navPillStyles.services.bg }};box-shadow:{{ navPillStyles.services.sh }}">Capabilities</button>
+        <button onClick="{{ nav.work }}" class="ac-nav-btn" style="color:{{ navPillStyles.work.color }};background:{{ navPillStyles.work.bg }};box-shadow:{{ navPillStyles.work.sh }}">Experiments</button>
+        <button onClick="{{ nav.process }}" class="ac-nav-btn" style="color:{{ navPillStyles.process.color }};background:{{ navPillStyles.process.bg }};box-shadow:{{ navPillStyles.process.sh }}">How We Work</button>
+        <button onClick="{{ nav.about }}" class="ac-nav-btn" style="color:{{ navPillStyles.about.color }};background:{{ navPillStyles.about.bg }};box-shadow:{{ navPillStyles.about.sh }}">Why Aceva</button>
+        <button onClick="{{ toggleMore }}" aria-expanded="{{ moreOpen }}" class="ac-nav-btn" style="color:{{ navPillStyles.more.color }};background:{{ navPillStyles.more.bg }};box-shadow:{{ navPillStyles.more.sh }}">More<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true" style="transition:transform 180ms ease;transform:{{ moreChevron }}"><path d="M6 9l6 6 6-6"></path></svg></button>
       </nav>
 
       <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
-        <button onClick="{{ nav.contact }}" data-desktop-cta style="display:none;background:#1E4FD9;border:0;color:#fff;font-family:'Instrument Sans',sans-serif;font-size:14.5px;font-weight:600;padding:11px 20px;border-radius:10px;transition:background 180ms ease,box-shadow 180ms ease,transform 120ms ease" style-hover="background:#3B7CFF;box-shadow:0 0 0 1px rgba(59,124,255,.5),0 8px 30px rgba(59,124,255,.28)" style-active="transform:scale(.98)">Start a Project</button>
-        <button onClick="{{ openMenu }}" data-burger aria-label="Open menu" style="display:flex;flex-direction:column;gap:5px;background:none;border:1px solid #2A2A32;border-radius:10px;width:44px;height:44px;align-items:center;justify-content:center">
+        <button onClick="{{ nav.contact }}" data-desktop-cta class="ac-btn-primary" style="display:none;padding:11px 20px">Start a Project<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+        <button onClick="{{ openMenu }}" data-burger aria-label="Open menu" style="display:flex;flex-direction:column;gap:5px;background:none;border:1px solid #2A2A32;border-radius:10px;width:44px;height:44px;align-items:center;justify-content:center;transition:border-color 180ms ease,background 180ms ease" style-hover="border-color:#3B7CFF;background:rgba(20,20,24,.6)">
           <span style="display:block;width:17px;height:1.5px;background:#F5F6F8"></span>
           <span style="display:block;width:11px;height:1.5px;background:#9CA0AC"></span>
         </button>
@@ -182,7 +244,7 @@
 
     <sc-if value="{{ moreOpen }}" hint-placeholder-val="{{ false }}">
       <div style="border-top:1px solid #2A2A32;background:rgba(20,20,24,.92);backdrop-filter:blur(18px);animation:acFadeUp 220ms ease both">
-        <div style="max-width:1280px;margin:0 auto;padding:26px clamp(20px,4vw,48px) 30px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px 28px">
+        <div class="ac-more-grid" style="max-width:1280px;margin:0 auto;padding:26px clamp(20px,4vw,48px) 30px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px 28px">
           <button onClick="{{ nav.company }}" style="text-align:left;background:none;border:0;padding:10px 12px;border-radius:8px;color:#F5F6F8;font-size:14.5px;font-weight:500" style-hover="background:#1C1C22">About Us</button>
           <button onClick="{{ nav.technology }}" style="text-align:left;background:none;border:0;padding:10px 12px;border-radius:8px;color:#F5F6F8;font-size:14.5px;font-weight:500" style-hover="background:#1C1C22">Technology Stack</button>
           <button onClick="{{ nav.industries }}" style="text-align:left;background:none;border:0;padding:10px 12px;border-radius:8px;color:#F5F6F8;font-size:14.5px;font-weight:500" style-hover="background:#1C1C22">Industries We Serve</button>
@@ -235,19 +297,22 @@
     <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
       <div>
         <section style="position:relative;overflow:hidden;border-bottom:1px solid #2A2A32">
-          <div aria-hidden="true" style="position:absolute;top:-30%;right:-10%;width:70vw;height:70vw;max-width:900px;max-height:900px;background:radial-gradient(circle at 50% 50%, rgba(59,124,255,.18), rgba(21,42,107,.10) 42%, transparent 68%);animation:acDrift 22s ease-in-out infinite;pointer-events:none"></div>
+          <div data-hero-canvas aria-hidden="true" style="position:absolute;inset:0;z-index:0;pointer-events:none;display:none"></div>
+          <div aria-hidden="true" style="position:absolute;top:-30%;right:-10%;width:70vw;height:70vw;max-width:900px;max-height:900px;background:radial-gradient(circle at 50% 50%, rgba(59,124,255,.16), rgba(21,42,107,.10) 42%, transparent 68%);animation:acDrift 22s ease-in-out infinite;pointer-events:none"></div>
           <div aria-hidden="true" style="position:absolute;inset:0;background-image:linear-gradient(#2A2A32 1px,transparent 1px);background-size:100% 96px;opacity:.22;pointer-events:none;mask-image:linear-gradient(#000,transparent 82%)"></div>
-          <div style="position:relative;max-width:1280px;margin:0 auto;padding:clamp(64px,10vw,120px) clamp(20px,4vw,48px) clamp(48px,6vw,72px)">
+          <div style="position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:clamp(64px,10vw,120px) clamp(20px,4vw,48px) clamp(48px,6vw,72px)">
             <p style="display:flex;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.2em;color:#7FB2FF;margin:0 0 clamp(24px,4vw,38px);animation:acFadeUp 700ms cubic-bezier(.16,1,.3,1) both">
               <span style="width:22px;height:1px;background:#3B7CFF"></span>ACEVA HOLDINGS / SOFTWARE DIVISION
+              <span aria-hidden="true" style="width:6px;height:6px;border-radius:50%;background:#2FBE7A;box-shadow:0 0 8px rgba(47,190,122,.5);animation:acPulseDot 2.8s ease-in-out infinite"></span>
             </p>
             <h1 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(38px,6.6vw,72px);line-height:1.04;letter-spacing:-.03em;margin:0;max-width:15ch;text-wrap:balance;animation:acFadeUp 800ms cubic-bezier(.16,1,.3,1) 60ms both">Build what your business needs next.</h1>
             <p style="font-size:clamp(16.5px,1.5vw,19.5px);line-height:1.62;color:#9CA0AC;max-width:60ch;margin:clamp(22px,3vw,30px) 0 0;animation:acFadeUp 800ms cubic-bezier(.16,1,.3,1) 140ms both">Aceva designs digital experiences, custom software, mobile products and intelligent systems — and rescues products that need a stronger path forward.</p>
             <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:clamp(30px,4vw,42px);animation:acFadeUp 800ms cubic-bezier(.16,1,.3,1) 220ms both">
-              <button onClick="{{ nav.contact }}" style="background:#1E4FD9;border:0;color:#fff;font-size:15.5px;font-weight:600;padding:16px 26px;border-radius:11px;min-height:52px;transition:background 180ms ease,box-shadow 180ms ease,transform 120ms ease" style-hover="background:#3B7CFF;box-shadow:0 0 0 1px rgba(59,124,255,.5),0 10px 36px rgba(59,124,255,.3)" style-active="transform:scale(.98)">Start a Project</button>
-              <button onClick="{{ nav.work }}" style="background:none;border:1px solid #2A2A32;color:#F5F6F8;font-size:15.5px;font-weight:500;padding:16px 26px;border-radius:11px;min-height:52px;display:flex;align-items:center;gap:10px;transition:border-color 180ms ease,background 180ms ease" style-hover="border-color:#3B7CFF;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">Explore Experiments<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+              <button onClick="{{ nav.contact }}" class="ac-btn-primary" style="min-height:52px;padding:16px 26px">Start a Project<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+              <button onClick="{{ nav.work }}" class="ac-btn-ghost" style="min-height:52px;padding:16px 26px">Explore Experiments<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
             </div>
             <p style="font-size:13.5px;color:#9CA0AC;margin:clamp(28px,4vw,40px) 0 0;animation:acFadeUp 800ms cubic-bezier(.16,1,.3,1) 300ms both">For buyers with a clear idea or problem — or visitors who want to see how Aceva thinks and builds.</p>
+            <p class="ac-scroll-cue" aria-hidden="true"><span>Scroll</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 4v16m0 0-6-6m6 6 6-6"></path></svg></p>
           </div>
           <div style="border-top:1px solid #2A2A32;background:rgba(20,20,24,.5)">
             <div style="max-width:1280px;margin:0 auto;padding:22px clamp(20px,4vw,48px);display:flex;flex-wrap:wrap;align-items:center;gap:18px 32px">
@@ -318,7 +383,7 @@
                     <p style="font-size:15.5px;line-height:1.6;color:#F5F6F8;margin:0;padding:16px 18px;border-left:2px solid #1E4FD9;background:rgba(30,79,217,.08)">{{ pathSprint }}</p>
                     <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:26px">
                       <button onClick="{{ nav.contact }}" style="background:#1E4FD9;border:0;color:#fff;font-size:15px;font-weight:600;padding:14px 22px;border-radius:10px;min-height:48px;transition:background 180ms ease,box-shadow 180ms ease" style-hover="background:#3B7CFF;box-shadow:0 8px 30px rgba(59,124,255,.28)">{{ pathCta }}</button>
-                      <button onClick="{{ nav.work }}" style="background:none;border:1px solid #2A2A32;color:#F5F6F8;font-size:15px;font-weight:500;padding:14px 22px;border-radius:10px;min-height:48px;transition:border-color 180ms ease" style-hover="border-color:#3B7CFF">See the proof</button>
+                      <button onClick="{{ nav.work }}" class="ac-btn-ghost" style="padding:12px 20px;min-height:44px">See the proof</button>
                     </div>
                   </div>
                   <div>
@@ -347,37 +412,37 @@
             <p data-reveal style="font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.2em;color:#7FB2FF;margin:0 0 18px">02 — THE OFFER</p>
             <h2 data-reveal style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,4vw,46px);line-height:1.08;letter-spacing:-.025em;margin:0;max-width:22ch">Five capabilities. One accountable engineering partner.</h2>
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;margin-top:clamp(30px,4vw,48px)">
-              <button data-reveal onClick="{{ capNav.digital }}" style="text-align:left;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid #2A2A32;border-radius:14px;padding:28px;color:#F5F6F8;display:flex;flex-direction:column;gap:12px;min-height:230px;transition:transform 220ms cubic-bezier(.16,1,.3,1),border-color 200ms ease,box-shadow 220ms ease" style-hover="transform:translateY(-6px);border-color:#3B7CFF;box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 0 1px rgba(59,124,255,.25)">
+              <button data-reveal onClick="{{ capNav.digital }}" class="ac-card" style="text-align:left;padding:28px;color:#F5F6F8;display:flex;flex-direction:column;gap:12px;min-height:230px">
                 <span style="display:flex;align-items:center;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;color:#9CA0AC">01<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#3B7CFF" stroke-width="1.6" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg></span>
                 <span style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:500;letter-spacing:-.01em;margin-top:6px">Digital Experiences</span>
                 <span style="font-size:14.5px;line-height:1.62;color:#9CA0AC">Premium websites, e-commerce, portals and customer-facing platforms.</span>
-                <span style="display:flex;align-items:center;gap:8px;margin-top:auto;font-size:13.5px;color:#7FB2FF">Learn more<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+                <span class="ac-link" style="margin-top:auto;font-size:13.5px">Learn more<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
               </button>
-              <button data-reveal onClick="{{ capNav.software }}" style="text-align:left;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid #2A2A32;border-radius:14px;padding:28px;color:#F5F6F8;display:flex;flex-direction:column;gap:12px;min-height:230px;transition:transform 220ms cubic-bezier(.16,1,.3,1),border-color 200ms ease,box-shadow 220ms ease" style-hover="transform:translateY(-6px);border-color:#3B7CFF;box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 0 1px rgba(59,124,255,.25)">
+              <button data-reveal onClick="{{ capNav.software }}" class="ac-card" style="text-align:left;padding:28px;color:#F5F6F8;display:flex;flex-direction:column;gap:12px;min-height:230px">
                 <span style="display:flex;align-items:center;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;color:#9CA0AC">02<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#3B7CFF" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 9h18M9 21V9"></path></svg></span>
                 <span style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:500;letter-spacing:-.01em;margin-top:6px">Custom Software</span>
                 <span style="font-size:14.5px;line-height:1.62;color:#9CA0AC">SaaS products, dashboards, marketplaces and internal business systems.</span>
-                <span style="display:flex;align-items:center;gap:8px;margin-top:auto;font-size:13.5px;color:#7FB2FF">Learn more<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+                <span class="ac-link" style="margin-top:auto;font-size:13.5px">Learn more<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
               </button>
-              <button data-reveal onClick="{{ capNav.mobile }}" style="text-align:left;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid #2A2A32;border-radius:14px;padding:28px;color:#F5F6F8;display:flex;flex-direction:column;gap:12px;min-height:230px;transition:transform 220ms cubic-bezier(.16,1,.3,1),border-color 200ms ease,box-shadow 220ms ease" style-hover="transform:translateY(-6px);border-color:#3B7CFF;box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 0 1px rgba(59,124,255,.25)">
+              <button data-reveal onClick="{{ capNav.mobile }}" class="ac-card" style="text-align:left;padding:28px;color:#F5F6F8;display:flex;flex-direction:column;gap:12px;min-height:230px">
                 <span style="display:flex;align-items:center;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;color:#9CA0AC">03<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#3B7CFF" stroke-width="1.6" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"></rect><path d="M11 18h2"></path></svg></span>
                 <span style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:500;letter-spacing:-.01em;margin-top:6px">Mobile Products</span>
                 <span style="font-size:14.5px;line-height:1.62;color:#9CA0AC">iOS, Android and cross-platform applications for customers and teams.</span>
-                <span style="display:flex;align-items:center;gap:8px;margin-top:auto;font-size:13.5px;color:#7FB2FF">Learn more<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+                <span class="ac-link" style="margin-top:auto;font-size:13.5px">Learn more<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
               </button>
-              <button data-reveal onClick="{{ capNav.intelligence }}" style="text-align:left;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid #2A2A32;border-radius:14px;padding:28px;color:#F5F6F8;display:flex;flex-direction:column;gap:12px;min-height:230px;transition:transform 220ms cubic-bezier(.16,1,.3,1),border-color 200ms ease,box-shadow 220ms ease" style-hover="transform:translateY(-6px);border-color:#3B7CFF;box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 0 1px rgba(59,124,255,.25)">
+              <button data-reveal onClick="{{ capNav.intelligence }}" class="ac-card" style="text-align:left;padding:28px;color:#F5F6F8;display:flex;flex-direction:column;gap:12px;min-height:230px">
                 <span style="display:flex;align-items:center;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;color:#9CA0AC">04<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#3B7CFF" stroke-width="1.6" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M6.3 6.3l2.1 2.1M15.6 15.6l2.1 2.1M17.7 6.3l-2.1 2.1M8.4 15.6l-2.1 2.1"></path><circle cx="12" cy="12" r="3.4"></circle></svg></span>
                 <span style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:500;letter-spacing:-.01em;margin-top:6px">Intelligence &amp; Automation</span>
                 <span style="font-size:14.5px;line-height:1.62;color:#9CA0AC">AI assistants, workflow automation, integrations, knowledge systems and reporting.</span>
-                <span style="display:flex;align-items:center;gap:8px;margin-top:auto;font-size:13.5px;color:#7FB2FF">Learn more<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+                <span class="ac-link" style="margin-top:auto;font-size:13.5px">Learn more<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
               </button>
-              <button data-reveal onClick="{{ capNav.rescue }}" style="text-align:left;background:linear-gradient(150deg,rgba(21,42,107,.66),rgba(20,20,24,.5) 58%);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid #2A2A32;border-radius:14px;padding:28px;color:#F5F6F8;display:flex;flex-direction:column;gap:12px;min-height:230px;transition:transform 220ms cubic-bezier(.16,1,.3,1),border-color 200ms ease,box-shadow 220ms ease" style-hover="transform:translateY(-6px);border-color:#3B7CFF;box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 0 1px rgba(59,124,255,.25)">
+              <button data-reveal onClick="{{ capNav.rescue }}" class="ac-card-flagship" style="text-align:left;padding:28px;color:#F5F6F8;display:flex;flex-direction:column;gap:12px;min-height:230px">
                 <span style="display:flex;align-items:center;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;color:#7FB2FF">05 · FLAGSHIP<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#7FB2FF" stroke-width="1.6" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path><path d="M9.2 12l2 2 3.6-3.6"></path></svg></span>
                 <span style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:500;letter-spacing:-.01em;margin-top:6px">Product Rescue &amp; Reliability</span>
                 <span style="font-size:14.5px;line-height:1.62;color:#c3c8d4">Audit, stabilize, secure and modernize unfinished, outdated or AI-generated software.</span>
-                <span style="display:flex;align-items:center;gap:8px;margin-top:auto;font-size:13.5px;color:#7FB2FF">Learn more<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+                <span class="ac-link" style="margin-top:auto;font-size:13.5px">Learn more<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
               </button>
-              <button data-reveal onClick="{{ nav.services }}" style="text-align:left;background:none;border:1px dashed #2A2A32;border-radius:14px;padding:28px;color:#F5F6F8;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;min-height:230px;transition:border-color 200ms ease,background 200ms ease" style-hover="border-color:#3B7CFF;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">
+              <button data-reveal onClick="{{ nav.services }}" class="ac-card-ghost" style="text-align:left;padding:28px;color:#F5F6F8;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;min-height:230px">
                 <span style="font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:500;letter-spacing:-.01em">All capabilities in detail</span>
                 <span style="font-size:14px;color:#9CA0AC">What each one includes, when to buy it, and what we will not promise.</span>
               </button>
@@ -444,7 +509,7 @@
                 <p style="font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.2em;color:#7FB2FF;margin:0 0 18px">04 — PROCESS</p>
                 <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,3.6vw,42px);line-height:1.1;letter-spacing:-.025em;margin:0">Understand, design, build, launch, improve.</h2>
               </div>
-              <button onClick="{{ nav.process }}" style="background:none;border:1px solid #2A2A32;color:#F5F6F8;font-size:14.5px;font-weight:500;padding:13px 20px;border-radius:10px;min-height:48px;transition:border-color 180ms ease,background 180ms ease" style-hover="border-color:#3B7CFF;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">Full process</button>
+              <button onClick="{{ nav.process }}" class="ac-btn-ghost" style="min-height:48px;padding:13px 20px">Full process<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
             </div>
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:0;margin-top:clamp(30px,4vw,50px);border-top:1px solid #2A2A32">
               <div data-reveal style="padding:26px 22px 26px 0;border-right:1px solid #2A2A32">
@@ -483,30 +548,30 @@
                 <p style="font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.2em;color:#7FB2FF;margin:0 0 18px">05 — PROOF, NOT PORTFOLIO</p>
                 <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(28px,3.6vw,42px);line-height:1.1;letter-spacing:-.025em;margin:0;max-width:24ch">Honest demonstrations, clearly labeled. Never presented as client work.</h2>
               </div>
-              <button onClick="{{ nav.work }}" style="background:none;border:1px solid #2A2A32;color:#F5F6F8;font-size:14.5px;font-weight:500;padding:13px 20px;border-radius:10px;min-height:48px;transition:border-color 180ms ease,background 180ms ease" style-hover="border-color:#3B7CFF;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">Open Experiments</button>
+              <button onClick="{{ nav.work }}" class="ac-btn-ghost" style="min-height:48px;padding:13px 20px">Open Experiments<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
             </div>
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:clamp(30px,4vw,48px)">
-              <button data-reveal onClick="{{ nav.work }}" style="text-align:left;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid #2A2A32;border-radius:14px;padding:24px;color:#F5F6F8;min-height:180px;display:flex;flex-direction:column;gap:10px;transition:transform 200ms cubic-bezier(.16,1,.3,1),border-color 200ms ease" style-hover="transform:translateY(-5px);border-color:#3B7CFF">
+              <button data-reveal onClick="{{ nav.work }}" class="ac-card" style="text-align:left;padding:24px;color:#F5F6F8;min-height:180px;display:flex;flex-direction:column;gap:10px">
                 <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;color:#7FB2FF;border:1px solid rgba(127,178,255,.3);border-radius:999px;padding:4px 9px;align-self:flex-start">LIVE PROOF</span>
                 <span style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:500;margin-top:6px">This website</span>
                 <span style="font-size:14px;line-height:1.6;color:#9CA0AC">Digital Experiences, demonstrated by the thing you are using now.</span>
               </button>
-              <button data-reveal onClick="{{ nav.work }}" style="text-align:left;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid #2A2A32;border-radius:14px;padding:24px;color:#F5F6F8;min-height:180px;display:flex;flex-direction:column;gap:10px;transition:transform 200ms cubic-bezier(.16,1,.3,1),border-color 200ms ease" style-hover="transform:translateY(-5px);border-color:#3B7CFF">
+              <button data-reveal onClick="{{ nav.work }}" class="ac-card" style="text-align:left;padding:24px;color:#F5F6F8;min-height:180px;display:flex;flex-direction:column;gap:10px">
                 <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;color:#9CA0AC;border:1px solid #2A2A32;border-radius:999px;padding:4px 9px;align-self:flex-start">CONCEPT DEMO</span>
                 <span style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:500;margin-top:6px">Operations dashboard</span>
                 <span style="font-size:14px;line-height:1.6;color:#9CA0AC">Users, permissions, tasks, data and reporting in one realistic workflow.</span>
               </button>
-              <button data-reveal onClick="{{ nav.work }}" style="text-align:left;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid #2A2A32;border-radius:14px;padding:24px;color:#F5F6F8;min-height:180px;display:flex;flex-direction:column;gap:10px;transition:transform 200ms cubic-bezier(.16,1,.3,1),border-color 200ms ease" style-hover="transform:translateY(-5px);border-color:#3B7CFF">
+              <button data-reveal onClick="{{ nav.work }}" class="ac-card" style="text-align:left;padding:24px;color:#F5F6F8;min-height:180px;display:flex;flex-direction:column;gap:10px">
                 <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;color:#9CA0AC;border:1px solid #2A2A32;border-radius:999px;padding:4px 9px;align-self:flex-start">CONCEPT DEMO</span>
                 <span style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:500;margin-top:6px">Mobile journey</span>
                 <span style="font-size:14px;line-height:1.6;color:#9CA0AC">One complete journey from sign-in to a useful outcome — not ten loose screens.</span>
               </button>
-              <button data-reveal onClick="{{ nav.work }}" style="text-align:left;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid #2A2A32;border-radius:14px;padding:24px;color:#F5F6F8;min-height:180px;display:flex;flex-direction:column;gap:10px;transition:transform 200ms cubic-bezier(.16,1,.3,1),border-color 200ms ease" style-hover="transform:translateY(-5px);border-color:#3B7CFF">
+              <button data-reveal onClick="{{ nav.work }}" class="ac-card" style="text-align:left;padding:24px;color:#F5F6F8;min-height:180px;display:flex;flex-direction:column;gap:10px">
                 <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;color:#9CA0AC;border:1px solid #2A2A32;border-radius:999px;padding:4px 9px;align-self:flex-start">CONCEPT DEMO</span>
                 <span style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:500;margin-top:6px">Automation with approval</span>
                 <span style="font-size:14px;line-height:1.6;color:#9CA0AC">Request, lookup, proposed action, human approval, system update.</span>
               </button>
-              <button data-reveal onClick="{{ nav.work }}" style="text-align:left;background:linear-gradient(150deg,rgba(21,42,107,.66),rgba(20,20,24,.5) 60%);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid #2A2A32;border-radius:14px;padding:24px;color:#F5F6F8;min-height:180px;display:flex;flex-direction:column;gap:10px;transition:transform 200ms cubic-bezier(.16,1,.3,1),border-color 200ms ease" style-hover="transform:translateY(-5px);border-color:#3B7CFF">
+              <button data-reveal onClick="{{ nav.work }}" class="ac-card-flagship" style="text-align:left;padding:24px;color:#F5F6F8;min-height:180px;display:flex;flex-direction:column;gap:10px">
                 <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;color:#7FB2FF;border:1px solid rgba(127,178,255,.3);border-radius:999px;padding:4px 9px;align-self:flex-start">SAMPLE REPORT</span>
                 <span style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:500;margin-top:6px">Rescue Report</span>
                 <span style="font-size:14px;line-height:1.6;color:#c3c8d4">Findings, severity, what to keep, what to replace, and a 30/60/90-day plan.</span>
@@ -517,36 +582,36 @@
 
         <section style="border-bottom:1px solid #2A2A32">
           <div style="max-width:1280px;margin:0 auto;padding:clamp(64px,9vw,116px) clamp(20px,4vw,48px);display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
-            <div data-reveal style="border:1px solid #2A2A32;border-radius:14px;padding:30px;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">
+            <div data-reveal class="ac-card" style="padding:30px">
               <p style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;color:#9CA0AC;margin:0 0 16px">CLIENT FEEDBACK</p>
               <p style="font-family:'Space Grotesk',sans-serif;font-size:21px;font-weight:500;line-height:1.34;letter-spacing:-.01em;margin:0">Coming soon.</p>
               <p style="font-size:14.5px;line-height:1.6;color:#9CA0AC;margin:12px 0 0">We publish quotes only after real engagements close. Nothing here is invented.</p>
-              <button onClick="{{ nav.testimonials }}" style="margin-top:22px;background:none;border:0;padding:0;color:#7FB2FF;font-size:14px;display:flex;align-items:center;gap:8px" style-hover="color:#3B7CFF">Our policy on proof<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+              <button onClick="{{ nav.testimonials }}" class="ac-link" style="margin-top:22px;font-size:14px;background:none;border:0;padding:0">Our policy on proof<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
             </div>
-            <div data-reveal style="border:1px solid #2A2A32;border-radius:14px;padding:30px;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">
+            <div data-reveal class="ac-card" style="padding:30px">
               <p style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;color:#9CA0AC;margin:0 0 16px">CAREERS</p>
               <p style="font-family:'Space Grotesk',sans-serif;font-size:21px;font-weight:500;line-height:1.34;letter-spacing:-.01em;margin:0">Five seniors. Five juniors. Every change reviewed.</p>
               <p style="font-size:14.5px;line-height:1.6;color:#9CA0AC;margin:12px 0 0">No junior change reaches production without a named senior review. That is how people grow here.</p>
-              <button onClick="{{ nav.careers }}" style="margin-top:22px;background:none;border:0;padding:0;color:#7FB2FF;font-size:14px;display:flex;align-items:center;gap:8px" style-hover="color:#3B7CFF">How the team works<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+              <button onClick="{{ nav.careers }}" class="ac-link" style="margin-top:22px;font-size:14px;background:none;border:0;padding:0">How the team works<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
             </div>
-            <div data-reveal style="border:1px solid #2A2A32;border-radius:14px;padding:30px;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">
+            <div data-reveal class="ac-card" style="padding:30px">
               <p style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;color:#9CA0AC;margin:0 0 16px">COMMON QUESTIONS</p>
               <p style="font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:500;line-height:1.4;margin:0 0 10px;padding-bottom:12px;border-bottom:1px solid #2A2A32">How do we start?</p>
               <p style="font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:500;line-height:1.4;margin:0 0 10px;padding-bottom:12px;border-bottom:1px solid #2A2A32">Fixed scope or dedicated team?</p>
               <p style="font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:500;line-height:1.4;margin:0">Who owns the code?</p>
-              <button onClick="{{ nav.faq }}" style="margin-top:22px;background:none;border:0;padding:0;color:#7FB2FF;font-size:14px;display:flex;align-items:center;gap:8px" style-hover="color:#3B7CFF">All questions<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+              <button onClick="{{ nav.faq }}" class="ac-link" style="margin-top:22px;font-size:14px;background:none;border:0;padding:0">All questions<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
             </div>
           </div>
         </section>
 
-        <section style="position:relative;overflow:hidden">
+        <section class="ac-hairline" style="position:relative;overflow:hidden">
           <div aria-hidden="true" style="position:absolute;bottom:-40%;left:50%;transform:translateX(-50%);width:100vw;height:60vw;max-height:700px;background:radial-gradient(ellipse at 50% 100%, rgba(59,124,255,.20), rgba(106,79,224,.10) 40%, transparent 70%);pointer-events:none"></div>
           <div style="position:relative;max-width:1280px;margin:0 auto;padding:clamp(72px,10vw,140px) clamp(20px,4vw,48px);text-align:left">
             <h2 data-reveal style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(32px,5vw,58px);line-height:1.05;letter-spacing:-.03em;margin:0;max-width:20ch">Tell us what is costing you the most time, money or customer trust.</h2>
             <p data-reveal style="font-size:clamp(16px,1.5vw,18.5px);line-height:1.6;color:#9CA0AC;margin:24px 0 0;max-width:52ch">A short qualification form, then a meeting. We reply from acevatechnology@gmail.com.</p>
             <div data-reveal style="display:flex;flex-wrap:wrap;gap:12px;margin-top:34px">
-              <button onClick="{{ nav.contact }}" style="background:#1E4FD9;border:0;color:#fff;font-size:15.5px;font-weight:600;padding:16px 26px;border-radius:11px;min-height:52px;transition:background 180ms ease,box-shadow 180ms ease,transform 120ms ease" style-hover="background:#3B7CFF;box-shadow:0 0 0 1px rgba(59,124,255,.5),0 10px 36px rgba(59,124,255,.3)" style-active="transform:scale(.98)">Start a Project</button>
-              <a href="mailto:acevatechnology@gmail.com" style="border:1px solid #2A2A32;color:#F5F6F8;font-size:15.5px;font-weight:500;padding:16px 26px;border-radius:11px;min-height:52px;display:flex;align-items:center;transition:border-color 180ms ease,background 180ms ease" style-hover="border-color:#3B7CFF;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">Email us directly</a>
+              <button onClick="{{ nav.contact }}" class="ac-btn-primary" style="min-height:52px;padding:16px 26px">Start a Project<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+              <a href="mailto:acevatechnology@gmail.com" class="ac-btn-ghost" style="min-height:52px;padding:16px 26px">Email us directly</a>
             </div>
           </div>
         </section>
@@ -606,8 +671,8 @@
             <h1 style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(32px,5vw,58px);line-height:1.05;letter-spacing:-.03em;margin:0;max-width:22ch">{{ cap.name }}</h1>
             <p style="font-size:clamp(16.5px,1.5vw,19px);line-height:1.62;color:#9CA0AC;margin:22px 0 0;max-width:56ch">{{ cap.lead }}</p>
             <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:32px">
-              <button onClick="{{ nav.contact }}" style="background:#1E4FD9;border:0;color:#fff;font-size:15px;font-weight:600;padding:15px 24px;border-radius:11px;min-height:50px;transition:background 180ms ease,box-shadow 180ms ease" style-hover="background:#3B7CFF;box-shadow:0 8px 30px rgba(59,124,255,.28)">Discuss your project</button>
-              <button onClick="{{ nav.work }}" style="background:none;border:1px solid #2A2A32;color:#F5F6F8;font-size:15px;font-weight:500;padding:15px 24px;border-radius:11px;min-height:50px;transition:border-color 180ms ease,background 180ms ease" style-hover="border-color:#3B7CFF;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">See the proof</button>
+              <button onClick="{{ nav.contact }}" class="ac-btn-primary">Discuss your project</button>
+              <button onClick="{{ nav.work }}" class="ac-btn-ghost">See the proof</button>
             </div>
           </div>
         </section>
@@ -627,20 +692,20 @@
               <p data-reveal style="font-family:'Space Grotesk',sans-serif;font-size:clamp(20px,2.4vw,27px);font-weight:500;line-height:1.32;letter-spacing:-.015em;margin:clamp(32px,4vw,44px) 0 0;padding-left:22px;border-left:2px solid #1E4FD9">{{ cap.sales }}</p>
             </div>
             <div style="display:flex;flex-direction:column;gap:14px">
-              <div data-reveal style="background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid #2A2A32;border-radius:14px;padding:26px">
+              <div data-reveal class="ac-card" style="padding:26px">
                 <p style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;color:#7FB2FF;margin:0 0 14px">WHEN YOU NEED IT</p>
                 <p style="font-size:16px;line-height:1.6;color:#F5F6F8;margin:0">{{ cap.when }}</p>
               </div>
-              <div data-reveal style="background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid #2A2A32;border-radius:14px;padding:26px">
+              <div data-reveal class="ac-card" style="padding:26px">
                 <p style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;color:#7FB2FF;margin:0 0 14px">HOW WE PROVE IT</p>
                 <p style="font-size:16px;line-height:1.6;color:#F5F6F8;margin:0">{{ cap.proof }}</p>
-                <button onClick="{{ nav.work }}" style="margin-top:16px;background:none;border:0;padding:0;color:#7FB2FF;font-size:14px;display:flex;align-items:center;gap:8px" style-hover="color:#3B7CFF">Open in Experiments<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+                <button onClick="{{ nav.work }}" class="ac-link" style="margin-top:16px;font-size:14px">Open in Experiments<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
               </div>
-              <div data-reveal style="background:none;border:1px solid #2A2A32;border-radius:14px;padding:26px">
+              <div data-reveal class="ac-card" style="padding:26px">
                 <p style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;color:#9CA0AC;margin:0 0 14px">WHAT WE WILL NOT PROMISE</p>
                 <p style="font-size:16px;line-height:1.6;color:#9CA0AC;margin:0">{{ cap.limit }}</p>
               </div>
-              <div data-reveal style="background:none;border:1px solid #2A2A32;border-radius:14px;padding:26px">
+              <div data-reveal class="ac-card" style="padding:26px">
                 <p style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;color:#9CA0AC;margin:0 0 16px">ENGAGEMENT TYPES</p>
                 <div style="display:flex;flex-direction:column;gap:12px">
                   <p style="font-size:15px;line-height:1.5;margin:0;color:#F5F6F8">Fixed scope — written scope, milestones and acceptance criteria.</p>
@@ -654,11 +719,11 @@
 
         <section>
           <div style="max-width:1280px;margin:0 auto;padding:clamp(40px,5vw,64px) clamp(20px,4vw,48px);display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">
-            <button onClick="{{ cap.onPrev }}" style="text-align:left;background:none;border:1px solid #2A2A32;border-radius:14px;padding:24px;color:#F5F6F8;min-height:110px;transition:border-color 180ms ease,background 180ms ease" style-hover="border-color:#3B7CFF;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">
+            <button onClick="{{ cap.onPrev }}" class="ac-card" style="text-align:left;padding:24px;min-height:110px">
               <span style="display:flex;align-items:center;gap:9px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;color:#9CA0AC"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"></path></svg>PREVIOUS</span>
               <span style="display:block;font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:500;margin-top:12px">{{ cap.prevName }}</span>
             </button>
-            <button onClick="{{ cap.onNext }}" style="text-align:left;background:none;border:1px solid #2A2A32;border-radius:14px;padding:24px;color:#F5F6F8;min-height:110px;transition:border-color 180ms ease,background 180ms ease" style-hover="border-color:#3B7CFF;background:rgba(20,20,24,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">
+            <button onClick="{{ cap.onNext }}" class="ac-card" style="text-align:left;padding:24px;min-height:110px">
               <span style="display:flex;align-items:center;gap:9px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;color:#9CA0AC">NEXT<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
               <span style="display:block;font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:500;margin-top:12px">{{ cap.nextName }}</span>
             </button>
@@ -1874,7 +1939,7 @@
 
   </main>
 
-  <footer style="border-top:1px solid #2A2A32;background:#0F0F13;position:relative;z-index:1">
+  <footer class="ac-hairline" style="border-top:1px solid #2A2A32;background:#0F0F13;position:relative;z-index:1">
     <div style="max-width:1280px;margin:0 auto;padding:clamp(48px,6vw,72px) clamp(20px,4vw,48px)">
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:36px 28px">
         <div style="grid-column:span 2;min-width:220px">
@@ -1931,9 +1996,12 @@
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:14px 26px;align-items:center;justify-content:space-between;margin-top:clamp(36px,5vw,56px);padding-top:24px;border-top:1px solid #2A2A32">
         <p style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#4b4f5b;margin:0">© 2026 ACEVA TECHNOLOGY. ALL RIGHTS RESERVED.</p>
-        <div style="display:flex;gap:22px">
+        <div style="display:flex;gap:22px;align-items:center">
           <button onClick="{{ nav.privacy }}" style="background:none;border:0;padding:0;color:#9CA0AC;font-size:13px" style-hover="color:#F5F6F8">Privacy Policy</button>
           <button onClick="{{ nav.terms }}" style="background:none;border:0;padding:0;color:#9CA0AC;font-size:13px" style-hover="color:#F5F6F8">Terms of Service</button>
+          <button onClick="{{ scrollTop }}" aria-label="Back to top" style="display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;border:1px solid #2A2A32;background:none;color:#9CA0AC;transition:border-color 180ms ease,color 180ms ease,transform 180ms ease" style-hover="border-color:#3B7CFF;color:#F5F6F8;transform:translateY(-2px)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20V4m0 0-6 6m6-6 6 6"></path></svg>
+          </button>
         </div>
       </div>
     </div>
@@ -2117,6 +2185,33 @@ const LEGAL = {
 
 const CAP_PAGES = { digital: 'cap-digital', software: 'cap-software', mobile: 'cap-mobile', intelligence: 'cap-intelligence', rescue: 'cap-rescue' };
 
+const OGL_VERT = `attribute vec2 position; attribute vec2 uv; varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position, 0.0, 1.0); }`;
+
+const OGL_FRAG = `precision highp float;
+uniform float uTime;
+uniform vec2 uAspect;
+varying vec2 vUv;
+float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123); }
+float noise(vec2 p) {
+  vec2 i = floor(p), f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+}
+void main() {
+  vec2 uv = vUv;
+  float t = uTime * 0.06;
+  float q = noise(vec2(uv.x * 1.8 + t, uv.y * 1.8 - t * 0.7));
+  float w = noise(vec2(uv.x * 3.0 - t * 0.9, uv.y * 3.0 + t * 0.5) + q * 1.6);
+  vec3 deep = vec3(0.039, 0.059, 0.122);
+  vec3 mid  = vec3(0.055, 0.118, 0.247);
+  vec3 lift = vec3(0.086, 0.188, 0.361);
+  vec3 col = mix(deep, mid, smoothstep(0.3, 0.72, w));
+  col = mix(col, lift, smoothstep(0.62, 0.95, w) * 0.5);
+  float vig = 1.0 - smoothstep(0.55, 1.1, length((uv - 0.5) * vec2(uAspect.x, 1.0)) * 1.15);
+  col *= vig;
+  gl_FragColor = vec4(col, 1.0);
+}`;
+
 class Component extends DCLogic {
   state = {
     page: 'home', path: null, menuOpen: false, moreOpen: false,
@@ -2168,6 +2263,9 @@ class Component extends DCLogic {
     this.openMenu = () => this.setState({ menuOpen: true, moreOpen: false });
     this.closeMenu = () => this.setState({ menuOpen: false });
     this.toggleMore = () => this.setState(s => ({ moreOpen: !s.moreOpen }));
+    this.scrollTop = () => {
+      window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    };
     this.onScroll = () => {
       const el = this.navRef.current;
       if (!el) return;
@@ -2196,13 +2294,15 @@ class Component extends DCLogic {
     this.applyResponsive();
     window.addEventListener('resize', this.applyResponsive = this.applyResponsive.bind(this));
     this.observeReveals();
+    this.maybeInitOgl();
   }
 
-  componentDidUpdate() { this.applyResponsive(); this.observeReveals(); }
+  componentDidUpdate() { this.applyResponsive(); this.observeReveals(); this.maybeInitOgl(); }
 
   componentWillUnmount() {
     window.removeEventListener('scroll', this.onScroll);
     if (this.io) this.io.disconnect();
+    this._stopOgl();
   }
 
   applyResponsive() {
@@ -2210,7 +2310,7 @@ class Component extends DCLogic {
     if (!root) return;
     const wide = window.innerWidth >= 1000;
     root.querySelectorAll('[data-desktop-nav]').forEach(el => { el.style.display = wide ? 'flex' : 'none'; });
-    root.querySelectorAll('[data-desktop-cta]').forEach(el => { el.style.display = wide ? 'block' : 'none'; });
+    root.querySelectorAll('[data-desktop-cta]').forEach(el => { el.style.display = wide ? 'inline-flex' : 'none'; });
     root.querySelectorAll('[data-burger]').forEach(el => { el.style.display = wide ? 'none' : 'flex'; });
     root.querySelectorAll('[data-mobile-cta]').forEach(el => { el.style.display = wide ? 'none' : 'flex'; });
     root.querySelectorAll('[data-main]').forEach(el => { el.style.paddingBottom = wide ? '0px' : '88px'; });
@@ -2219,6 +2319,87 @@ class Component extends DCLogic {
       el.style.display = level === 'off' ? 'none' : 'block';
       el.style.opacity = level === 'subtle' ? '.5' : '1';
     });
+  }
+
+  pillStyle(on) {
+    return on
+      ? { bg: '#1C1C22', color: '#F5F6F8', sh: 'inset 0 0 0 1px rgba(59,124,255,.18)' }
+      : { bg: 'transparent', color: '#9CA0AC', sh: 'none' };
+  }
+
+  maybeInitOgl() {
+    const mount = this.navRef.current && this.navRef.current.parentNode.querySelector('[data-hero-canvas]');
+    if (this._ogl && !mount) { this._stopOgl(); return; }
+    if (this._ogl) return;
+    if (!mount) return;
+    const level = this.props.motion || 'full';
+    if (level === 'off' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (window.innerWidth < 720) return;
+    if (!window.OGL) {
+      this._loadOglScript(() => this._attachOgl(mount), () => {});
+      return;
+    }
+    this._attachOgl(mount);
+  }
+
+  _loadOglScript(onOk, onErr) {
+    const s = document.createElement('script');
+    s.src = 'https://unpkg.com/ogl@1.0.11/dist/ogl.min.js';
+    s.async = true;
+    s.onload = onOk;
+    s.onerror = onErr;
+    document.head.appendChild(s);
+  }
+
+  _attachOgl(mount) {
+    if (!mount || !mount.isConnected || this._ogl || !window.OGL) return;
+    const O = window.OGL;
+    const renderer = new O.Renderer({ dpr: Math.min(window.devicePixelRatio || 1, 2), alpha: true });
+    const canvas = renderer.gl.canvas;
+    canvas.style.position = 'absolute';
+    canvas.style.inset = '0';
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    canvas.style.pointerEvents = 'none';
+    mount.appendChild(canvas);
+    mount.style.display = 'block';
+
+    const scene = new O.Transform();
+    const camera = new O.Camera();
+    const geometry = new O.Triangle();
+    const program = new O.Program(renderer.gl, {
+      vertex: OGL_VERT,
+      fragment: OGL_FRAG,
+      uniforms: { uTime: { value: 0 }, uAspect: { value: [1, 1] } }
+    });
+    const mesh = new O.Mesh(geometry, program);
+    mesh.setParent(scene);
+
+    const fit = () => {
+      const w = mount.clientWidth || window.innerWidth;
+      const h = mount.clientHeight || 480;
+      renderer.setSize(w, h);
+      program.uniforms.uAspect.value = [w / h, 1];
+    };
+    fit();
+    window.addEventListener('resize', fit);
+
+    let alive = true;
+    const tick = t => {
+      if (!alive) return;
+      program.uniforms.uTime.value = t * 0.001;
+      renderer.render({ scene, camera });
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+
+    this._ogl = { stop: () => { alive = false; window.removeEventListener('resize', fit); renderer.gl.canvas.remove(); } };
+  }
+
+  _stopOgl() {
+    if (this._ogl) { this._ogl.stop(); this._ogl = null; }
+    const mount = this.navRef.current && this.navRef.current.parentNode.querySelector('[data-hero-canvas]');
+    if (mount) mount.style.display = 'none';
   }
 
   observeReveals() {
@@ -2387,6 +2568,14 @@ class Component extends DCLogic {
       isCapDetail: !!cap,
       cap: cap || {},
       capList: CAPS.map(c => Object.assign({}, c, { onOpen: this.capNav[c.key] })),
+      navPillStyles: {
+        services: this.pillStyle(p === 'services'),
+        work: this.pillStyle(p === 'work'),
+        process: this.pillStyle(p === 'process'),
+        about: this.pillStyle(p === 'about'),
+        more: this.pillStyle(['company','technology','industries','testimonials','careers','insights','faq','mobile'].indexOf(p) >= 0)
+      },
+      moreChevron: this.state.moreOpen ? 'rotate(180deg)' : 'none',
       nav: this.nav,
       capNav: this.capNav,
       navRef: this.navRef,
