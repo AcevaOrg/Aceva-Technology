@@ -1,0 +1,33 @@
+.approveBtn {
+  transition:
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+.approveBtn:hover {
+  background: var(--electric);
+  box-shadow: 0 8px 26px rgba(59, 124, 255, 0.28);
+}
+.rejectBtn {
+  transition: border-color 180ms ease;
+}
+.rejectBtn:hover {
+  border-color: var(--error);
+}
+.nextBtn {
+  transition:
+    border-color 180ms ease,
+    background 180ms ease;
+}
+.nextBtn:hover {
+  border-color: var(--electric);
+  background: var(--elevated);
+}
+.resetBtn {
+  transition:
+    border-color 180ms ease,
+    color 180ms ease;
+}
+.resetBtn:hover {
+  border-color: var(--electric);
+  color: var(--ink);
+}
