@@ -1,0 +1,20 @@
+.backHomeBtn {
+  transition:
+    border-color 180ms ease,
+    background 180ms ease;
+}
+.backHomeBtn:hover {
+  border-color: var(--electric);
+  background: rgba(20, 20, 24, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.rescueCta {
+  transition:
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+.rescueCta:hover {
+  background: var(--electric);
+  box-shadow: 0 8px 30px rgba(59, 124, 255, 0.28);
+}

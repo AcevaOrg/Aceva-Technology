@@ -1,0 +1,6 @@
+.row {
+  transition: background 200ms ease;
+}
+.row:hover {
+  background: #101014;
+}

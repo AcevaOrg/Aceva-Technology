@@ -1,0 +1,27 @@
+.logoBtn {
+  transition: opacity 160ms ease;
+}
+.logoBtn:hover {
+  opacity: 0.88;
+}
+.burger {
+  transition:
+    border-color 180ms ease,
+    background 180ms ease;
+}
+.burger:hover {
+  border-color: var(--electric);
+  background: rgba(20, 20, 24, 0.6);
+}
+.moreItem {
+  transition: background 160ms ease;
+}
+.moreItem:hover {
+  background: var(--elevated);
+}
+.mobileTopLink {
+  transition: color 160ms ease;
+}
+.mobileEmail:hover {
+  border-color: var(--electric);
+}

@@ -1,0 +1,6 @@
+.crumbLink {
+  transition: color 160ms ease;
+}
+.crumbLink:hover {
+  color: var(--ink);
+}
