@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ROUTES, capabilityRoute } from "@/lib/nav";
 import { LogoMark } from "@/components/ui/icons";
 import BackToTopButton from "./BackToTopButton";
@@ -45,8 +46,12 @@ function LinkColumn({ title, links }: { title: string; links: { href: string; la
 
 export default function Footer() {
   return (
-    <footer className="ac-hairline" style={{ borderTop: "1px solid var(--hairline)", background: "#0f0f13", position: "relative", zIndex: 1 }}>
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(48px,6vw,72px) clamp(20px,4vw,48px)" }}>
+    <footer className="ac-hairline" style={{ borderTop: "1px solid var(--hairline)", position: "relative", zIndex: 1 }}>
+      <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
+        <Image src="/images/used/nav-footer-bg.png" alt="" fill style={{ objectFit: "cover", objectPosition: "center center", opacity: 0.2 }} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 30%, transparent 70%, #0A0A0C 100%)" }} />
+      </div>
+      <div style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(48px,6vw,72px) clamp(20px,4vw,48px)" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: "36px 28px" }}>
           <div style={{ gridColumn: "span 2", minWidth: 220 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>

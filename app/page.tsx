@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { CAPS } from "@/lib/data/caps";
 import { ROUTES, capabilityRoute } from "@/lib/nav";
@@ -79,23 +80,24 @@ export default function HomePage() {
   return (
     <div>
       {/* Hero */}
-      <section style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid var(--hairline)" }}>
-        <HeroCanvas />
-        <div aria-hidden="true" style={{ position: "absolute", top: "-30%", right: "-10%", width: "70vw", height: "70vw", maxWidth: 900, maxHeight: 900, background: "radial-gradient(circle at 50% 50%, rgba(59,124,255,.16), rgba(21,42,107,.10) 42%, transparent 68%)", animation: "acDrift 22s ease-in-out infinite", pointerEvents: "none" }} />
-        <div aria-hidden="true" style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(#2A2A32 1px,transparent 1px)", backgroundSize: "100% 96px", opacity: 0.22, pointerEvents: "none", maskImage: "linear-gradient(#000,transparent 82%)" }} />
-        <div style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,10vw,120px) clamp(20px,4vw,48px) clamp(48px,6vw,72px)" }}>
-          <p style={{ display: "flex", alignItems: "center", gap: 12, fontFamily: "var(--font-jetbrains-mono)", fontSize: 11.5, letterSpacing: ".2em", color: "var(--ice)", margin: "0 0 clamp(24px,4vw,38px)", animation: "acFadeUp 700ms cubic-bezier(.16,1,.3,1) both" }}>
+      <section className="hero" style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid var(--hairline)" }}>
+        <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
+          <Image src="/images/used/shared-skyline.jpg" alt="" fill style={{ objectFit: "cover", objectPosition: "center center", opacity: 1, filter: "blur(3px)", transform: "scale(1.02)" }} priority />
+          <div className="hero-overlay" />
+        </div>
+        <div style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,10vw,120px) clamp(20px,4vw,48px) clamp(48px,6vw,72px)", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+          <p style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, fontFamily: "var(--font-jetbrains-mono)", fontSize: 11.5, letterSpacing: ".2em", color: "var(--ice)", margin: "0 0 clamp(24px,4vw,38px)", animation: "acFadeUp 700ms cubic-bezier(.16,1,.3,1) both" }}>
             <span style={{ width: 22, height: 1, background: "var(--electric)" }} />
             ACEVA HOLDINGS / SOFTWARE DIVISION
             <span aria-hidden="true" style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--success)", boxShadow: "0 0 8px rgba(47,190,122,.5)", animation: "acPulseDot 2.8s ease-in-out infinite" }} />
           </p>
-          <h1 style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: "clamp(38px,6.6vw,72px)", lineHeight: 1.04, letterSpacing: "-.03em", margin: 0, maxWidth: "15ch", animation: "acFadeUp 800ms cubic-bezier(.16,1,.3,1) 60ms both" }}>
+          <h1 style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: "clamp(38px,6.6vw,72px)", lineHeight: 1.04, letterSpacing: "-.03em", margin: "0 auto", maxWidth: 800, animation: "acFadeUp 800ms cubic-bezier(.16,1,.3,1) 60ms both" }}>
             Build what your business needs next.
           </h1>
-          <p style={{ fontSize: "clamp(16.5px,1.5vw,19.5px)", lineHeight: 1.62, color: "var(--muted)", maxWidth: "60ch", margin: "clamp(22px,3vw,30px) 0 0", animation: "acFadeUp 800ms cubic-bezier(.16,1,.3,1) 140ms both" }}>
+          <p style={{ fontSize: "clamp(16.5px,1.5vw,19.5px)", lineHeight: 1.62, color: "var(--muted)", maxWidth: "60ch", margin: "clamp(22px,3vw,30px) auto 0", animation: "acFadeUp 800ms cubic-bezier(.16,1,.3,1) 140ms both" }}>
             Aceva designs digital experiences, custom software, mobile products and intelligent systems — and rescues products that need a stronger path forward.
           </p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: "clamp(30px,4vw,42px)", animation: "acFadeUp 800ms cubic-bezier(.16,1,.3,1) 220ms both" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 12, marginTop: "clamp(30px,4vw,42px)", animation: "acFadeUp 800ms cubic-bezier(.16,1,.3,1) 220ms both" }}>
             <Link href={ROUTES.contact} className="ac-btn-primary" style={{ minHeight: 52, padding: "16px 26px" }}>
               Start a Project
               <ArrowRightIcon width={15} height={15} strokeWidth={2.2} />
@@ -108,7 +110,7 @@ export default function HomePage() {
           <p style={{ fontSize: 13.5, color: "var(--muted)", margin: "clamp(28px,4vw,40px) 0 0", animation: "acFadeUp 800ms cubic-bezier(.16,1,.3,1) 300ms both" }}>
             For buyers with a clear idea or problem — or visitors who want to see how Aceva thinks and builds.
           </p>
-          <p className="ac-scroll-cue" aria-hidden="true">
+          <p className="ac-scroll-cue" aria-hidden="true" style={{ margin: "clamp(32px,5vw,64px) auto 0" }}>
             <span>Scroll</span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <path d="M12 4v16m0 0-6-6m6 6 6-6" />
@@ -144,8 +146,13 @@ export default function HomePage() {
       </section>
 
       {/* Five capabilities */}
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,9vw,116px) clamp(20px,4vw,48px)" }}>
+      <section className="capabilities" style={{ borderBottom: "1px solid var(--hairline)" }}>
+        <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
+          <Image src="/images/used/architectural-blueprint.jpg" alt="" fill style={{ objectFit: "cover", objectPosition: "center center", opacity: 1 }} />
+          <div className="capabilities-overlay" />
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 15%, transparent 85%, #0A0A0C 100%)" }} />
+        </div>
+        <div style={{ position: "relative", zIndex: 1, maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,9vw,116px) clamp(20px,4vw,48px)" }}>
           <Reveal>
             <Eyebrow>02 — THE OFFER</Eyebrow>
             <h2 style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: "clamp(28px,4vw,46px)", lineHeight: 1.08, letterSpacing: "-.025em", margin: 0, maxWidth: "22ch" }}>
@@ -227,8 +234,13 @@ export default function HomePage() {
       </section>
 
       {/* Process strip */}
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,9vw,116px) clamp(20px,4vw,48px)" }}>
+      <section className="process" style={{ borderBottom: "1px solid var(--hairline)" }}>
+        <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
+          <Image src="/images/used/process-bg.png" alt="" fill style={{ objectFit: "cover", objectPosition: "center center", opacity: 0.2 }} />
+          <div className="process-overlay" />
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 15%, transparent 85%, #0A0A0C 100%)" }} />
+        </div>
+        <div style={{ position: "relative", zIndex: 1, maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,9vw,116px) clamp(20px,4vw,48px)" }}>
           <Reveal style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", justifyContent: "space-between", gap: 16 }}>
             <div>
               <Eyebrow>04 — PROCESS</Eyebrow>
@@ -252,8 +264,13 @@ export default function HomePage() {
       </section>
 
       {/* Proof, not portfolio */}
-      <section style={{ borderBottom: "1px solid var(--hairline)", background: "rgba(15,15,19,.72)" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,9vw,116px) clamp(20px,4vw,48px)" }}>
+      <section className="experiments" style={{ borderBottom: "1px solid var(--hairline)", background: "rgba(15,15,19,.72)" }}>
+        <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
+          <Image src="/images/used/twin-visions.jpg" alt="" fill style={{ objectFit: "cover", objectPosition: "center center", opacity: 1 }} />
+          <div className="experiments-overlay" />
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 20%, transparent 80%, #0A0A0C 100%)" }} />
+        </div>
+        <div style={{ position: "relative", zIndex: 1, maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,9vw,116px) clamp(20px,4vw,48px)" }}>
           <Reveal style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", justifyContent: "space-between", gap: 16 }}>
             <div>
               <Eyebrow>05 — PROOF, NOT PORTFOLIO</Eyebrow>
