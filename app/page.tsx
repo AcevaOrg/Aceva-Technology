@@ -82,7 +82,7 @@ export default function HomePage() {
       {/* Hero */}
       <section className="hero" style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid var(--hairline)" }}>
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/shared-skyline.jpg" alt="" fill style={{ objectFit: "cover", objectPosition: "center center", opacity: 1, filter: "blur(3px)", transform: "scale(1.02)" }} priority />
+          <Image src="/images/used/shared-skyline.jpg" alt="" fill className="bg-pan-slow" style={{ objectFit: "cover", objectPosition: "center center", opacity: 1 }} priority />
           <div className="hero-overlay" />
         </div>
         <div style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,10vw,120px) clamp(20px,4vw,48px) clamp(48px,6vw,72px)", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
@@ -148,7 +148,7 @@ export default function HomePage() {
       {/* Five capabilities */}
       <section className="capabilities" style={{ borderBottom: "1px solid var(--hairline)" }}>
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/architectural-blueprint.jpg" alt="" fill style={{ objectFit: "cover", objectPosition: "center center", opacity: 1 }} />
+          <Image src="/images/used/architectural-blueprint.jpg" alt="" fill className="bg-pan" style={{ objectFit: "cover", objectPosition: "center center", opacity: 1 }} />
           <div className="capabilities-overlay" />
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 15%, transparent 85%, #0A0A0C 100%)" }} />
         </div>
@@ -236,7 +236,7 @@ export default function HomePage() {
       {/* Process strip */}
       <section className="process" style={{ borderBottom: "1px solid var(--hairline)" }}>
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/process-bg.png" alt="" fill style={{ objectFit: "cover", objectPosition: "center center", opacity: 0.2 }} />
+          <Image src="/images/used/process-bg.png" alt="" fill className="bg-pan-fast" style={{ objectFit: "cover", objectPosition: "center center", opacity: 0.4 }} />
           <div className="process-overlay" />
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 15%, transparent 85%, #0A0A0C 100%)" }} />
         </div>
@@ -266,7 +266,7 @@ export default function HomePage() {
       {/* Proof, not portfolio */}
       <section className="experiments" style={{ borderBottom: "1px solid var(--hairline)", background: "rgba(15,15,19,.72)" }}>
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/twin-visions.jpg" alt="" fill style={{ objectFit: "cover", objectPosition: "center center", opacity: 1 }} />
+          <Image src="/images/used/twin-visions.jpg" alt="" fill className="bg-pan" style={{ objectFit: "cover", objectPosition: "center center", opacity: 1 }} />
           <div className="experiments-overlay" />
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 20%, transparent 80%, #0A0A0C 100%)" }} />
         </div>

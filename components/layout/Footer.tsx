@@ -46,9 +46,9 @@ function LinkColumn({ title, links }: { title: string; links: { href: string; la
 
 export default function Footer() {
   return (
-    <footer className="ac-hairline" style={{ borderTop: "1px solid var(--hairline)", position: "relative", zIndex: 1 }}>
+    <footer className="ac-hairline" style={{ borderTop: "1px solid var(--hairline)", position: "relative", zIndex: 1, overflow: "hidden" }}>
       <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-        <Image src="/images/used/nav-footer-bg.png" alt="" fill style={{ objectFit: "cover", objectPosition: "center center", opacity: 0.2 }} />
+        <Image src="/images/used/nav-footer-bg.png" alt="" fill className="bg-pan-slow" style={{ objectFit: "cover", objectPosition: "center center", opacity: 0.35 }} />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 30%, transparent 70%, #0A0A0C 100%)" }} />
       </div>
       <div style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(48px,6vw,72px) clamp(20px,4vw,48px)" }}>

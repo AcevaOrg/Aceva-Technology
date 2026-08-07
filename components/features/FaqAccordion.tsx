@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Faq } from "@/lib/data/faqs";
+import Reveal from "@/components/ui/Reveal";
 
 interface FaqAccordionProps {
   items: Faq[];
@@ -16,7 +17,7 @@ export default function FaqAccordion({ items }: FaqAccordionProps) {
       {items.map((item, i) => {
         const open = openIndex === i;
         return (
-          <div key={item.q} style={{ borderBottom: "1px solid var(--hairline)" }}>
+          <Reveal key={item.q} delay={Math.min(i, 6) * 60} style={{ borderBottom: "1px solid var(--hairline)" }}>
             <button
               type="button"
               onClick={() => setOpenIndex((s) => (s === i ? -1 : i))}
@@ -63,6 +64,8 @@ export default function FaqAccordion({ items }: FaqAccordionProps) {
                   fontSize: 14,
                   color: "var(--ice)",
                   marginTop: 2,
+                  transform: open ? "rotate(180deg)" : "none",
+                  transition: "transform 220ms cubic-bezier(.16,1,.3,1)",
                 }}
               >
                 {open ? "–" : "+"}
@@ -83,7 +86,7 @@ export default function FaqAccordion({ items }: FaqAccordionProps) {
                 {item.a}
               </p>
             )}
-          </div>
+          </Reveal>
         );
       })}
     </div>
