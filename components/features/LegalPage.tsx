@@ -1,6 +1,7 @@
 import type { LegalDoc } from "@/lib/data/legal";
 import Eyebrow from "@/components/ui/Eyebrow";
 import Callout from "@/components/ui/Callout";
+import Reveal from "@/components/ui/Reveal";
 
 interface LegalPageProps {
   doc: LegalDoc;
@@ -44,11 +45,11 @@ export default function LegalPage({ doc }: LegalPageProps) {
           jurisdiction before launch.
         </Callout>
         <div style={{ marginTop: 36, display: "flex", flexDirection: "column" }}>
-          {doc.sections.map((s) => (
-            <div key={s.h} style={{ padding: "26px 0", borderTop: "1px solid var(--hairline)" }}>
+          {doc.sections.map((s, i) => (
+            <Reveal key={s.h} delay={Math.min(i, 6) * 50} style={{ padding: "26px 0", borderTop: "1px solid var(--hairline)" }}>
               <h2 style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 19, fontWeight: 500, margin: 0 }}>{s.h}</h2>
               <p style={{ fontSize: 15.5, lineHeight: 1.7, color: "var(--muted)", margin: "10px 0 0" }}>{s.p}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
         <p

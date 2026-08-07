@@ -4,6 +4,7 @@ import { FAQS } from "@/lib/data/faqs";
 import { ROUTES } from "@/lib/nav";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import FaqAccordion from "@/components/features/FaqAccordion";
+import Reveal from "@/components/ui/Reveal";
 
 export const metadata: Metadata = {
   title: "FAQ — ACEVA Technology",
@@ -46,7 +47,7 @@ export default function FaqPage() {
       <section>
         <div style={{ maxWidth: 920, margin: "0 auto", padding: "clamp(24px,4vw,48px) clamp(20px,4vw,48px) clamp(56px,8vw,104px)" }}>
           <FaqAccordion items={FAQS} />
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center", marginTop: 40 }}>
+          <Reveal style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center", marginTop: 40 }}>
             <Link
               href={ROUTES.contact}
               className="ac-btn-primary"
@@ -58,7 +59,7 @@ export default function FaqPage() {
             <p style={{ fontSize: 14.5, color: "var(--muted)", margin: 0 }}>
               Anything not answered here gets a written answer, not a sales call.
             </p>
-          </div>
+          </Reveal>
         </div>
       </section>
     </div>
