@@ -31,12 +31,14 @@ export default function FaqAccordion({ items }: FaqAccordionProps) {
                 justifyContent: "space-between",
                 gap: 20,
                 textAlign: "left",
-                background: "none",
+                background: hoverIndex === i ? "rgba(255,255,255,.028)" : "none",
                 border: 0,
-                padding: "24px 0",
+                borderRadius: 10,
+                padding: "24px 14px",
+                margin: "0 -14px",
                 color: hoverIndex === i ? "var(--ice)" : "var(--ink)",
                 minHeight: 56,
-                transition: "color 160ms ease",
+                transition: "color 160ms ease, background 220ms ease",
               }}
             >
               <span
@@ -64,28 +66,35 @@ export default function FaqAccordion({ items }: FaqAccordionProps) {
                   fontSize: 14,
                   color: "var(--ice)",
                   marginTop: 2,
-                  transform: open ? "rotate(180deg)" : "none",
-                  transition: "transform 220ms cubic-bezier(.16,1,.3,1)",
+                  transform: open ? "rotate(135deg)" : "none",
+                  transition: "transform 340ms cubic-bezier(.34,1.56,.64,1)",
                 }}
               >
                 {open ? "–" : "+"}
               </span>
             </button>
-            {open && (
-              <p
-                style={{
-                  fontSize: 16,
-                  lineHeight: 1.68,
-                  color: "var(--muted)",
-                  margin: 0,
-                  padding: "0 0 26px",
-                  maxWidth: "62ch",
-                  animation: "acFadeUp 300ms cubic-bezier(.16,1,.3,1) both",
-                }}
-              >
-                {item.a}
-              </p>
-            )}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateRows: open ? "1fr" : "0fr",
+                transition: "grid-template-rows 460ms cubic-bezier(.16,1,.3,1)",
+              }}
+            >
+              <div style={{ overflow: "hidden", minHeight: 0 }}>
+                <p
+                  style={{
+                    fontSize: 16,
+                    lineHeight: 1.68,
+                    color: "var(--muted)",
+                    margin: 0,
+                    padding: "0 0 26px",
+                    maxWidth: "62ch",
+                  }}
+                >
+                  {item.a}
+                </p>
+              </div>
+            </div>
           </Reveal>
         );
       })}

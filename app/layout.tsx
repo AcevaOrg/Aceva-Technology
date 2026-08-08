@@ -6,6 +6,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import MobileCtaBar from "@/components/layout/MobileCtaBar";
 import AmbientBackground from "@/components/layout/AmbientBackground";
+import BackToTopButton from "@/components/layout/BackToTopButton";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -58,6 +59,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             {children}
           </main>
           <Footer />
+          <BackToTopButton />
           <MobileCtaBar />
         </div>
       </body>

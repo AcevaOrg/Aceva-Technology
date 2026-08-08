@@ -6,6 +6,7 @@ import Callout from "@/components/ui/Callout";
 import Tag from "@/components/ui/Tag";
 import KeyValueRow from "@/components/ui/KeyValueRow";
 import PhoneFrame from "@/components/ui/PhoneFrame";
+import KpiStat from "@/components/ui/KpiStat";
 import ExperimentsTabs from "@/components/features/ExperimentsTabs";
 import AutomationDemo from "@/components/features/AutomationDemo";
 import styles from "./experiments.module.css";
@@ -403,20 +404,26 @@ function DashPanel() {
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(140px,1fr))", gap: 10 }}>
                 <div style={{ border: "1px solid var(--hairline)", borderRadius: 12, padding: 16, background: "rgba(20,20,24,.55)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
                   <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10, letterSpacing: ".14em", color: "var(--muted)", margin: "0 0 10px" }}>OPEN JOBS</p>
-                  <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 27, fontWeight: 600, margin: 0, letterSpacing: "-.02em" }}>128</p>
+                  <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 27, fontWeight: 600, margin: 0, letterSpacing: "-.02em" }}>
+                    <KpiStat value={128} />
+                  </p>
                 </div>
                 <div style={{ border: "1px solid var(--hairline)", borderRadius: 12, padding: 16, background: "rgba(20,20,24,.55)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
                   <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10, letterSpacing: ".14em", color: "var(--muted)", margin: "0 0 10px" }}>ON TIME</p>
-                  <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 27, fontWeight: 600, margin: 0, letterSpacing: "-.02em", color: "var(--success)" }}>94%</p>
+                  <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 27, fontWeight: 600, margin: 0, letterSpacing: "-.02em", color: "var(--success)" }}>
+                    <KpiStat value={94} suffix="%" />
+                  </p>
                 </div>
                 <div style={{ border: "1px solid var(--hairline)", borderRadius: 12, padding: 16, background: "rgba(20,20,24,.55)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
                   <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10, letterSpacing: ".14em", color: "var(--muted)", margin: "0 0 10px" }}>OVERDUE</p>
-                  <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 27, fontWeight: 600, margin: 0, letterSpacing: "-.02em", color: "var(--warning)" }}>7</p>
+                  <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 27, fontWeight: 600, margin: 0, letterSpacing: "-.02em", color: "var(--warning)" }}>
+                    <KpiStat value={7} />
+                  </p>
                 </div>
                 <div style={{ border: "1px solid var(--hairline)", borderRadius: 12, padding: 16, background: "rgba(20,20,24,.55)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
                   <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10, letterSpacing: ".14em", color: "var(--muted)", margin: "0 0 10px" }}>AVG DWELL</p>
                   <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 27, fontWeight: 600, margin: 0, letterSpacing: "-.02em" }}>
-                    2.4<span style={{ fontSize: 14, color: "var(--muted)", fontWeight: 400 }}> days</span>
+                    <KpiStat value={2.4} decimals={1} unit="days" />
                   </p>
                 </div>
               </div>
