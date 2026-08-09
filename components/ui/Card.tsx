@@ -1,5 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import type { CSSProperties, ReactNode } from "react";
+import { useCallback, useRef, type CSSProperties, type MouseEvent, type ReactNode } from "react";
 
 interface CardProps {
   children: ReactNode;
@@ -18,6 +20,21 @@ const VARIANT_CLASS: Record<NonNullable<CardProps["variant"]>, string> = {
 };
 
 export default function Card({ children, variant = "default", href, onClick, style, className }: CardProps) {
+  // Cache the reduced-motion preference once per card instance.
+  const motionOk = useRef<boolean | null>(null);
+
+  // Cursor-follow spotlight: feed the CSS radial highlight via --mx/--my vars.
+  const handleMouseMove = useCallback((e: MouseEvent<HTMLElement>) => {
+    if (motionOk.current === null) {
+      motionOk.current = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    }
+    if (!motionOk.current) return;
+    const el = e.currentTarget;
+    const rect = el.getBoundingClientRect();
+    el.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+    el.style.setProperty("--my", `${e.clientY - rect.top}px`);
+  }, []);
+
   const baseStyle: CSSProperties =
     variant === "plain"
       ? { background: "var(--charcoal)", border: "1px solid var(--hairline)", borderRadius: "var(--radius)" }
@@ -27,20 +44,31 @@ export default function Card({ children, variant = "default", href, onClick, sty
 
   if (href) {
     return (
-      <Link href={href} className={cls || undefined} style={{ display: "block", color: "inherit", ...combinedStyle }}>
+      <Link
+        href={href}
+        className={cls || undefined}
+        style={{ display: "block", color: "inherit", ...combinedStyle }}
+        onMouseMove={handleMouseMove}
+      >
         {children}
       </Link>
     );
   }
   if (onClick) {
     return (
-      <button type="button" onClick={onClick} className={cls || undefined} style={{ display: "block", width: "100%", color: "inherit", ...combinedStyle }}>
+      <button
+        type="button"
+        onClick={onClick}
+        className={cls || undefined}
+        style={{ display: "block", width: "100%", color: "inherit", ...combinedStyle }}
+        onMouseMove={handleMouseMove}
+      >
         {children}
       </button>
     );
   }
   return (
-    <div className={cls || undefined} style={combinedStyle}>
+    <div className={cls || undefined} style={combinedStyle} onMouseMove={handleMouseMove}>
       {children}
     </div>
   );

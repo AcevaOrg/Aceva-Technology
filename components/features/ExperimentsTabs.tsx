@@ -73,7 +73,9 @@ export default function ExperimentsTabs({ site, dash, mob, auto, rescue }: Exper
                     borderRadius: 10,
                     minHeight: 44,
                     whiteSpace: "nowrap",
-                    transition: "background 180ms ease, border-color 180ms ease, color 180ms ease",
+                    transform: exp === t.key ? "translateY(-1px) scale(1.015)" : "none",
+                    boxShadow: exp === t.key ? "0 4px 14px rgba(0,0,0,.28)" : "none",
+                    transition: "background 220ms ease, border-color 220ms ease, color 220ms ease, transform 260ms cubic-bezier(.34,1.56,.64,1), box-shadow 220ms ease",
                   }}
                 >
                   {t.label}
@@ -83,7 +85,9 @@ export default function ExperimentsTabs({ site, dash, mob, auto, rescue }: Exper
           </div>
         </div>
       </section>
-      {panels[exp]}
+      <div key={exp} style={{ animation: "acBlurIn 480ms cubic-bezier(.16,1,.3,1) both" }}>
+        {panels[exp]}
+      </div>
     </>
   );
 }

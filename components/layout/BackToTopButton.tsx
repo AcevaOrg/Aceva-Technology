@@ -1,13 +1,25 @@
 "use client";
 
-import styles from "./Footer.module.css";
+import { useEffect, useState } from "react";
+import styles from "./BackToTopButton.module.css";
+
+const SHOW_AFTER = 600;
 
 export default function BackToTopButton() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > SHOW_AFTER);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <button
       type="button"
       aria-label="Back to top"
-      className={styles.topBtn}
+      className={visible ? `${styles.button} ${styles.visible}` : styles.button}
       onClick={() =>
         window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" })
       }
