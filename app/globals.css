@@ -114,22 +114,37 @@ html {
   font-size: 15px;
   border: none;
   text-decoration: none;
+  position: relative;
+  overflow: hidden;
   transition:
-    background 0.18s ease,
-    box-shadow 0.18s ease,
-    transform 0.18s ease,
-    color 0.18s ease;
+    background 0.22s cubic-bezier(.16,1,.3,1),
+    box-shadow 0.22s cubic-bezier(.16,1,.3,1),
+    transform 0.22s cubic-bezier(.16,1,.3,1),
+    color 0.22s ease;
+}
+.ac-btn-primary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,.14) 48%, rgba(255,255,255,.22) 52%, transparent 60%);
+  transform: translateX(-120%);
+  transition: transform 0.48s cubic-bezier(.16,1,.3,1);
+  pointer-events: none;
 }
 .ac-btn-primary:hover {
   background: var(--electric);
   box-shadow:
     0 0 0 1px rgba(59, 124, 255, 0.35),
     0 8px 30px rgba(59, 124, 255, 0.22);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   color: #fff;
 }
+.ac-btn-primary:hover::before {
+  transform: translateX(120%);
+}
 .ac-btn-primary:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
+  transition-duration: 0.1s;
 }
 .ac-btn-ghost {
   display: inline-flex;
@@ -144,28 +159,45 @@ html {
   font-size: 15px;
   border: 1px solid #33333c;
   text-decoration: none;
+  position: relative;
+  overflow: hidden;
   transition:
-    background 0.18s ease,
-    border-color 0.18s ease,
-    color 0.18s ease,
-    transform 0.18s ease;
+    background 0.22s cubic-bezier(.16,1,.3,1),
+    border-color 0.22s cubic-bezier(.16,1,.3,1),
+    box-shadow 0.22s cubic-bezier(.16,1,.3,1),
+    color 0.22s ease,
+    transform 0.22s cubic-bezier(.16,1,.3,1);
+}
+.ac-btn-ghost::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,.06) 48%, rgba(255,255,255,.1) 52%, transparent 60%);
+  transform: translateX(-120%);
+  transition: transform 0.48s cubic-bezier(.16,1,.3,1);
+  pointer-events: none;
 }
 .ac-btn-ghost:hover {
   background: rgba(245, 246, 248, 0.05);
   border-color: #4a4a55;
   color: var(--ink);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,.18);
+}
+.ac-btn-ghost:hover::before {
+  transform: translateX(120%);
 }
 .ac-btn-ghost:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
+  transition-duration: 0.1s;
 }
 .ac-btn-primary svg,
 .ac-btn-ghost svg {
-  transition: transform 0.18s ease;
+  transition: transform 0.22s cubic-bezier(.16,1,.3,1);
 }
 .ac-btn-primary:hover svg,
 .ac-btn-ghost:hover svg {
-  transform: translateX(3px);
+  transform: translateX(4px);
 }
 .ac-btn-primary:disabled,
 .ac-btn-ghost:disabled {
@@ -177,45 +209,77 @@ html {
   background: var(--charcoal);
   border: 1px solid var(--hairline);
   border-radius: var(--radius);
+  position: relative;
   transition:
-    transform 0.22s ease,
-    border-color 0.22s ease,
-    box-shadow 0.22s ease,
-    background 0.22s ease;
+    transform 0.28s cubic-bezier(.16,1,.3,1),
+    border-color 0.28s cubic-bezier(.16,1,.3,1),
+    box-shadow 0.28s cubic-bezier(.16,1,.3,1),
+    background 0.28s ease;
+}
+.ac-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(520px circle at var(--mx, 50%) var(--my, 50%), rgba(127, 178, 255, 0.08), transparent 45%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 .ac-card:hover,
 .ac-card--hover {
   transform: translateY(-4px);
   border-color: rgba(59, 124, 255, 0.42);
   box-shadow:
-    0 12px 40px rgba(0, 0, 0, 0.35),
+    0 16px 44px rgba(0, 0, 0, 0.38),
     0 0 0 1px rgba(59, 124, 255, 0.1);
   background: var(--elevated);
+}
+.ac-card:hover::after,
+.ac-card--hover::after {
+  opacity: 1;
 }
 .ac-card-flagship {
   background: linear-gradient(145deg, rgba(30, 79, 217, 0.13), rgba(106, 79, 224, 0.06) 55%, rgba(20, 20, 24, 0));
   border: 1px solid rgba(59, 124, 255, 0.3);
   border-radius: var(--radius);
+  position: relative;
   transition:
-    transform 0.22s ease,
-    border-color 0.22s ease,
-    box-shadow 0.22s ease;
+    transform 0.28s cubic-bezier(.16,1,.3,1),
+    border-color 0.28s cubic-bezier(.16,1,.3,1),
+    box-shadow 0.28s cubic-bezier(.16,1,.3,1);
+}
+.ac-card-flagship::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(520px circle at var(--mx, 50%) var(--my, 50%), rgba(127, 178, 255, 0.1), transparent 45%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 .ac-card-flagship:hover {
   transform: translateY(-4px);
   border-color: rgba(59, 124, 255, 0.55);
   box-shadow:
-    0 12px 40px rgba(0, 0, 0, 0.35),
-    0 0 24px rgba(59, 124, 255, 0.12);
+    0 16px 44px rgba(0, 0, 0, 0.38),
+    0 0 28px rgba(59, 124, 255, 0.14);
+}
+.ac-card-flagship:hover::after {
+  opacity: 1;
 }
 .ac-card-ghost {
   background: rgba(20, 20, 24, 0.4);
   border: 1px dashed #33333c;
   border-radius: var(--radius);
+  position: relative;
   transition:
     border-color 0.22s ease,
     background 0.22s ease,
-    transform 0.22s ease;
+    transform 0.28s cubic-bezier(.16,1,.3,1);
 }
 .ac-card-ghost:hover {
   border-color: rgba(59, 124, 255, 0.5);
@@ -291,6 +355,7 @@ html {
 .ac-nav-btn {
   display: inline-flex;
   align-items: center;
+  position: relative;
   padding: 8px 14px;
   border-radius: 8px;
   border: none;
@@ -302,9 +367,24 @@ html {
     background 0.16s ease,
     color 0.16s ease;
 }
+.ac-nav-btn::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 5px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--electric), var(--ice));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(.16,1,.3,1);
+}
 .ac-nav-btn:hover {
   background: rgba(255, 255, 255, 0.05) !important;
   color: var(--ink) !important;
+}
+.ac-nav-btn:hover::after {
+  transform: scaleX(1);
 }
 .ac-more-grid button {
   position: relative;
@@ -355,6 +435,168 @@ html {
     opacity: 1;
     transform: none;
   }
+}
+/* Clip-path mask reveal for headings */
+@keyframes acMaskUp {
+  from {
+    clip-path: inset(100% 0 0 0);
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    clip-path: inset(0% 0 0 0);
+    opacity: 1;
+    transform: none;
+  }
+}
+/* Blur + fade entrance for premium text */
+@keyframes acBlurIn {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0px);
+    transform: none;
+  }
+}
+/* Eyebrow letter-spacing tracking-in */
+@keyframes acTrackIn {
+  from {
+    letter-spacing: 0.06em;
+    opacity: 0;
+  }
+  to {
+    letter-spacing: 0.2em;
+    opacity: 1;
+  }
+}
+/* Dropdown panel: origin-based scale + fade */
+@keyframes acDropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scaleY(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* Mobile menu item: staggered rise */
+@keyframes acMobileItem {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* Hero headline shimmer */
+@keyframes acShimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+/* Animated gradient border for flagship cards */
+@property --border-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes acBorderFlow {
+  0% {
+    --border-angle: 0deg;
+  }
+  100% {
+    --border-angle: 360deg;
+  }
+}
+.ac-card-flagship::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--border-angle),
+    rgba(59, 124, 255, 0.85),
+    rgba(127, 178, 255, 0.35) 25%,
+    rgba(30, 79, 217, 0.9) 50%,
+    rgba(127, 178, 255, 0.35) 75%,
+    rgba(59, 124, 255, 0.85)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  animation: acBorderFlow 7s linear infinite;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+.ac-card-flagship:hover::before {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ac-card-flagship::before {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* ---- luxury motion utilities ---- */
+/* Gradient shimmer for the hero headline (existing brand blues only) */
+.ac-text-shimmer {
+  background: linear-gradient(
+    110deg,
+    var(--ink) 0%,
+    var(--ink) 30%,
+    var(--ice) 45%,
+    var(--electric) 52%,
+    var(--ice) 59%,
+    var(--ink) 74%,
+    var(--ink) 100%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: acShimmer 7s cubic-bezier(.4,0,.2,1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ac-text-shimmer {
+    animation: none;
+    background: none;
+    -webkit-text-fill-color: var(--ink);
+    color: var(--ink);
+  }
+}
+/* Draw-style link underline (background-size trick) */
+.ac-underline {
+  position: relative;
+}
+.ac-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, var(--electric), var(--ice));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.32s cubic-bezier(.16,1,.3,1);
+}
+.ac-underline:hover::after {
+  transform: scaleX(1);
 }
 @keyframes acDrift {
   0% {

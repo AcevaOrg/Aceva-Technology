@@ -2,7 +2,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { ROUTES, capabilityRoute } from "@/lib/nav";
 import { LogoMark } from "@/components/ui/icons";
-import BackToTopButton from "./BackToTopButton";
 import styles from "./Footer.module.css";
 
 const CAPABILITY_LINKS = [
@@ -92,7 +91,6 @@ export default function Footer() {
             <Link href={ROUTES.terms} className={styles.bottomLink}>
               Terms of Service
             </Link>
-            <BackToTopButton />
           </div>
         </div>
       </div>

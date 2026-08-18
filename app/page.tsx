@@ -8,7 +8,6 @@ import Card from "@/components/ui/Card";
 import Tag from "@/components/ui/Tag";
 import ArrowLink from "@/components/ui/ArrowLink";
 import { ArrowRightIcon } from "@/components/ui/icons";
-import HeroCanvas from "@/components/ui/HeroCanvas";
 import PathChooser from "@/components/features/PathChooser";
 
 const CAP_ICONS: Record<string, React.ReactNode> = {
@@ -86,18 +85,18 @@ export default function HomePage() {
           <div className="hero-overlay" />
         </div>
         <div style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,10vw,120px) clamp(20px,4vw,48px) clamp(48px,6vw,72px)", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
-          <p style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, fontFamily: "var(--font-jetbrains-mono)", fontSize: 11.5, letterSpacing: ".2em", color: "var(--ice)", margin: "0 0 clamp(24px,4vw,38px)", animation: "acFadeUp 700ms cubic-bezier(.16,1,.3,1) both" }}>
+          <p style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, fontFamily: "var(--font-jetbrains-mono)", fontSize: 11.5, letterSpacing: ".2em", color: "var(--ice)", margin: "0 0 clamp(24px,4vw,38px)", animation: "acTrackIn 900ms cubic-bezier(.16,1,.3,1) both" }}>
             <span style={{ width: 22, height: 1, background: "var(--electric)" }} />
             ACEVA HOLDINGS / SOFTWARE DIVISION
             <span aria-hidden="true" style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--success)", boxShadow: "0 0 8px rgba(47,190,122,.5)", animation: "acPulseDot 2.8s ease-in-out infinite" }} />
           </p>
-          <h1 style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: "clamp(38px,6.6vw,72px)", lineHeight: 1.04, letterSpacing: "-.03em", margin: "0 auto", maxWidth: 800, animation: "acFadeUp 800ms cubic-bezier(.16,1,.3,1) 60ms both" }}>
-            Build what your business needs next.
+          <h1 style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: "clamp(38px,6.6vw,72px)", lineHeight: 1.04, letterSpacing: "-.03em", margin: "0 auto", maxWidth: 800, animation: "acMaskUp 900ms cubic-bezier(.16,1,.3,1) 80ms both" }}>
+            <span className="ac-text-shimmer">Build what your business needs next.</span>
           </h1>
-          <p style={{ fontSize: "clamp(16.5px,1.5vw,19.5px)", lineHeight: 1.62, color: "var(--muted)", maxWidth: "60ch", margin: "clamp(22px,3vw,30px) auto 0", animation: "acFadeUp 800ms cubic-bezier(.16,1,.3,1) 140ms both" }}>
+          <p style={{ fontSize: "clamp(16.5px,1.5vw,19.5px)", lineHeight: 1.62, color: "var(--muted)", maxWidth: "60ch", margin: "clamp(22px,3vw,30px) auto 0", animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 160ms both" }}>
             Aceva designs digital experiences, custom software, mobile products and intelligent systems — and rescues products that need a stronger path forward.
           </p>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 12, marginTop: "clamp(30px,4vw,42px)", animation: "acFadeUp 800ms cubic-bezier(.16,1,.3,1) 220ms both" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 12, marginTop: "clamp(30px,4vw,42px)", animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 260ms both" }}>
             <Link href={ROUTES.contact} className="ac-btn-primary" style={{ minHeight: 52, padding: "16px 26px" }}>
               Start a Project
               <ArrowRightIcon width={15} height={15} strokeWidth={2.2} />
@@ -107,7 +106,7 @@ export default function HomePage() {
               <ArrowRightIcon width={15} height={15} />
             </Link>
           </div>
-          <p style={{ fontSize: 13.5, color: "var(--muted)", margin: "clamp(28px,4vw,40px) 0 0", animation: "acFadeUp 800ms cubic-bezier(.16,1,.3,1) 300ms both" }}>
+          <p style={{ fontSize: 13.5, color: "var(--muted)", margin: "clamp(28px,4vw,40px) 0 0", animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 360ms both" }}>
             For buyers with a clear idea or problem — or visitors who want to see how Aceva thinks and builds.
           </p>
           <p className="ac-scroll-cue" aria-hidden="true" style={{ margin: "clamp(32px,5vw,64px) auto 0" }}>

@@ -44,10 +44,15 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [progress, setProgress] = useState(0);
   const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 40);
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      setProgress(total > 0 ? Math.min(window.scrollY / total, 1) : 0);
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -79,6 +84,7 @@ export default function Header() {
   return (
     <>
       <header ref={navRef} className="ac-hairline" style={headerStyle}>
+        <div aria-hidden="true" style={{ position: "absolute", left: 0, right: 0, bottom: -1, height: 2, background: "linear-gradient(90deg, var(--royal), var(--electric))", transform: `scaleX(${progress})`, transformOrigin: "left", opacity: progress > 0 ? 1 : 0, transition: "transform 90ms linear, opacity 260ms ease", willChange: "transform" }} />
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(20px,4vw,48px)", height: 72, display: "flex", alignItems: "center", gap: 32 }}>
           <Link href={ROUTES.home} aria-label="ACEVA Technology — home" className={styles.logoBtn} style={{ display: "flex", alignItems: "center", gap: 12, color: "var(--ink)" }}>
             <LogoMark id="acevaStrokeHeader" />
@@ -134,7 +140,7 @@ export default function Header() {
         </div>
 
         {moreOpen && (
-          <div style={{ borderTop: "1px solid var(--hairline)", background: "rgba(20,20,24,.92)", backdropFilter: "blur(18px)", animation: "acFadeUp 220ms ease both" }}>
+          <div style={{ borderTop: "1px solid var(--hairline)", background: "rgba(20,20,24,.92)", backdropFilter: "blur(18px)", transformOrigin: "top", animation: "acDropdownIn 260ms cubic-bezier(.16,1,.3,1) both" }}>
             <div className="ac-more-grid" style={{ maxWidth: 1280, margin: "0 auto", padding: "26px clamp(20px,4vw,48px) 30px", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: "8px 28px" }}>
               {MORE_LINKS.map((l) => (
                 <Link key={l.href} href={l.href} className={styles.moreItem} style={{ textAlign: "left", padding: "10px 12px", borderRadius: 8, color: "var(--ink)", fontSize: 14.5, fontWeight: 500 }}>
@@ -154,6 +160,7 @@ export default function Header() {
               type="button"
               onClick={() => setMenuOpen(false)}
               aria-label="Close menu"
+              className={styles.closeBtn}
               style={{ background: "none", border: "1px solid var(--hairline)", borderRadius: 10, width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--ink)" }}
             >
               <CloseIcon />
@@ -161,29 +168,29 @@ export default function Header() {
           </div>
           <div style={{ flex: 1, overflowY: "auto", padding: "18px clamp(20px,4vw,48px) 140px" }}>
             <div style={{ display: "flex", flexDirection: "column" }}>
-              {DESKTOP_LINKS.map((l) => (
+              {DESKTOP_LINKS.map((l, i) => (
                 <Link
                   key={l.href}
                   href={l.href}
-                  style={{ textAlign: "left", borderBottom: "1px solid var(--hairline)", padding: "20px 0", color: "var(--ink)", fontFamily: "var(--font-space-grotesk)", fontSize: 26, fontWeight: 500, letterSpacing: "-.01em", minHeight: 56, display: "block" }}
+                  style={{ textAlign: "left", borderBottom: "1px solid var(--hairline)", padding: "20px 0", color: "var(--ink)", fontFamily: "var(--font-space-grotesk)", fontSize: 26, fontWeight: 500, letterSpacing: "-.01em", minHeight: 56, display: "block", animation: `acMobileItem 420ms cubic-bezier(.16,1,.3,1) ${90 + i * 55}ms both` }}
                 >
                   {l.label}
                 </Link>
               ))}
             </div>
-            <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".24em", color: "var(--muted)", margin: "34px 0 10px" }}>COMPANY</p>
+            <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".24em", color: "var(--muted)", margin: "34px 0 10px", animation: "acMobileItem 420ms cubic-bezier(.16,1,.3,1) 340ms both" }}>COMPANY</p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2px 18px" }}>
-              {MORE_LINKS.map((l) => (
-                <Link key={l.href} href={l.href} style={{ textAlign: "left", padding: "14px 0", color: "var(--muted)", fontSize: 15, minHeight: 48, display: "block" }}>
+              {MORE_LINKS.map((l, i) => (
+                <Link key={l.href} href={l.href} style={{ textAlign: "left", padding: "14px 0", color: "var(--muted)", fontSize: 15, minHeight: 48, display: "block", animation: `acMobileItem 420ms cubic-bezier(.16,1,.3,1) ${400 + i * 35}ms both` }}>
                   {l.label}
                 </Link>
               ))}
             </div>
             <div style={{ marginTop: 36, display: "flex", flexDirection: "column", gap: 10 }}>
-              <Link href={ROUTES.contact} className="ac-btn-primary" style={{ padding: 17, borderRadius: 12, minHeight: 56 }}>
+              <Link href={ROUTES.contact} className="ac-btn-primary" style={{ padding: 17, borderRadius: 12, minHeight: 56, animation: `acMobileItem 420ms cubic-bezier(.16,1,.3,1) ${680 + MORE_LINKS.length * 35}ms both` }}>
                 Start a Project
               </Link>
-              <a href="mailto:acevatechnology@gmail.com" className={styles.mobileEmail} style={{ textAlign: "center", border: "1px solid var(--hairline)", color: "var(--ink)", fontSize: 16, fontWeight: 500, padding: 17, borderRadius: 12, minHeight: 56 }}>
+              <a href="mailto:acevatechnology@gmail.com" className={styles.mobileEmail} style={{ textAlign: "center", border: "1px solid var(--hairline)", color: "var(--ink)", fontSize: 16, fontWeight: 500, padding: 17, borderRadius: 12, minHeight: 56, animation: `acMobileItem 420ms cubic-bezier(.16,1,.3,1) ${760 + MORE_LINKS.length * 35}ms both` }}>
                 acevatechnology@gmail.com
               </a>
             </div>
