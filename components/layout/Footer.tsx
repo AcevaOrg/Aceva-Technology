@@ -55,7 +55,7 @@ export default function Footer() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: "36px 28px" }}>
           <div style={{ gridColumn: "span 2", minWidth: 220 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <LogoMark id="acevaStrokeFoot" width={26} height={26} />
+              <LogoMark id="acevaStrokeFoot" width={36} height={22} />
               <span style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: 16, letterSpacing: ".16em" }}>ACEVA</span>
             </div>
             <p style={{ fontSize: 14.5, lineHeight: 1.65, color: "var(--muted)", margin: "18px 0 0", maxWidth: "34ch" }}>
