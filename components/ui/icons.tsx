@@ -41,17 +41,30 @@ export function MailIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-export function LogoMark({ id = "acevaStroke", ...props }: SVGProps<SVGSVGElement> & { id?: string }) {
+export function LogoMark({
+  id = "acevaStroke",
+  width = 46,
+  height = 28,
+  ...props
+}: SVGProps<SVGSVGElement> & { id?: string }) {
   return (
-    <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true" {...props}>
+    <svg width={width} height={height} viewBox="0 0 495 299" fill="none" aria-hidden="true" {...props}>
       <defs>
-        <linearGradient id={id} x1="0" y1="32" x2="32" y2="0">
-          <stop offset="0" stopColor="#0F1E4D" />
-          <stop offset="1" stopColor="#3B7CFF" />
+        <linearGradient id={id} gradientUnits="userSpaceOnUse" x1="458.63" y1="74.2" x2="340.54" y2="259.67">
+          <stop offset="0" stopColor="#1D489B" />
+          <stop offset="0.4271" stopColor="#1E4799" stopOpacity="0.5729" />
+          <stop offset="0.6099" stopColor="#1F4593" stopOpacity="0.3901" />
+          <stop offset="0.7461" stopColor="#214189" stopOpacity="0.2539" />
+          <stop offset="0.8591" stopColor="#223C7D" stopOpacity="0.1409" />
+          <stop offset="0.9566" stopColor="#22366E" stopOpacity="0.0434" />
+          <stop offset="1" stopColor="#223266" stopOpacity="0" />
         </linearGradient>
       </defs>
-      <path d="M14 2 L26 30 L20.4 30 L14 14.6 L7.6 30 L2 30 Z" fill="#F5F6F8" />
-      <path d="M19.5 8 L30 8 L22.6 26 L18.6 16.4 Z" fill={`url(#${id})`} />
+      <polygon
+        fill="#F5F6F8"
+        points="65.53,288.34 10.04,288.34 181.1,10.43 353.07,288.34 296.66,288.34 181.55,99.39 123.77,192 202.65,192 230.62,239.73 94.42,239.27"
+      />
+      <polygon fill={`url(#${id})`} points="431.95,70.96 485.15,70.96 353.07,285.13 326.47,241.71" />
     </svg>
   );
 }
