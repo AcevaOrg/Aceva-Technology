@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   EMPTY_CONTACT_FORM,
+  CONTACT_LIMITS,
   validateContact,
   errorSummary,
   type ContactFormValues,
@@ -13,12 +14,76 @@ import { isPathKey } from "@/lib/data/paths";
 
 type Status = "idle" | "loading" | "success" | "error";
 
+interface TurnstileApi {
+  render: (container: HTMLElement, options: {
+    sitekey: string;
+    theme: "dark";
+    action: "contact";
+    callback: (token: string) => void;
+    "expired-callback": () => void;
+    "error-callback": () => void;
+  }) => string;
+  reset: (widgetId?: string) => void;
+}
+
+declare global {
+  interface Window {
+    turnstile?: TurnstileApi;
+  }
+}
+
 export default function ContactForm() {
   const searchParams = useSearchParams();
   const [form, setForm] = useState<ContactFormValues>(EMPTY_CONTACT_FORM);
   const [errors, setErrors] = useState<ContactFieldErrors>({});
   const [status, setStatus] = useState<Status>("idle");
   const [serverMessage, setServerMessage] = useState("");
+  const turnstileRef = useRef<HTMLDivElement>(null);
+  const turnstileWidgetId = useRef<string | undefined>(undefined);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileLoaded, setTurnstileLoaded] = useState(false);
+
+  // Load Turnstile script
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const markLoaded = () => setTurnstileLoaded(true);
+    const existingScript = document.querySelector<HTMLScriptElement>('script[src*="turnstile"]');
+
+    if (window.turnstile) {
+      queueMicrotask(markLoaded);
+    } else if (existingScript) {
+      existingScript.addEventListener("load", markLoaded);
+    } else {
+      const script = document.createElement("script");
+      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+      script.async = true;
+      script.defer = true;
+      script.addEventListener("load", markLoaded);
+      document.head.appendChild(script);
+    }
+
+    return () => {
+      existingScript?.removeEventListener("load", markLoaded);
+    };
+  }, []);
+
+  // Render Turnstile widget
+  useEffect(() => {
+    if (!turnstileLoaded || !turnstileRef.current || !window.turnstile) return;
+    if (turnstileRef.current.hasChildNodes()) return;
+
+    const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+    if (!siteKey) return; // Turnstile not configured
+
+    turnstileWidgetId.current = window.turnstile.render(turnstileRef.current, {
+      sitekey: siteKey,
+      theme: "dark",
+      action: "contact",
+      callback: (token: string) => setTurnstileToken(token),
+      "expired-callback": () => setTurnstileToken(""),
+      "error-callback": () => setTurnstileToken(""),
+    });
+  }, [turnstileLoaded]);
 
   useEffect(() => {
     const situation = searchParams.get("situation");
@@ -31,17 +96,33 @@ export default function ContactForm() {
 
   function onField<K extends keyof ContactFormValues>(key: K) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-      setForm((f) => ({ ...f, [key]: e.target.value }));
+      setForm((f) => ({ ...f, [key]: e.target.value as ContactFormValues[K] }));
       setErrors((er) => ({ ...er, [key]: false }));
+      setServerMessage("");
+      if (status === "error") setStatus("idle");
     };
   }
 
-  async function handleSubmit() {
+  async function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
+    e?.preventDefault();
     const nextErrors = validateContact(form);
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
       return;
     }
+
+    // Check Turnstile if configured
+    const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+    if (siteKey && !turnstileToken) {
+      setStatus("error");
+      setServerMessage("Please complete the verification.");
+      return;
+    }
+
+    // Get honeypot value
+    const honeypotInput = document.querySelector('input[name="_gotcha"]') as HTMLInputElement;
+    const honeypotValue = honeypotInput?.value || "";
+
     setErrors({});
     setStatus("loading");
     setServerMessage("");
@@ -49,13 +130,18 @@ export default function ContactForm() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, "cf-turnstile-response": turnstileToken, _gotcha: honeypotValue }),
       });
       const data = await res.json();
       if (!res.ok || !data.ok) {
         setStatus("error");
         setErrors(data.errors || {});
         setServerMessage(data.message || "Something went wrong. Please try again.");
+        // Reset Turnstile on error so user can retry
+        if (siteKey && window.turnstile) {
+          window.turnstile.reset(turnstileWidgetId.current);
+          setTurnstileToken("");
+        }
         return;
       }
       setStatus("success");
@@ -70,6 +156,10 @@ export default function ContactForm() {
     setErrors({});
     setStatus("idle");
     setServerMessage("");
+    setTurnstileToken("");
+    if (window.turnstile && turnstileWidgetId.current !== undefined) {
+      window.turnstile.reset(turnstileWidgetId.current);
+    }
   }
 
   const fieldBorder = (key: keyof ContactFieldErrors) => (errors[key] ? "var(--error)" : "var(--hairline)");
@@ -109,10 +199,12 @@ export default function ContactForm() {
     );
   }
 
-  const hasErrors = Object.keys(errors).length > 0;
+  const hasErrors = Object.keys(errors).length > 0 || Boolean(serverMessage);
 
   return (
-    <div style={{ padding: "clamp(24px,3.5vw,36px)" }}>
+    <form onSubmit={handleSubmit} noValidate style={{ padding: "clamp(24px,3.5vw,36px)" }}>
+      {/* Honeypot - hidden field that bots fill but humans don't see */}
+      <input type="text" name="_gotcha" tabIndex={-1} autoComplete="off" style={{ display: "none" }} aria-hidden="true" />
       <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10.5, letterSpacing: ".14em", color: "var(--muted)", margin: "0 0 22px" }}>QUALIFICATION — 6 FIELDS</p>
 
       {hasErrors && (
@@ -128,17 +220,17 @@ export default function ContactForm() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 16 }}>
         <label style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <span style={{ fontSize: 13.5, color: "var(--muted)" }}>Your name</span>
-          <input value={form.name} onChange={onField("name")} type="text" autoComplete="name" placeholder="Jordan Ellis" style={{ ...inputStyle, border: `1px solid ${fieldBorder("name")}` }} />
+          <input value={form.name} onChange={onField("name")} type="text" autoComplete="name" required maxLength={CONTACT_LIMITS.name} aria-invalid={Boolean(errors.name)} placeholder="Jordan Ellis" style={{ ...inputStyle, border: `1px solid ${fieldBorder("name")}` }} />
         </label>
         <label style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <span style={{ fontSize: 13.5, color: "var(--muted)" }}>Work email</span>
-          <input value={form.email} onChange={onField("email")} type="email" autoComplete="email" placeholder="you@company.com" style={{ ...inputStyle, border: `1px solid ${fieldBorder("email")}` }} />
+          <input value={form.email} onChange={onField("email")} type="email" autoComplete="email" required maxLength={CONTACT_LIMITS.email} aria-invalid={Boolean(errors.email)} placeholder="you@company.com" style={{ ...inputStyle, border: `1px solid ${fieldBorder("email")}` }} />
         </label>
         <label style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <span style={{ fontSize: 13.5, color: "var(--muted)" }}>
             Company <span style={{ color: "#4b4f5b" }}>(optional)</span>
           </span>
-          <input value={form.company} onChange={onField("company")} type="text" autoComplete="organization" placeholder="Company name" style={{ ...inputStyle, border: "1px solid var(--hairline)" }} />
+          <input value={form.company} onChange={onField("company")} type="text" autoComplete="organization" maxLength={CONTACT_LIMITS.company} aria-invalid={Boolean(errors.company)} placeholder="Company name" style={{ ...inputStyle, border: `1px solid ${fieldBorder("company")}` }} />
         </label>
         <label style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <span style={{ fontSize: 13.5, color: "var(--muted)" }}>Where you are right now</span>
@@ -179,15 +271,23 @@ export default function ContactForm() {
           value={form.details}
           onChange={onField("details")}
           rows={5}
+          required
+          minLength={CONTACT_LIMITS.detailsMin}
+          maxLength={CONTACT_LIMITS.detailsMax}
+          aria-invalid={Boolean(errors.details)}
           placeholder="What is broken, slow or missing — and what would change for the business if it were fixed?"
           style={{ ...inputStyle, border: `1px solid ${fieldBorder("details")}`, lineHeight: 1.55, resize: "vertical" }}
         />
       </label>
 
+      {/* Cloudflare Turnstile - invisible CAPTCHA */}
+      {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && turnstileLoaded && (
+        <div ref={turnstileRef} style={{ marginTop: 16 }} />
+      )}
+
       <div style={{ display: "flex", flexWrap: "wrap", gap: 14, alignItems: "center", marginTop: 22 }}>
         <button
-          type="button"
-          onClick={handleSubmit}
+          type="submit"
           disabled={status === "loading"}
           className="ac-btn-primary"
           style={{ padding: "16px 26px", minHeight: 52, gap: 12, opacity: status === "loading" ? 0.7 : 1 }}
@@ -199,6 +299,6 @@ export default function ContactForm() {
         </button>
         <p style={{ fontSize: 13.5, color: "var(--muted)", margin: 0, maxWidth: "30ch" }}>No newsletter. No CRM sequence. One human reply.</p>
       </div>
-    </div>
+    </form>
   );
 }

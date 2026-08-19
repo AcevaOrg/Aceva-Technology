@@ -151,7 +151,7 @@ export default function CareersPage() {
                   Send your work
                 </a>
                 <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".1em", color: "#4b4f5b", margin: 0 }}>
-                  CAREERS INBOX — PLACEHOLDER, USING GENERAL EMAIL
+                  APPLICATIONS ARE CURRENTLY RECEIVED THROUGH OUR GENERAL INBOX
                 </p>
               </div>
             </Card>

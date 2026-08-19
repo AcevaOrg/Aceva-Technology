@@ -14,6 +14,8 @@
   --error: #e0503b;
   --radius: 14px;
   --radius-sm: 10px;
+  /* Floating Crystal nav: pill height (64px) + top offset (18px) + clearance (18px) */
+  --nav-offset: 100px;
 }
 
 * {
@@ -21,7 +23,7 @@
 }
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 96px;
+  scroll-padding-top: 110px;
   text-rendering: optimizeLegibility;
 }
 body {
@@ -242,6 +244,8 @@ html {
 }
 .ac-card-flagship {
   background: linear-gradient(145deg, rgba(30, 79, 217, 0.13), rgba(106, 79, 224, 0.06) 55%, rgba(20, 20, 24, 0));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(59, 124, 255, 0.3);
   border-radius: var(--radius);
   position: relative;

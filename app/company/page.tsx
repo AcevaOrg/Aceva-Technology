@@ -99,7 +99,7 @@ export default function CompanyPage() {
                   <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 18, fontWeight: 500, margin: 0 }}>{s.title}</p>
                   <p style={{ fontSize: 14.5, lineHeight: 1.6, color: "var(--muted)", margin: "8px 0 0" }}>{s.body}</p>
                   <Tag variant="dashed" style={{ marginTop: 16 }}>
-                    NAME — PLACEHOLDER
+                    SENIOR-LED DELIVERY
                   </Tag>
                 </Card>
               </Reveal>
