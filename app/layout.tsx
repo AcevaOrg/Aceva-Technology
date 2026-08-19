@@ -55,7 +55,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <div style={{ minHeight: "100vh", background: "#0A0A0C", overflowX: "hidden" }}>
           <AmbientBackground />
           <Header />
-          <main data-main style={{ paddingTop: 72, position: "relative", zIndex: 1 }}>
+          <main data-main style={{ position: "relative", zIndex: 1 }}>
             {children}
           </main>
           <Footer />

@@ -68,10 +68,10 @@ const PROCESS_STEPS = [
 ];
 
 const PROOF_CARDS = [
-  { badge: "LIVE PROOF", title: "This website", body: "Digital Experiences, demonstrated by the thing you are using now.", variant: "default" as const, ice: true },
-  { badge: "CONCEPT DEMO", title: "Operations dashboard", body: "Users, permissions, tasks, data and reporting in one realistic workflow.", variant: "default" as const, ice: false },
-  { badge: "CONCEPT DEMO", title: "Mobile journey", body: "One complete journey from sign-in to a useful outcome — not ten loose screens.", variant: "default" as const, ice: false },
-  { badge: "CONCEPT DEMO", title: "Automation with approval", body: "Request, lookup, proposed action, human approval, system update.", variant: "default" as const, ice: false },
+  { badge: "LIVE PROOF", title: "This website", body: "Digital Experiences, demonstrated by the thing you are using now.", variant: "flagship" as const, ice: true },
+  { badge: "CONCEPT DEMO", title: "Operations dashboard", body: "Users, permissions, tasks, data and reporting in one realistic workflow.", variant: "flagship" as const, ice: true },
+  { badge: "CONCEPT DEMO", title: "Mobile journey", body: "One complete journey from sign-in to a useful outcome — not ten loose screens.", variant: "flagship" as const, ice: true },
+  { badge: "CONCEPT DEMO", title: "Automation with approval", body: "Request, lookup, proposed action, human approval, system update.", variant: "flagship" as const, ice: true },
   { badge: "SAMPLE REPORT", title: "Rescue Report", body: "Findings, severity, what to keep, what to replace, and a 30/60/90-day plan.", variant: "flagship" as const, ice: true },
 ];
 
@@ -84,7 +84,7 @@ export default function HomePage() {
           <Image src="/images/used/shared-skyline.jpg" alt="" fill className="bg-pan-slow" style={{ objectFit: "cover", objectPosition: "center center", opacity: 1 }} priority />
           <div className="hero-overlay" />
         </div>
-        <div style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,10vw,120px) clamp(20px,4vw,48px) clamp(48px,6vw,72px)", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+        <div style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(110px,14vw,160px) clamp(20px,4vw,48px) clamp(48px,6vw,72px)", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
           <p style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, fontFamily: "var(--font-jetbrains-mono)", fontSize: 11.5, letterSpacing: ".2em", color: "var(--ice)", margin: "0 0 clamp(24px,4vw,38px)", animation: "acTrackIn 900ms cubic-bezier(.16,1,.3,1) both" }}>
             <span style={{ width: 22, height: 1, background: "var(--electric)" }} />
             ACEVA HOLDINGS / SOFTWARE DIVISION
@@ -115,18 +115,6 @@ export default function HomePage() {
               <path d="M12 4v16m0 0-6-6m6 6 6-6" />
             </svg>
           </p>
-        </div>
-        <div style={{ borderTop: "1px solid var(--hairline)", background: "rgba(20,20,24,.5)" }}>
-          <div style={{ maxWidth: 1280, margin: "0 auto", padding: "22px clamp(20px,4vw,48px)", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "18px 32px" }}>
-            <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: 0 }}>CLIENT LOGOS — PLACEHOLDER UNTIL FIRST ENGAGEMENTS LAUNCH</p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-              {[0, 1, 2, 3].map((i) => (
-                <Tag key={i} variant="dashed" style={{ width: 104, height: 34 }}>
-                  LOGO SLOT
-                </Tag>
-              ))}
-            </div>
-          </div>
         </div>
       </section>
 
@@ -161,13 +149,13 @@ export default function HomePage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(290px,1fr))", gap: 14, marginTop: "clamp(30px,4vw,48px)" }}>
             {CAPS.map((cap) => (
               <Reveal key={cap.key}>
-                <Card variant={cap.key === "rescue" ? "flagship" : "default"} href={capabilityRoute(cap.key)} style={{ padding: 28, display: "flex", flexDirection: "column", gap: 12, minHeight: 230 }}>
-                  <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".16em", color: cap.key === "rescue" ? "var(--ice)" : "var(--muted)" }}>
+                <Card variant="flagship" href={capabilityRoute(cap.key)} style={{ padding: 28, display: "flex", flexDirection: "column", gap: 12, minHeight: 230 }}>
+                  <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".16em", color: "var(--ice)" }}>
                     {cap.key === "rescue" ? `${cap.num} · FLAGSHIP` : cap.num}
                     {CAP_ICONS[cap.key]}
                   </span>
                   <span style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 22, fontWeight: 500, letterSpacing: "-.01em", marginTop: 6 }}>{cap.name}</span>
-                  <span style={{ fontSize: 14.5, lineHeight: 1.62, color: cap.key === "rescue" ? "#c3c8d4" : "var(--muted)" }}>{CAP_HOME_BLURBS[cap.key]}</span>
+                  <span style={{ fontSize: 14.5, lineHeight: 1.62, color: "#c3c8d4" }}>{CAP_HOME_BLURBS[cap.key]}</span>
                   <span className="ac-link" style={{ marginTop: "auto", fontSize: 13.5 }}>
                     Learn more
                     <ArrowRightIcon />
@@ -176,9 +164,9 @@ export default function HomePage() {
               </Reveal>
             ))}
             <Reveal>
-              <Card variant="ghost" href={ROUTES.services} style={{ padding: 28, display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 10, minHeight: 230 }}>
+              <Card variant="flagship" href={ROUTES.services} style={{ padding: 28, display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 10, minHeight: 230 }}>
                 <span style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 19, fontWeight: 500, letterSpacing: "-.01em" }}>All capabilities in detail</span>
-                <span style={{ fontSize: 14, color: "var(--muted)" }}>What each one includes, when to buy it, and what we will not promise.</span>
+                <span style={{ fontSize: 14, color: "#c3c8d4" }}>What each one includes, when to buy it, and what we will not promise.</span>
               </Card>
             </Reveal>
           </div>

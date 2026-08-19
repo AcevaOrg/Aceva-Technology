@@ -108,11 +108,11 @@ export default function IndustriesPage() {
         </div>
       </section>
 
-      {/* Placeholder industry slots */}
+      {/* Additional sectors */}
       <section>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(44px,6vw,80px) clamp(20px,4vw,48px)" }}>
           <Reveal as="p" style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 20px" }}>
-            INDUSTRY PAGES — PLACEHOLDER SLOTS
+            ADDITIONAL SECTORS WE UNDERSTAND
           </Reveal>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 12 }}>
             {SLOTS.map((s) => (

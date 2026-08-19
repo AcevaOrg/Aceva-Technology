@@ -75,9 +75,6 @@ export default function Footer() {
               <a href="mailto:acevatechnology@gmail.com" style={{ fontSize: 14, color: "var(--ink)" }}>
                 acevatechnology@gmail.com
               </a>
-              <span style={{ color: "#4b4f5b", fontFamily: "var(--font-jetbrains-mono)", fontSize: 12 }}>PHONE — PLACEHOLDER</span>
-              <span style={{ color: "#4b4f5b", fontFamily: "var(--font-jetbrains-mono)", fontSize: 12 }}>NEW YORK ADDRESS — PLACEHOLDER</span>
-              <span style={{ color: "#4b4f5b", fontFamily: "var(--font-jetbrains-mono)", fontSize: 12 }}>LINKEDIN / GITHUB — PLACEHOLDER</span>
             </div>
           </div>
         </div>

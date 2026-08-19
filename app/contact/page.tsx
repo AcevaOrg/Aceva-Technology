@@ -24,10 +24,7 @@ export default function ContactPage() {
           </p>
           <div style={{ marginTop: 36, display: "flex", flexDirection: "column", borderTop: "1px solid var(--hairline)" }}>
             <KeyValueRow first label="Email" value={<a href="mailto:acevatechnology@gmail.com">acevatechnology@gmail.com</a>} />
-            <KeyValueRow label="Phone" value={<span style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "#4b4f5b" }}>PLACEHOLDER</span>} />
-            <KeyValueRow label="Office" value={<span style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "#4b4f5b" }}>NEW YORK — PLACEHOLDER</span>} />
-            <KeyValueRow label="Reply time" value={<span style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "#4b4f5b" }}>PLACEHOLDER — E.G. 1 BUSINESS DAY</span>} />
-            <KeyValueRow label="Meeting booking" value={<span style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "#4b4f5b" }}>CALENDAR LINK — PLACEHOLDER</span>} />
+            <KeyValueRow label="Reply" value={<span style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "var(--muted)" }}>A HUMAN RESPONSE, NOT AN AUTOMATED SEQUENCE</span>} />
           </div>
         </Reveal>
 
