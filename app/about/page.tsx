@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { ROUTES } from "@/lib/nav";
 import Reveal from "@/components/ui/Reveal";
 import Callout from "@/components/ui/Callout";
 import Button from "@/components/ui/Button";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Why Aceva — ACEVA Technology",
   description:
     "We will not compete by saying more. We will compete by proving more — how Aceva positions, sells and delivers.",
-};
+});
 
 interface Fact {
   kicker: string;

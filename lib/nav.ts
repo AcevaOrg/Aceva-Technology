@@ -12,7 +12,6 @@ export const ROUTES = {
   insights: "/insights",
   faq: "/faq",
   contact: "/contact",
-  mobile: "/mobile",
   privacy: "/legal/privacy",
   terms: "/legal/terms",
 } as const;

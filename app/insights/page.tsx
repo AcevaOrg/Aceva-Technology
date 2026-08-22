@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Reveal from "@/components/ui/Reveal";
 import Card from "@/components/ui/Card";
 import Tag from "@/components/ui/Tag";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Insights — ACEVA Technology",
   description: "Writing starts after the first engagements, not before. Here is what is planned.",
-};
+  noIndex: true,
+});
 
 const PLANNED = [
   { label: "PLANNED · 01", title: "How to review AI-generated code before it reaches production" },
@@ -64,7 +66,7 @@ export default function InsightsPage() {
 
       <section>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(44px,6vw,80px) clamp(20px,4vw,48px)" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 12 }}>
+          <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 12 }}>
             {PLANNED.map((item) => (
               <Reveal key={item.label}>
                 <Card variant="ghost" style={{ padding: 26, minHeight: 190, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>

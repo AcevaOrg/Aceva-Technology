@@ -27,8 +27,7 @@ const PATH_META: Record<PathKey, { badge: string; title: string; body: string }>
 
 function pathStyle(on: boolean) {
   return {
-    bg: on ? "rgba(28,28,34,.7)" : "rgba(20,20,24,.55)",
-    border: on ? "var(--electric)" : "var(--hairline)",
+    border: on ? "var(--electric)" : "rgba(59,124,255,.3)",
     dot: on ? "var(--electric)" : "var(--hairline)",
     dotBg: on ? "var(--royal)" : "transparent",
   };
@@ -40,31 +39,31 @@ export default function PathChooser() {
 
   return (
     <>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 14, marginTop: "clamp(28px,4vw,44px)" }}>
+      <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 14, marginTop: "clamp(28px,4vw,44px)" }}>
         {PATH_KEYS.map((key) => {
           const meta = PATH_META[key];
           const on = selected === key;
           const st = pathStyle(on);
           return (
-            <Reveal key={key} style={{ textAlign: "left" }}>
+            <Reveal key={key} style={{ textAlign: "left", height: "100%" }}>
               <button
+                className="ac-card-flagship path-choice-card"
                 type="button"
                 onClick={() => setSelected((s) => (s === key ? null : key))}
                 aria-pressed={on}
                 style={{
                   textAlign: "left",
                   width: "100%",
-                  background: st.bg,
+                  height: "100%",
                   border: `1px solid ${st.border}`,
                   borderRadius: 14,
                   padding: 26,
                   minHeight: 170,
-                  backdropFilter: "blur(16px)",
-                  WebkitBackdropFilter: "blur(16px)",
                   display: "flex",
                   flexDirection: "column",
                   gap: 14,
                   color: "var(--ink)",
+                  boxShadow: on ? "0 16px 44px rgba(0,0,0,.38), 0 0 28px rgba(59,124,255,.18)" : undefined,
                   transition: "transform 200ms cubic-bezier(.16,1,.3,1), border-color 200ms ease, background 200ms ease, box-shadow 200ms ease",
                 }}
               >

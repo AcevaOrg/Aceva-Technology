@@ -25,14 +25,13 @@ const RESOURCE_LINKS = [
   { href: ROUTES.technology, label: "Technology Stack" },
   { href: ROUTES.insights, label: "Insights" },
   { href: ROUTES.faq, label: "FAQs" },
-  { href: ROUTES.mobile, label: "Mobile Layouts" },
 ];
 
-function LinkColumn({ title, links }: { title: string; links: { href: string; label: string }[] }) {
+function LinkColumn({ title, links, card = false }: { title: string; links: { href: string; label: string }[]; card?: boolean }) {
   return (
-    <div>
-      <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 16px" }}>{title}</p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 11, alignItems: "flex-start" }}>
+    <div className={card ? styles.navCard : undefined}>
+      <p className={styles.navTitle}>{title}</p>
+      <div className={styles.linkList}>
         {links.map((l) => (
           <Link key={l.href} href={l.href} className={styles.link}>
             {l.label}
@@ -47,12 +46,12 @@ export default function Footer() {
   return (
     <footer className="ac-hairline" style={{ borderTop: "1px solid var(--hairline)", position: "relative", zIndex: 1, overflow: "hidden" }}>
       <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-        <Image src="/images/used/nav-footer-bg.png" alt="" fill className="bg-pan-slow" style={{ objectFit: "cover", objectPosition: "center center", opacity: 0.35 }} />
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 30%, transparent 70%, #0A0A0C 100%)" }} />
+        <Image src="/images/used/aceva-footer-background-8k-4x1.png" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--footer bg-pan-slow" />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(10,10,12,.72) 0%, rgba(10,10,12,.40) 30%, rgba(10,10,12,.40) 70%, rgba(10,10,12,.72) 100%)" }} />
       </div>
-      <div style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(48px,6vw,72px) clamp(20px,4vw,48px)" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: "36px 28px" }}>
-          <div style={{ gridColumn: "span 2", minWidth: 220 }}>
+      <div className="image-backed-content" style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(48px,6vw,72px) clamp(20px,4vw,48px)" }}>
+        <div className={styles.footerGrid}>
+          <div className={styles.brandBlock}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <LogoMark id="acevaStrokeFoot" width={36} height={22} />
               <span style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: 16, letterSpacing: ".16em" }}>ACEVA</span>
@@ -65,11 +64,11 @@ export default function Footer() {
             </p>
           </div>
 
-          <LinkColumn title="CAPABILITIES" links={CAPABILITY_LINKS} />
-          <LinkColumn title="COMPANY" links={COMPANY_LINKS} />
-          <LinkColumn title="RESOURCES" links={RESOURCE_LINKS} />
+          <LinkColumn title="CAPABILITIES" links={CAPABILITY_LINKS} card />
+          <LinkColumn title="COMPANY" links={COMPANY_LINKS} card />
+          <LinkColumn title="RESOURCES" links={RESOURCE_LINKS} card />
 
-          <div>
+          <div className={styles.contactBlock}>
             <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 16px" }}>CONTACT</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 11, alignItems: "flex-start" }}>
               <a href="mailto:acevatechnology@gmail.com" style={{ fontSize: 14, color: "var(--ink)" }}>

@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { ROUTES } from "@/lib/nav";
 import Reveal from "@/components/ui/Reveal";
 import Card from "@/components/ui/Card";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Industries — ACEVA Technology",
   description: "We sell by problem, not by industry — the three problems we start from, and where industry pages will go.",
-};
+});
 
 interface Path {
   label: string;
@@ -79,7 +80,7 @@ export default function IndustriesPage() {
           <Reveal as="p" style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 26px" }}>
             THE THREE PROBLEMS WE START FROM
           </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(270px,1fr))", gap: 14 }}>
+          <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(270px,1fr))", gap: 14 }}>
             {PATHS.map((p) => (
               <Reveal key={p.label}>
                 <Card
@@ -114,7 +115,7 @@ export default function IndustriesPage() {
           <Reveal as="p" style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 20px" }}>
             ADDITIONAL SECTORS WE UNDERSTAND
           </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 12 }}>
+          <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 12 }}>
             {SLOTS.map((s) => (
               <Reveal key={s.label}>
                 <Card variant="ghost" style={{ padding: 24, minHeight: 120, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>

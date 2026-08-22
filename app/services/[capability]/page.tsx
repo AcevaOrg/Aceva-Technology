@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { CAPS, getCapability, getAdjacentCapabilities } from "@/lib/data/caps";
@@ -23,10 +24,10 @@ export async function generateMetadata({ params }: CapabilityPageProps): Promise
   if (!cap) {
     return { title: "Capability — ACEVA Technology" };
   }
-  return {
+  return pageMetadata({
     title: `${cap.name} — ACEVA Technology`,
     description: cap.lead,
-  };
+  });
 }
 
 export default async function CapabilityPage({ params }: CapabilityPageProps) {
@@ -183,7 +184,7 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
               {cap.sales}
             </Reveal>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <div className="ac-card-stack" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <Reveal>
               <Card style={{ padding: 26 }}>
                 <p
@@ -267,6 +268,7 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
 
       <section>
         <div
+          className="ac-card-grid"
           style={{
             maxWidth: 1280,
             margin: "0 auto",

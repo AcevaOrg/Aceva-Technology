@@ -29,7 +29,21 @@ const jetBrainsMono = JetBrains_Mono({
   fallback: ["monospace"],
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://acevatechnology.com";
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": `${siteUrl}/#organization`,
+  name: "ACEVA Technology",
+  url: siteUrl,
+  logo: `${siteUrl}/favicon.ico`,
+  email: "acevatechnology@gmail.com",
+  description: "A software engineering company that designs, builds, and scales custom digital products.",
+};
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "ACEVA Technology — Custom Software, Web & Mobile Engineering",
   description:
     "ACEVA Technology is a premium software engineering company partnering with startups and enterprises to design, build, and scale reliable digital products — custom software, mobile apps, AI & automation, and product rescue.",
@@ -50,8 +64,12 @@ export const viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${instrumentSans.variable} ${jetBrainsMono.variable}`}>
+    <html lang="en" data-scroll-behavior="smooth" className={`${spaceGrotesk.variable} ${instrumentSans.variable} ${jetBrainsMono.variable}`}>
       <body suppressHydrationWarning>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema).replace(/</g, "\\u003c") }}
+        />
         <div style={{ minHeight: "100vh", background: "#0A0A0C", overflowX: "hidden" }}>
           <AmbientBackground />
           <Header />

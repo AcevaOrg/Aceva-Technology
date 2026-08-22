@@ -16,7 +16,7 @@ const VARIANT_CLASS: Record<NonNullable<CardProps["variant"]>, string> = {
   default: "ac-card",
   flagship: "ac-card-flagship",
   ghost: "ac-card-ghost",
-  plain: "",
+  plain: "ac-card-plain",
 };
 
 export default function Card({ children, variant = "default", href, onClick, style, className }: CardProps) {
@@ -37,7 +37,7 @@ export default function Card({ children, variant = "default", href, onClick, sty
 
   const baseStyle: CSSProperties =
     variant === "plain"
-      ? { background: "var(--charcoal)", border: "1px solid var(--hairline)", borderRadius: "var(--radius)" }
+      ? { borderRadius: "var(--radius)" }
       : {};
   const cls = `${VARIANT_CLASS[variant]}${className ? ` ${className}` : ""}`.trim();
   const combinedStyle = { ...baseStyle, ...style };
