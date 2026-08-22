@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { ROUTES } from "@/lib/nav";
 import Reveal from "@/components/ui/Reveal";
@@ -11,11 +12,11 @@ import ExperimentsTabs from "@/components/features/ExperimentsTabs";
 import AutomationDemo from "@/components/features/AutomationDemo";
 import styles from "./experiments.module.css";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Experiments — ACEVA Technology",
   description:
     "Concept demos and internal products, honestly labeled. None of these are client projects — no client names, no results, no invented metrics.",
-};
+});
 
 type Severity = "CRITICAL" | "HIGH" | "MEDIUM";
 

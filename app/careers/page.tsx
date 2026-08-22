@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Reveal from "@/components/ui/Reveal";
 import Card from "@/components/ui/Card";
 import Tag from "@/components/ui/Tag";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Careers — ACEVA Technology",
   description: "Five senior professionals and five juniors. Every junior has a named mentor and named senior review.",
-};
+});
 
 const LANE_CARDS = [
   {
@@ -78,6 +79,7 @@ export default function CareersPage() {
 
       <section style={{ borderBottom: "1px solid var(--hairline)" }}>
         <div
+          className="ac-card-grid"
           style={{
             maxWidth: 1280,
             margin: "0 auto",
@@ -89,19 +91,17 @@ export default function CareersPage() {
         >
           {LANE_CARDS.map((card) => (
             <Reveal key={card.title}>
-              <div
+              <Card
+                variant="flagship"
                 style={{
-                  border: "1px solid var(--hairline)",
                   borderRadius: 14,
                   padding: 26,
-                  background: "rgba(20,20,24,.55)",
-                  backdropFilter: "blur(16px)",
-                  WebkitBackdropFilter: "blur(16px)",
+                  height: "100%",
                 }}
               >
                 <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 19, fontWeight: 500, margin: 0 }}>{card.title}</p>
                 <p style={{ fontSize: 14.5, lineHeight: 1.62, color: "var(--muted)", margin: "10px 0 0" }}>{card.body}</p>
-              </div>
+              </Card>
             </Reveal>
           ))}
         </div>
@@ -114,7 +114,7 @@ export default function CareersPage() {
           </Reveal>
           <Reveal>
             <Card
-              variant="ghost"
+              variant="flagship"
               style={{
                 borderRadius: 16,
                 padding: "clamp(28px,4vw,44px)",
@@ -156,15 +156,15 @@ export default function CareersPage() {
               </div>
             </Card>
           </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 12, marginTop: 14 }}>
+          <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 12, marginTop: 14 }}>
             {ROLE_SLOTS.map((slot) => (
               <Reveal key={slot.label}>
-                <div style={{ border: "1px solid var(--hairline)", borderRadius: 14, padding: 22 }}>
+                <Card variant="flagship" style={{ borderRadius: 14, padding: 22, height: "100%" }}>
                   <Tag variant="dashed" style={{ marginBottom: 10 }}>
                     {slot.label}
                   </Tag>
                   <p style={{ fontSize: 14.5, color: "var(--muted)", margin: 0 }}>{slot.body}</p>
-                </div>
+                </Card>
               </Reveal>
             ))}
           </div>

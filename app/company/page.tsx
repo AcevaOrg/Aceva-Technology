@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Reveal from "@/components/ui/Reveal";
 import Card from "@/components/ui/Card";
 import Tag from "@/components/ui/Tag";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "About Us — ACEVA Technology",
   description: "Aceva is the software division of Aceva Holdings — how the team is structured and the month-one launch plan.",
-};
+});
 
 interface Senior {
   role: string;
@@ -86,12 +87,12 @@ export default function CompanyPage() {
           <Reveal as="p" style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 26px" }}>
             HOW THE TEAM IS STRUCTURED
           </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))", gap: 14 }}>
+          <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))", gap: 14 }}>
             {SENIORS.map((s) => (
               <Reveal key={s.role}>
                 <Card
                   variant="plain"
-                  style={{ padding: 24, background: "rgba(20,20,24,.55)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}
+                  style={{ padding: 24 }}
                 >
                   <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10.5, letterSpacing: ".14em", color: "var(--electric)", margin: "0 0 12px" }}>
                     {s.role}

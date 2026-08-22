@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Reveal from "@/components/ui/Reveal";
 import Card from "@/components/ui/Card";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "How We Work — ACEVA Technology",
   description:
     "Five phases with weekly demos and clear ownership — understand, design, build, launch, improve.",
-};
+});
 
 interface Phase {
   n: string;
@@ -181,11 +182,11 @@ export default function ProcessPage() {
           >
             Two rules that do not bend.
           </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 14, marginTop: 32 }}>
+          <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 14, marginTop: 32 }}>
             <Reveal>
               <Card
                 variant="plain"
-                style={{ padding: 28, background: "rgba(20,20,24,.55)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}
+                style={{ padding: 28 }}
               >
                 <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 20, fontWeight: 500, margin: 0 }}>Senior review, always</p>
                 <p style={{ fontSize: 15.5, lineHeight: 1.62, color: "var(--muted)", margin: "12px 0 0" }}>
@@ -197,7 +198,7 @@ export default function ProcessPage() {
             <Reveal>
               <Card
                 variant="plain"
-                style={{ padding: 28, background: "rgba(20,20,24,.55)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}
+                style={{ padding: 28 }}
               >
                 <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 20, fontWeight: 500, margin: 0 }}>You own everything</p>
                 <p style={{ fontSize: 15.5, lineHeight: 1.62, color: "var(--muted)", margin: "12px 0 0" }}>

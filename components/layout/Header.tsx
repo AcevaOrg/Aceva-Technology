@@ -8,6 +8,7 @@ import { ArrowRightIcon, ChevronDownIcon, CloseIcon, LogoMark } from "@/componen
 import styles from "./Header.module.css";
 
 const DESKTOP_LINKS: { href: string; label: string; match: (p: string) => boolean }[] = [
+  { href: ROUTES.home, label: "Home", match: () => false },
   { href: ROUTES.services, label: "Capabilities", match: (p) => p.startsWith("/services") },
   { href: ROUTES.work, label: "Experiments", match: (p) => p === ROUTES.work },
   { href: ROUTES.process, label: "How We Work", match: (p) => p === ROUTES.process },
@@ -22,7 +23,6 @@ const MORE_LINKS = [
   { href: ROUTES.careers, label: "Careers" },
   { href: ROUTES.insights, label: "Insights" },
   { href: ROUTES.faq, label: "FAQs" },
-  { href: ROUTES.mobile, label: "Mobile Layouts" },
 ];
 
 const MORE_ROUTES = MORE_LINKS.map((l) => l.href);
@@ -88,6 +88,7 @@ export default function Header() {
                 <Link
                   key={l.href}
                   href={l.href}
+                  aria-current={active ? "page" : undefined}
                   className={`${styles.crystalLink} ${active ? styles.crystalLinkActive : ""}`}
                 >
                   {l.label}
@@ -168,16 +169,20 @@ export default function Header() {
           </div>
           <div className={styles.mobileBody}>
             <div style={{ display: "flex", flexDirection: "column" }}>
-              {DESKTOP_LINKS.map((l, i) => (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  className={styles.mobilePrimaryLink}
-                  style={{ animationDelay: `${90 + i * 55}ms` }}
-                >
-                  {l.label}
-                </Link>
-              ))}
+              {DESKTOP_LINKS.map((l, i) => {
+                const active = l.match(pathname);
+                return (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    aria-current={active ? "page" : undefined}
+                    className={`${styles.mobilePrimaryLink} ${active ? styles.mobilePrimaryLinkActive : ""}`}
+                    style={{ animationDelay: `${90 + i * 55}ms` }}
+                  >
+                    {l.label}
+                  </Link>
+                );
+              })}
             </div>
 
             <p className={styles.mobileSection}>COMPANY</p>

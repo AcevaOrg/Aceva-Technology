@@ -1,13 +1,14 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Reveal from "@/components/ui/Reveal";
 import KeyValueRow from "@/components/ui/KeyValueRow";
 import ContactForm from "@/components/features/ContactForm";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Contact — ACEVA Technology",
   description: "Tell Aceva what is costing you the most time, money or customer trust. A senior reads every message.",
-};
+});
 
 export default function ContactPage() {
   return (
@@ -28,7 +29,7 @@ export default function ContactPage() {
           </div>
         </Reveal>
 
-        <div style={{ border: "1px solid var(--hairline)", borderRadius: 16, background: "rgba(20,20,24,.55)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", overflow: "hidden" }}>
+        <div className="ac-card-flagship" style={{ borderRadius: 16, overflow: "hidden" }}>
           <Suspense fallback={<div style={{ padding: "clamp(24px,3.5vw,36px)", minHeight: 420 }} />}>
             <ContactForm />
           </Suspense>

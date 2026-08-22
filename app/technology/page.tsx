@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Reveal from "@/components/ui/Reveal";
 import Card from "@/components/ui/Card";
 import Tag from "@/components/ui/Tag";
 import Callout from "@/components/ui/Callout";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Technology — ACEVA Technology",
   description: "The stack we build with by default, what we choose it for, and where the decision is still open.",
-};
+});
 
 interface TechCategory {
   kicker: string;
@@ -115,12 +116,12 @@ export default function TechnologyPage() {
       {/* Stack categories */}
       <section>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(40px,6vw,72px) clamp(20px,4vw,48px)" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 14 }}>
+          <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 14 }}>
             {CATEGORIES.map((cat) => (
               <Reveal key={cat.kicker}>
                 <Card
                   variant="plain"
-                  style={{ padding: 26, background: "rgba(20,20,24,.55)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}
+                  style={{ padding: 26 }}
                 >
                   <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10.5, letterSpacing: ".16em", color: "var(--electric)", margin: "0 0 16px" }}>
                     {cat.kicker}

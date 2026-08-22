@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { ROUTES } from "@/lib/nav";
 import { ArrowRightIcon } from "@/components/ui/icons";
@@ -6,10 +7,11 @@ import Reveal from "@/components/ui/Reveal";
 import Card from "@/components/ui/Card";
 import Tag from "@/components/ui/Tag";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Client Feedback — ACEVA Technology",
   description: "Aceva has no testimonials yet, and will not write its own. Here is what we will publish, and when.",
-};
+  noIndex: true,
+});
 
 export default function TestimonialsPage() {
   return (
@@ -63,7 +65,7 @@ export default function TestimonialsPage() {
           <Reveal as="p" style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 22px" }}>
             WHAT WE WILL PUBLISH — AND WHEN
           </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 12 }}>
+          <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 12 }}>
             <Reveal>
               <Card variant="ghost" style={{ padding: 26, minHeight: 200, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                 <Tag variant="dashed">QUOTE SLOT 01</Tag>

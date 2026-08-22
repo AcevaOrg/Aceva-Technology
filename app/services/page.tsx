@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { CAPS } from "@/lib/data/caps";
 import { capabilityRoute } from "@/lib/nav";
@@ -6,11 +7,11 @@ import Reveal from "@/components/ui/Reveal";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import styles from "./services.module.css";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Services — ACEVA Technology",
   description:
     "Five capabilities, each written in business language: what it includes, when you need it, and what we will not promise.",
-};
+});
 
 export default function ServicesPage() {
   return (

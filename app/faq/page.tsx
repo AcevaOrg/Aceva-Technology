@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { FAQS } from "@/lib/data/faqs";
 import { ROUTES } from "@/lib/nav";
@@ -6,10 +7,10 @@ import { ArrowRightIcon } from "@/components/ui/icons";
 import FaqAccordion from "@/components/features/FaqAccordion";
 import Reveal from "@/components/ui/Reveal";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "FAQ — ACEVA Technology",
   description: "Questions buyers actually ask about working with Aceva.",
-};
+});
 
 export default function FaqPage() {
   return (

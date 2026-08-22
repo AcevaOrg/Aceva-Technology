@@ -81,7 +81,7 @@ export default function HomePage() {
       {/* Hero */}
       <section className="hero" style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid var(--hairline)" }}>
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/shared-skyline.jpg" alt="" fill className="bg-pan-slow" style={{ objectFit: "cover", objectPosition: "center center", opacity: 1 }} priority />
+          <Image src="/images/used/shared-skyline.jpg" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--hero bg-pan-slow" priority />
           <div className="hero-overlay" />
         </div>
         <div style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(110px,14vw,160px) clamp(20px,4vw,48px) clamp(48px,6vw,72px)", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
@@ -91,7 +91,9 @@ export default function HomePage() {
             <span aria-hidden="true" style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--success)", boxShadow: "0 0 8px rgba(47,190,122,.5)", animation: "acPulseDot 2.8s ease-in-out infinite" }} />
           </p>
           <h1 style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: "clamp(38px,6.6vw,72px)", lineHeight: 1.04, letterSpacing: "-.03em", margin: "0 auto", maxWidth: 800, animation: "acMaskUp 900ms cubic-bezier(.16,1,.3,1) 80ms both" }}>
-            <span className="ac-text-shimmer">Build what your business needs next.</span>
+            <span className="ac-text-shimmer">
+              Build what your business <span className="hero-title-accent">needs next.</span>
+            </span>
           </h1>
           <p style={{ fontSize: "clamp(16.5px,1.5vw,19.5px)", lineHeight: 1.62, color: "var(--muted)", maxWidth: "60ch", margin: "clamp(22px,3vw,30px) auto 0", animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 160ms both" }}>
             Aceva designs digital experiences, custom software, mobile products and intelligent systems — and rescues products that need a stronger path forward.
@@ -135,7 +137,7 @@ export default function HomePage() {
       {/* Five capabilities */}
       <section className="capabilities" style={{ borderBottom: "1px solid var(--hairline)" }}>
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/architectural-blueprint.jpg" alt="" fill className="bg-pan" style={{ objectFit: "cover", objectPosition: "center center", opacity: 1 }} />
+          <Image src="/images/used/holographic.png" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--contain bg-pan" />
           <div className="capabilities-overlay" />
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 15%, transparent 85%, #0A0A0C 100%)" }} />
         </div>
@@ -146,7 +148,7 @@ export default function HomePage() {
               Five capabilities. One accountable engineering partner.
             </h2>
           </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(290px,1fr))", gap: 14, marginTop: "clamp(30px,4vw,48px)" }}>
+          <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(290px,1fr))", gap: 14, marginTop: "clamp(30px,4vw,48px)" }}>
             {CAPS.map((cap) => (
               <Reveal key={cap.key}>
                 <Card variant="flagship" href={capabilityRoute(cap.key)} style={{ padding: 28, display: "flex", flexDirection: "column", gap: 12, minHeight: 230 }}>
@@ -223,7 +225,7 @@ export default function HomePage() {
       {/* Process strip */}
       <section className="process" style={{ borderBottom: "1px solid var(--hairline)" }}>
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/process-bg.png" alt="" fill className="bg-pan-fast" style={{ objectFit: "cover", objectPosition: "center center", opacity: 0.4 }} />
+          <Image src="/images/used/process-bg.png" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--process bg-pan-fast" />
           <div className="process-overlay" />
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 15%, transparent 85%, #0A0A0C 100%)" }} />
         </div>
@@ -253,7 +255,7 @@ export default function HomePage() {
       {/* Proof, not portfolio */}
       <section className="experiments" style={{ borderBottom: "1px solid var(--hairline)", background: "rgba(15,15,19,.72)" }}>
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/twin-visions.jpg" alt="" fill className="bg-pan" style={{ objectFit: "cover", objectPosition: "center center", opacity: 1 }} />
+          <Image src="/images/used/twin-visions.jpg" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--proof bg-pan" />
           <div className="experiments-overlay" />
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 20%, transparent 80%, #0A0A0C 100%)" }} />
         </div>
@@ -270,7 +272,7 @@ export default function HomePage() {
               <ArrowRightIcon />
             </Link>
           </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 14, marginTop: "clamp(30px,4vw,48px)" }}>
+          <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 14, marginTop: "clamp(30px,4vw,48px)" }}>
             {PROOF_CARDS.map((c) => (
               <Reveal key={c.title}>
                 <Card variant={c.variant} href={ROUTES.work} style={{ padding: 24, minHeight: 180, display: "flex", flexDirection: "column", gap: 10 }}>
@@ -288,9 +290,9 @@ export default function HomePage() {
 
       {/* Teaser row */}
       <section style={{ borderBottom: "1px solid var(--hairline)" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,9vw,116px) clamp(20px,4vw,48px)", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 14 }}>
+        <div className="ac-card-grid" style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,9vw,116px) clamp(20px,4vw,48px)", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 14 }}>
           <Reveal>
-            <Card style={{ padding: 30 }}>
+            <Card variant="flagship" className="home-teaser-card" style={{ padding: 30, height: "100%" }}>
               <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 16px" }}>CLIENT FEEDBACK</p>
               <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 21, fontWeight: 500, lineHeight: 1.34, letterSpacing: "-.01em", margin: 0 }}>Coming soon.</p>
               <p style={{ fontSize: 14.5, lineHeight: 1.6, color: "var(--muted)", margin: "12px 0 0" }}>We publish quotes only after real engagements close. Nothing here is invented.</p>
@@ -300,7 +302,7 @@ export default function HomePage() {
             </Card>
           </Reveal>
           <Reveal>
-            <Card style={{ padding: 30 }}>
+            <Card variant="flagship" className="home-teaser-card" style={{ padding: 30, height: "100%" }}>
               <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 16px" }}>CAREERS</p>
               <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 21, fontWeight: 500, lineHeight: 1.34, letterSpacing: "-.01em", margin: 0 }}>Five seniors. Five juniors. Every change reviewed.</p>
               <p style={{ fontSize: 14.5, lineHeight: 1.6, color: "var(--muted)", margin: "12px 0 0" }}>No junior change reaches production without a named senior review. That is how people grow here.</p>
@@ -310,7 +312,7 @@ export default function HomePage() {
             </Card>
           </Reveal>
           <Reveal>
-            <Card style={{ padding: 30 }}>
+            <Card variant="flagship" className="home-teaser-card" style={{ padding: 30, height: "100%" }}>
               <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 16px" }}>COMMON QUESTIONS</p>
               {["How do we start?", "Fixed scope or dedicated team?"].map((q) => (
                 <p key={q} style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 16, fontWeight: 500, lineHeight: 1.4, margin: "0 0 10px", paddingBottom: 12, borderBottom: "1px solid var(--hairline)" }}>
