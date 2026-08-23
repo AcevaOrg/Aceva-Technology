@@ -108,14 +108,6 @@ function SitePanel() {
               <KeyValueRow label="Mobile behavior" value="Native menu, sticky action bar" />
               <KeyValueRow label="Accessibility target" value="WCAG AA, keyboard complete" />
               <KeyValueRow label="Lead flow" value="Qualification form → meeting" />
-              <KeyValueRow
-                label="Measured scores"
-                value={
-                  <span style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 13, color: "#4b4f5b" }}>
-                    PENDING LAUNCH AUDIT
-                  </span>
-                }
-              />
             </div>
             <Link
               href={ROUTES.home}
@@ -172,7 +164,7 @@ function SitePanel() {
                   padding: "5px 10px",
                 }}
               >
-                aceva.example / temporary subdomain at launch
+                {(process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com").replace(/^https?:\/\//, "")}
               </span>
             </div>
             <div style={{ padding: "26px 24px 30px", background: "linear-gradient(180deg,#0F0F13,#141418)" }}>

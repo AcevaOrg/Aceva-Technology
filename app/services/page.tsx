@@ -75,8 +75,8 @@ export default function ServicesPage() {
             }}
           >
             <p style={{ fontSize: 17, lineHeight: 1.65, color: "var(--muted)", margin: 0 }}>
-              Keep these five and do not add more at launch. Each one is written in business language: what it
-              includes, when you need it, and what we will not promise.
+              Each one is written in business language: what it includes, when you need it, and what we will not
+              promise.
             </p>
             <p
               style={{
