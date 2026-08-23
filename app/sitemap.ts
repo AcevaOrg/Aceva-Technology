@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { ROUTES } from "@/lib/nav";
 import { CAPS } from "@/lib/data/caps";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://acevatech.com";
 
 const STATIC_ROUTES: Array<{ path: string; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"]; priority: number }> = [
   { path: ROUTES.home, changeFrequency: "weekly", priority: 1 },

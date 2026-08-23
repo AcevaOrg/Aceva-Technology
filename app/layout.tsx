@@ -29,7 +29,7 @@ const jetBrainsMono = JetBrains_Mono({
   fallback: ["monospace"],
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://acevatechnology.com";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://acevatech.com";
 
 const organizationSchema = {
   "@context": "https://schema.org",
