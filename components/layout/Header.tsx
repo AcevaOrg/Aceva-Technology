@@ -51,6 +51,10 @@ export default function Header() {
 
   const moreActive = MORE_ROUTES.some((r) => pathname === r);
 
+  const handleHomeClick = () => {
+    if (pathname === ROUTES.home) window.scrollTo(0, 0);
+  };
+
   return (
     <>
       {/* Floating Crystal Navbar */}
@@ -67,6 +71,7 @@ export default function Header() {
           {/* Logo */}
           <Link
             href={ROUTES.home}
+            onClick={handleHomeClick}
             aria-label="ACEVA Technology — home"
             className={styles.logoBtn}
           >
@@ -88,6 +93,7 @@ export default function Header() {
                 <Link
                   key={l.href}
                   href={l.href}
+                  onClick={l.href === ROUTES.home ? handleHomeClick : undefined}
                   aria-current={active ? "page" : undefined}
                   className={`${styles.crystalLink} ${active ? styles.crystalLinkActive : ""}`}
                 >
@@ -175,6 +181,7 @@ export default function Header() {
                   <Link
                     key={l.href}
                     href={l.href}
+                    onClick={l.href === ROUTES.home ? handleHomeClick : undefined}
                     aria-current={active ? "page" : undefined}
                     className={`${styles.mobilePrimaryLink} ${active ? styles.mobilePrimaryLinkActive : ""}`}
                     style={{ animationDelay: `${90 + i * 55}ms` }}
