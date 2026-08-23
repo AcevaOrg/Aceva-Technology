@@ -164,7 +164,7 @@ function SitePanel() {
                   padding: "5px 10px",
                 }}
               >
-                {(process.env.NEXT_PUBLIC_SITE_URL ?? "https://acevatech.com").replace(/^https?:\/\//, "")}
+                {(process.env.NEXT_PUBLIC_SITE_URL || "https://acevatech.com").replace(/^https?:\/\//, "")}
               </span>
             </div>
             <div style={{ padding: "26px 24px 30px", background: "linear-gradient(180deg,#0F0F13,#141418)" }}>
