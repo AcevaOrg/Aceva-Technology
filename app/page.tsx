@@ -81,7 +81,7 @@ export default function HomePage() {
       {/* Hero */}
       <section className="hero" style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid var(--hairline)" }}>
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/shared-skyline.jpg" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--hero bg-pan-slow" priority />
+          <Image src="/images/used/Aceva.png" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--hero bg-pan-slow" priority />
           <div className="hero-overlay" />
         </div>
         <div style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(110px,14vw,160px) clamp(20px,4vw,48px) clamp(48px,6vw,72px)", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
