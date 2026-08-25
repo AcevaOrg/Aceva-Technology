@@ -103,6 +103,10 @@ export default function HomePage() {
               Start a Project
               <ArrowRightIcon width={15} height={15} strokeWidth={2.2} />
             </Link>
+            <a href="mailto:acevatechnology@gmail.com" className="ac-btn-ghost" style={{ minHeight: 52, padding: "16px 26px" }}>
+              Contact Us
+              <ArrowRightIcon width={15} height={15} />
+            </a>
             <Link href={ROUTES.work} className="ac-btn-ghost" style={{ minHeight: 52, padding: "16px 26px" }}>
               Explore Experiments
               <ArrowRightIcon width={15} height={15} />
@@ -137,7 +141,7 @@ export default function HomePage() {
       {/* Five capabilities */}
       <section className="capabilities" style={{ borderBottom: "1px solid var(--hairline)" }}>
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/holographic.png" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--contain bg-pan" />
+          <Image src="/images/used/holographic.png" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--contain bg-pan" style={{ objectPosition: "center 20%" }} />
           <div className="capabilities-overlay" />
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 15%, transparent 85%, #0A0A0C 100%)" }} />
         </div>

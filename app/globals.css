@@ -854,7 +854,7 @@ html {
   display: flex;
 }
 [data-main] {
-  padding-bottom: 88px;
+  padding-bottom: 0;
 }
 @media (min-width: 1000px) {
   [data-desktop-nav] {
@@ -962,10 +962,20 @@ html {
   }
 
   .ac-section-image {
-    animation: none;
-    transform: none;
     object-fit: contain;
     object-position: center;
+  }
+
+  .ac-section-image.bg-pan {
+    animation-duration: 20s;
+  }
+
+  .ac-section-image.bg-pan-slow {
+    animation-duration: 28s;
+  }
+
+  .ac-section-image.bg-pan-fast {
+    animation-duration: 16s;
   }
 
   .ac-section-image--hero {

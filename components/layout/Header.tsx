@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ROUTES } from "@/lib/nav";
-import { ArrowRightIcon, ChevronDownIcon, CloseIcon, LogoMark } from "@/components/ui/icons";
+import { ArrowRightIcon, CloseIcon, LogoMark } from "@/components/ui/icons";
 import styles from "./Header.module.css";
 
 const DESKTOP_LINKS: { href: string; label: string; match: (p: string) => boolean }[] = [
@@ -102,37 +102,6 @@ export default function Header() {
               );
             })}
 
-            {/* More dropdown trigger */}
-            <div className={styles.moreWrapper}>
-              <button
-                type="button"
-                onClick={() => setMoreOpen((v) => !v)}
-                aria-expanded={moreOpen}
-                className={`${styles.crystalLink} ${moreActive ? styles.crystalLinkActive : ""}`}
-              >
-                More
-                <ChevronDownIcon
-                  style={{
-                    transition: "transform 220ms cubic-bezier(.16,1,.3,1)",
-                    transform: moreOpen ? "rotate(180deg)" : "none",
-                    marginLeft: 5,
-                    opacity: 0.7,
-                  }}
-                />
-              </button>
-
-              {moreOpen && (
-                <div className={styles.moreDropdown}>
-                  <div className={styles.moreDropdownInner}>
-                    {MORE_LINKS.map((l) => (
-                      <Link key={l.href} href={l.href} className={styles.moreDropdownItem}>
-                        {l.label}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
           </nav>
 
           {/* CTA Button */}
@@ -145,6 +114,36 @@ export default function Header() {
             <ArrowRightIcon width={14} height={14} strokeWidth={2.2} />
           </Link>
 
+          {/* More dropdown trigger */}
+          <div className={`${styles.moreWrapper} ${styles.desktopMore}`}>
+            <button
+              type="button"
+              onClick={() => setMoreOpen((v) => !v)}
+              aria-label="More pages"
+              aria-haspopup="menu"
+              aria-expanded={moreOpen}
+              className={`${styles.menuButton} ${moreActive ? styles.menuButtonActive : ""}`}
+            >
+              <span className={styles.menuIcon} aria-hidden="true">
+                <span className={styles.menuIconLine} />
+                <span className={styles.menuIconLine} />
+                <span className={styles.menuIconLine} />
+              </span>
+            </button>
+
+            {moreOpen && (
+              <div className={styles.moreDropdown} role="menu">
+                <div className={styles.moreDropdownInner}>
+                  {MORE_LINKS.map((l) => (
+                    <Link key={l.href} href={l.href} role="menuitem" className={styles.moreDropdownItem}>
+                      {l.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Mobile burger */}
           <button
             type="button"
@@ -153,8 +152,11 @@ export default function Header() {
             aria-label="Open menu"
             className={styles.burger}
           >
-            <span className={styles.burgerLine} style={{ width: 17 }} />
-            <span className={styles.burgerLine} style={{ width: 11, opacity: 0.55 }} />
+            <span className={styles.menuIcon} aria-hidden="true">
+              <span className={styles.menuIconLine} />
+              <span className={styles.menuIconLine} />
+              <span className={styles.menuIconLine} />
+            </span>
           </button>
         </div>
       </header>
