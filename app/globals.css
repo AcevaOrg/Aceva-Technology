@@ -357,15 +357,17 @@ html {
 .ac-card-grid > .ac-card-ghost {
   height: 100%;
 }
+
+/* Card stack - allow natural heights on desktop, only equalize on mobile if needed */
 .ac-card-stack > * {
-  flex: 1 1 0;
-  min-height: 0;
+  flex: 0 0 auto;
+  min-height: auto;
 }
 .ac-card-stack > * > .ac-card,
 .ac-card-stack > * > .ac-card-plain,
 .ac-card-stack > * > .ac-card-flagship,
 .ac-card-stack > * > .ac-card-ghost {
-  height: 100%;
+  height: auto;
 }
 .ac-chip {
   display: inline-flex;
