@@ -1012,6 +1012,57 @@ html {
   }
 }
 
+/* Fix overlapping cards in capability pages on mobile */
+@media (max-width: 767px) {
+  .ac-card-stack {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+  }
+
+  .ac-card-stack > * {
+    flex: 0 0 auto !important;
+    min-height: auto !important;
+    height: auto !important;
+  }
+
+  .ac-card-stack > * > .ac-card,
+  .ac-card-stack > * > .ac-card-plain,
+  .ac-card-stack > * > .ac-card-flagship,
+  .ac-card-stack > * > .ac-card-ghost,
+  .ac-card-stack > .ac-card,
+  .ac-card-stack > .ac-card-plain,
+  .ac-card-stack > .ac-card-flagship,
+  .ac-card-stack > .ac-card-ghost {
+    height: auto !important;
+    min-height: auto !important;
+  }
+
+  /* Ensure grid items stack properly on mobile without overlap */
+  .ac-card-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .ac-card-grid > * {
+    min-width: 0 !important;
+    height: auto !important;
+  }
+
+  .ac-card-grid > * > .ac-card,
+  .ac-card-grid > * > .ac-card-plain,
+  .ac-card-grid > * > .ac-card-flagship,
+  .ac-card-grid > * > .ac-card-ghost,
+  .ac-card-grid > .ac-card,
+  .ac-card-grid > .ac-card-plain,
+  .ac-card-grid > .ac-card-flagship,
+  .ac-card-grid > .ac-card-ghost {
+    height: auto !important;
+    min-height: auto !important;
+  }
+}
+
 @media (hover: none) and (pointer: coarse) {
   .ac-card:hover,
   .ac-card-plain:hover,
