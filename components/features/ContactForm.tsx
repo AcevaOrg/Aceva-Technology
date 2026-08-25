@@ -11,6 +11,7 @@ import {
   type ContactFieldErrors,
 } from "@/lib/validateContact";
 import { isPathKey } from "@/lib/data/paths";
+import { ContactFormSkeleton } from "@/components/ui/FormSkeleton";
 
 type Status = "idle" | "loading" | "success" | "error";
 
@@ -93,6 +94,11 @@ export default function ContactForm() {
       setForm((f) => ({ ...f, situation }));
     }
   }, [searchParams]);
+
+  // Show skeleton while Turnstile is loading
+  if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !turnstileLoaded) {
+    return <ContactFormSkeleton />;
+  }
 
   function onField<K extends keyof ContactFormValues>(key: K) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
