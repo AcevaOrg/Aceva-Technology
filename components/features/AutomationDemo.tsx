@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AUTO_STEPS } from "@/lib/data/autoSteps";
 import Reveal from "@/components/ui/Reveal";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import styles from "./AutomationDemo.module.css";
+import AutomationDemoSkeleton from "./AutomationDemoSkeleton";
 
 interface LogLine {
   t: string;
@@ -26,6 +27,8 @@ const INITIAL_STATE: AutoState = { step: 0, log: [], rejected: false };
 
 export default function AutomationDemo() {
   const [state, setState] = useState<AutoState>(INITIAL_STATE);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const prevStepRef = useRef(0);
 
   const step = AUTO_STEPS[state.step];
   const last = state.step === AUTO_STEPS.length - 1;
@@ -34,6 +37,20 @@ export default function AutomationDemo() {
   const showNext = !step.approval && !last && !state.rejected;
   const done = last || state.rejected;
   const logEmpty = state.log.length === 0;
+
+  // Show skeleton during step transitions
+  useEffect(() => {
+    if (state.step !== prevStepRef.current) {
+      setIsTransitioning(true);
+      prevStepRef.current = state.step;
+      const timer = setTimeout(() => setIsTransitioning(false), 400);
+      return () => clearTimeout(timer);
+    }
+  }, [state.step]);
+
+  if (isTransitioning) {
+    return <AutomationDemoSkeleton step={state.step} />;
+  }
 
   function advance() {
     setState((s) => {
