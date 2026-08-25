@@ -57,6 +57,7 @@ export default function Reveal({ children, as: Tag = "div", delay = 0, variant =
     }
 
     let timer: ReturnType<typeof setTimeout> | undefined;
+    const mobile = window.matchMedia("(max-width: 767px)").matches;
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -65,7 +66,10 @@ export default function Reveal({ children, as: Tag = "div", delay = 0, variant =
           io.unobserve(el);
         });
       },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.08 },
+      {
+        rootMargin: mobile ? "0px 0px -3% 0px" : "0px 0px -8% 0px",
+        threshold: mobile ? 0.01 : 0.08,
+      },
     );
     io.observe(el);
     return () => {
