@@ -144,7 +144,7 @@ export default function CareersPage() {
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-start" }}>
                 <a
-                  href="mailto:acevatechnology@gmail.com"
+                  href="mailto:acevatech.official@gmail.com"
                   className="ac-btn-primary"
                   style={{ padding: "15px 24px", borderRadius: 11, minHeight: 50 }}
                 >

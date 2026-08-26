@@ -71,8 +71,8 @@ export default function Footer() {
           <div className={styles.contactBlock}>
             <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 16px" }}>CONTACT</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 11, alignItems: "flex-start" }}>
-              <a href="mailto:acevatechnology@gmail.com" style={{ fontSize: 14, color: "var(--ink)" }}>
-                acevatechnology@gmail.com
+              <a href="mailto:acevatech.official@gmail.com" style={{ fontSize: 14, color: "var(--ink)" }}>
+                acevatech.official@gmail.com
               </a>
             </div>
           </div>

@@ -206,7 +206,7 @@ export default function MobilePage() {
                     Start a Project
                   </span>
                   <span style={{ display: "block", marginTop: 9, border: "1px solid var(--hairline)", textAlign: "center", fontSize: 13, padding: 15, borderRadius: 11, color: "var(--ink)" }}>
-                    acevatechnology@gmail.com
+                    acevatech.official@gmail.com
                   </span>
                 </div>
               </ScreenFill>
