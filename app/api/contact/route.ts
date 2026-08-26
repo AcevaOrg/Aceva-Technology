@@ -153,7 +153,7 @@ export async function POST(request: Request) {
   if (spamCheck.isSpam) {
     console.warn("[contact] Spam rejected", { score: spamCheck.score, reasons: spamCheck.reasons });
     return NextResponse.json(
-      { ok: false, message: "Your message appears to be automated. Please email us directly at acevatechnology@gmail.com." },
+      { ok: false, message: "Your message appears to be automated. Please email us directly at acevatech.official@gmail.com." },
       { status: 400 }
     );
   }
@@ -172,12 +172,12 @@ export async function POST(request: Request) {
   if (!apiKey) {
     console.error("[contact] RESEND_API_KEY is not set");
     return NextResponse.json(
-      { ok: false, message: "We could not send that just now. Email us directly at acevatechnology@gmail.com." },
+      { ok: false, message: "We could not send that just now. Email us directly at acevatech.official@gmail.com." },
       { status: 500 },
     );
   }
 
-  const toEmail = process.env.CONTACT_TO_EMAIL || "acevatechnology@gmail.com";
+  const toEmail = process.env.CONTACT_TO_EMAIL || "acevatech.official@gmail.com";
   const fromEmail = process.env.CONTACT_FROM_EMAIL || "Aceva Website <onboarding@resend.dev>";
 
   const resend = new Resend(apiKey);
@@ -203,14 +203,14 @@ export async function POST(request: Request) {
     if (error) {
       console.error("[contact] Resend rejected the request", { name: error.name, message: error.message });
       return NextResponse.json(
-        { ok: false, message: "We could not send that just now. Email us directly at acevatechnology@gmail.com." },
+        { ok: false, message: "We could not send that just now. Email us directly at acevatech.official@gmail.com." },
         { status: 502 },
       );
     }
   } catch (err) {
     console.error("[contact] Resend send failed", err);
     return NextResponse.json(
-      { ok: false, message: "We could not send that just now. Email us directly at acevatechnology@gmail.com." },
+      { ok: false, message: "We could not send that just now. Email us directly at acevatech.official@gmail.com." },
       { status: 500 },
     );
   }

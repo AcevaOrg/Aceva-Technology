@@ -24,7 +24,7 @@ export default function ContactPage() {
             Answer that in a few lines. A senior reads it — not a form-filling assistant — and replies with either a next step or an honest no.
           </p>
           <div style={{ marginTop: 36, display: "flex", flexDirection: "column", borderTop: "1px solid var(--hairline)" }}>
-            <KeyValueRow first label="Email" value={<a href="mailto:acevatechnology@gmail.com">acevatechnology@gmail.com</a>} />
+            <KeyValueRow first label="Email" value={<a href="mailto:acevatech.official@gmail.com">acevatech.official@gmail.com</a>} />
             <KeyValueRow label="Reply" value={<span style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "var(--muted)" }}>A HUMAN RESPONSE, NOT AN AUTOMATED SEQUENCE</span>} />
           </div>
         </Reveal>

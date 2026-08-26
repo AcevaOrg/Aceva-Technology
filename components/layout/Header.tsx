@@ -222,11 +222,11 @@ export default function Header() {
                 Start a Project
               </Link>
               <a
-                href="mailto:acevatechnology@gmail.com"
+                href="mailto:acevatech.official@gmail.com"
                 className={styles.mobileEmail}
                 style={{ animationDelay: `${760 + MORE_LINKS.length * 35}ms` }}
               >
-                acevatechnology@gmail.com
+                acevatech.official@gmail.com
               </a>
             </div>
           </div>
