@@ -8,7 +8,7 @@ import { ArrowRightIcon, CloseIcon, LogoMark } from "@/components/ui/icons";
 import styles from "./Header.module.css";
 
 const DESKTOP_LINKS: { href: string; label: string; match: (p: string) => boolean }[] = [
-  { href: ROUTES.home, label: "Home", match: () => false },
+  { href: ROUTES.home, label: "Home", match: (p) => p === ROUTES.home },
   { href: ROUTES.services, label: "Capabilities", match: (p) => p.startsWith("/services") },
   { href: ROUTES.work, label: "Experiments", match: (p) => p === ROUTES.work },
   { href: ROUTES.process, label: "How We Work", match: (p) => p === ROUTES.process },
@@ -33,6 +33,7 @@ export default function Header() {
   const [moreOpen, setMoreOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const navRef = useRef<HTMLElement>(null);
+  const moreWrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => {
@@ -42,6 +43,18 @@ export default function Header() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Close the "More" dropdown when clicking anywhere outside it
+  useEffect(() => {
+    if (!moreOpen) return;
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (moreWrapperRef.current && !moreWrapperRef.current.contains(e.target as Node)) {
+        setMoreOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [moreOpen]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -115,7 +128,7 @@ export default function Header() {
           </Link>
 
           {/* More dropdown trigger */}
-          <div className={`${styles.moreWrapper} ${styles.desktopMore}`}>
+          <div ref={moreWrapperRef} className={`${styles.moreWrapper} ${styles.desktopMore}`}>
             <button
               type="button"
               onClick={() => setMoreOpen((v) => !v)}
