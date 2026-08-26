@@ -14,7 +14,7 @@ export default function ContactPage() {
   return (
     <section style={{ position: "relative", overflow: "hidden" }}>
       <div aria-hidden="true" style={{ position: "absolute", top: "-30%", left: "-10%", width: "60vw", height: "60vw", maxWidth: 760, maxHeight: 760, background: "radial-gradient(circle at 50% 50%, rgba(59,124,255,.13), transparent 66%)", pointerEvents: "none" }} />
-      <div style={{ position: "relative", maxWidth: 1280, margin: "0 auto", padding: "clamp(56px,8vw,96px) clamp(20px,4vw,48px) clamp(56px,8vw,104px)", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))", gap: "clamp(30px,5vw,72px)", alignItems: "start" }}>
+      <div style={{ position: "relative", maxWidth: 1280, margin: "0 auto", padding: "calc(var(--nav-offset) + clamp(16px,3vw,32px)) clamp(20px,4vw,48px) clamp(56px,8vw,104px)", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))", gap: "clamp(30px,5vw,72px)", alignItems: "start" }}>
         <Reveal>
           <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11.5, letterSpacing: ".2em", color: "var(--ice)", margin: "0 0 20px" }}>START A PROJECT</p>
           <h1 style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: "clamp(32px,4.6vw,54px)", lineHeight: 1.05, letterSpacing: "-.03em", margin: 0, maxWidth: "18ch" }}>
