@@ -49,9 +49,6 @@ html {
 .ac-section-image--contain {
   object-fit: contain;
 }
-.ac-section-image--process {
-  opacity: 0.4;
-}
 body {
   margin: 0;
   background: var(--void);
@@ -693,10 +690,6 @@ html {
   animation: acDrift 42s ease-in-out infinite;
   will-change: transform;
 }
-.bg-pan-fast {
-  animation: acDrift 22s ease-in-out infinite reverse;
-  will-change: transform;
-}
 @keyframes acSpin {
   to {
     transform: rotate(360deg);
@@ -976,25 +969,12 @@ html {
     animation-duration: 28s;
   }
 
-  .ac-section-image.bg-pan-fast {
-    animation-duration: 16s;
-  }
-
   .ac-section-image--hero {
     object-position: center;
   }
 
   .ac-section-image--contain {
     object-fit: contain;
-    object-position: center;
-  }
-
-  .ac-section-image--process {
-    object-position: center;
-    opacity: 0.32;
-  }
-
-  .ac-section-image--proof {
     object-position: center;
   }
 
@@ -1228,7 +1208,7 @@ html {
 .experiments-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(10, 10, 12, 0.72);
+  background: rgba(10, 10, 12, 0.55);
   z-index: 1;
 }
 
@@ -1516,4 +1496,124 @@ html {
   .pl-node { opacity: 0.85; }
   .pl-node-glow { display: none; }
   .pl-star { opacity: 0.4; }
+}
+
+/* ---- Proof strip: verification-beam evidence board (ProofBoard.tsx) ---- */
+.pf-root {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.85;
+}
+.pf-root--portrait {
+  display: none;
+}
+/* Portrait viewports: sweep top-to-bottom instead, width-capped and pinned to
+   the top of the section so every wireframe stays whole. */
+@media (max-width: 900px) {
+  .pf-root--wide {
+    display: none;
+  }
+  .pf-root--portrait {
+    display: block;
+    inset: 0 auto auto 50%;
+    width: min(100%, 460px);
+    height: auto;
+    aspect-ratio: 460 / 640;
+    transform: translateX(-50%);
+    opacity: 0.7;
+  }
+}
+
+.pf-artifact {
+  fill: none;
+  stroke: #9dc0f0;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.24;
+  animation: pfLit 14s linear infinite;
+}
+.pf-artifact .pf-accent {
+  stroke: #7fb2ff;
+}
+
+/* Each wireframe is revealed by a clip rect the beam drags open. */
+.pf-wipe {
+  transform-box: fill-box;
+}
+.pf-root--wide .pf-wipe {
+  transform-origin: left center;
+  animation: pfWipeX 14s linear infinite;
+}
+.pf-root--portrait .pf-wipe {
+  transform-origin: center top;
+  animation: pfWipeY 14s linear infinite;
+}
+@keyframes pfWipeX {
+  0% { transform: scaleX(0); }
+  7%, 100% { transform: scaleX(1); }
+}
+@keyframes pfWipeY {
+  0% { transform: scaleY(0); }
+  7%, 100% { transform: scaleY(1); }
+}
+@keyframes pfLit {
+  0% { opacity: 0.24; }
+  7% { opacity: 1; }
+  22%, 100% { opacity: 0.6; }
+}
+
+.pf-tag {
+  opacity: 0;
+  animation: pfTag 14s linear infinite;
+}
+@keyframes pfTag {
+  0%, 5% { opacity: 0; }
+  11% { opacity: 1; }
+  24%, 100% { opacity: 0.85; }
+}
+.pf-tag-check {
+  fill: none;
+  stroke: #7fb2ff;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.pf-tag-text {
+  fill: #c2d6f0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, "SFMono-Regular", monospace;
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  paint-order: stroke;
+  stroke: rgba(6, 8, 14, 0.75);
+  stroke-width: 2px;
+  stroke-linejoin: round;
+}
+
+.pf-beam-line {
+  fill: #cfe1ff;
+  opacity: 0.5;
+}
+.pf-beam--x {
+  animation: pfBeamX 14s linear infinite;
+}
+.pf-beam--y {
+  animation: pfBeamY 14s linear infinite;
+}
+@keyframes pfBeamX {
+  from { transform: translateX(var(--pf-from)); }
+  to { transform: translateX(var(--pf-to)); }
+}
+@keyframes pfBeamY {
+  from { transform: translateY(var(--pf-from)); }
+  to { transform: translateY(var(--pf-to)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pf-beam { display: none; }
+  .pf-wipe { animation: none; transform: none; }
+  .pf-artifact { animation: none; opacity: 0.5; }
+  .pf-tag { animation: none; opacity: 0.6; }
 }
