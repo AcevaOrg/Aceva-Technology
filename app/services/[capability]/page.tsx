@@ -40,7 +40,7 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
 
   return (
     <div>
-      <section style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid var(--hairline)" }}>
+      <section style={{ position: "relative", overflow: "hidden" }}>
         <div
           aria-hidden="true"
           style={{
@@ -118,7 +118,7 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
         </div>
       </section>
 
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
+      <section>
         <div
           style={{
             maxWidth: 1280,

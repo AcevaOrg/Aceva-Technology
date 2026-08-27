@@ -87,7 +87,7 @@ export default function Loading() {
       </section>
 
       {/* CTA Section */}
-      <section style={{ padding: "80px 0", textAlign: "center", borderTop: "1px solid var(--hairline)" }}>
+      <section style={{ padding: "80px 0", textAlign: "center" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(20px,4vw,48px)" }}>
           <Skeleton variant="text" width="30%" height="12px" radius="4px" delay={1100} style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--muted)", border: "none", backgroundColor: "var(--elevated)", margin: "0 auto 16px", display: "inline-block" }} />
           <Skeleton variant="heading" width="60%" height="48px" delay={1200} style={{ fontFamily: "var(--font-space-grotesk)", fontSize: "clamp(2rem,5vw,3.5rem)", fontWeight: 700, lineHeight: 1.08, letterSpacing: "-0.035em", border: "none", backgroundColor: "var(--elevated)", borderRadius: 4, margin: "0 auto 24px" }} />

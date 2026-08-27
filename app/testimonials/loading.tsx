@@ -87,7 +87,7 @@ export default function Loading() {
       </section>
 
       {/* Metrics Section */}
-      <section style={{ padding: "80px 0", borderTop: "1px solid var(--hairline)" }}>
+      <section style={{ padding: "80px 0" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(20px,4vw,48px)" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14 }}>
             {Array.from({ length: 4 }).map((_, i) => (
