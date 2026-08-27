@@ -7,6 +7,7 @@ import Footer from "@/components/layout/Footer";
 import MobileCtaBar from "@/components/layout/MobileCtaBar";
 import AmbientBackground from "@/components/layout/AmbientBackground";
 import BackToTopButton from "@/components/layout/BackToTopButton";
+import { PulseProvider, PulseOverlay } from "@/components/pulse";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -70,16 +71,19 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema).replace(/</g, "\\u003c") }}
         />
-        <div style={{ minHeight: "100vh", background: "#0A0A0C", overflowX: "hidden" }}>
-          <AmbientBackground />
-          <Header />
-          <main data-main style={{ position: "relative", zIndex: 1 }}>
-            {children}
-          </main>
-          <Footer />
-          <BackToTopButton />
-          <MobileCtaBar />
-        </div>
+        <PulseProvider>
+          <div style={{ minHeight: "100vh", background: "#0A0A0C", overflowX: "hidden" }}>
+            <AmbientBackground />
+            <Header />
+            <main data-main style={{ position: "relative", zIndex: 1 }}>
+              {children}
+            </main>
+            <Footer />
+            <BackToTopButton />
+            <MobileCtaBar />
+            <PulseOverlay />
+          </div>
+        </PulseProvider>
       </body>
     </html>
   );
