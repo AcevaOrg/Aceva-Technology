@@ -9,6 +9,7 @@ import Tag from "@/components/ui/Tag";
 import ArrowLink from "@/components/ui/ArrowLink";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import PathChooser from "@/components/features/PathChooser";
+import ProcessLoop from "@/components/ui/ProcessLoop";
 
 const CAP_ICONS: Record<string, React.ReactNode> = {
   digital: (
@@ -229,7 +230,7 @@ export default function HomePage() {
       {/* Process strip */}
       <section className="process" style={{ borderBottom: "1px solid var(--hairline)" }}>
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/process-bg.png" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--process bg-pan-fast" />
+          <ProcessLoop />
           <div className="process-overlay" />
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 15%, transparent 85%, #0A0A0C 100%)" }} />
         </div>
