@@ -52,7 +52,7 @@ export default function AboutPage() {
   return (
     <div>
       {/* Hero */}
-      <section style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid var(--hairline)" }}>
+      <section style={{ position: "relative", overflow: "hidden" }}>
         <div
           aria-hidden="true"
           style={{
@@ -93,7 +93,7 @@ export default function AboutPage() {
       </section>
 
       {/* Four facts */}
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
+      <section>
         <div
           style={{
             maxWidth: 1280,
@@ -123,7 +123,7 @@ export default function AboutPage() {
       </section>
 
       {/* What we are not claiming */}
-      <section style={{ borderBottom: "1px solid var(--hairline)", background: "rgba(15,15,19,.72)" }}>
+      <section>
         <div
           style={{
             maxWidth: 1280,

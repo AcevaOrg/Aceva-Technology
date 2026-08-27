@@ -16,7 +16,7 @@ export const metadata: Metadata = pageMetadata({
 export default function ServicesPage() {
   return (
     <div>
-      <section style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid var(--hairline)" }}>
+      <section style={{ position: "relative", overflow: "hidden" }}>
         <div
           aria-hidden="true"
           style={{

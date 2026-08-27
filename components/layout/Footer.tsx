@@ -78,7 +78,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "14px 26px", alignItems: "center", justifyContent: "space-between", marginTop: "clamp(36px,5vw,56px)", paddingTop: 24, borderTop: "1px solid var(--hairline)" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "14px 26px", alignItems: "center", justifyContent: "space-between", marginTop: "clamp(36px,5vw,56px)", paddingTop: 24 }}>
           <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11.5, color: "#4b4f5b", margin: 0 }}>© 2026 ACEVA TECHNOLOGY. ALL RIGHTS RESERVED.</p>
           <div style={{ display: "flex", gap: 22, alignItems: "center" }}>
             <Link href={ROUTES.privacy} className={styles.bottomLink}>

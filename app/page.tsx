@@ -80,7 +80,7 @@ export default function HomePage() {
   return (
     <div>
       {/* Hero */}
-      <section className="hero" style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid var(--hairline)" }}>
+      <section className="hero" style={{ position: "relative", overflow: "hidden" }}>
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
           <Image src="/images/used/Aceva.png" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--hero bg-pan-slow" priority />
           <div className="hero-overlay" />
@@ -126,7 +126,7 @@ export default function HomePage() {
       </section>
 
       {/* Paths */}
-      <section id="paths" style={{ borderBottom: "1px solid var(--hairline)" }}>
+      <section id="paths">
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,9vw,116px) clamp(20px,4vw,48px)" }}>
           <Reveal style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", justifyContent: "space-between", gap: 16 }}>
             <div>
@@ -140,7 +140,7 @@ export default function HomePage() {
       </section>
 
       {/* Five capabilities */}
-      <section className="capabilities" style={{ borderBottom: "1px solid var(--hairline)" }}>
+      <section className="capabilities">
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
           <Image src="/images/used/holographic.png" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--contain bg-pan" style={{ objectPosition: "center 20%" }} />
           <div className="capabilities-overlay" />
@@ -181,7 +181,7 @@ export default function HomePage() {
       </section>
 
       {/* Differentiator strip */}
-      <section style={{ borderBottom: "1px solid var(--hairline)", background: "rgba(15,15,19,.72)" }}>
+      <section>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(56px,7vw,88px) clamp(20px,4vw,48px)", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))", gap: 2 }}>
           {[
             { n: "01", text: "AI-accelerated. Senior-reviewed. Production-ready." },
@@ -197,7 +197,7 @@ export default function HomePage() {
       </section>
 
       {/* How we compete */}
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
+      <section>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,9vw,116px) clamp(20px,4vw,48px)" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: "clamp(30px,5vw,72px)" }}>
             <Reveal>
@@ -228,7 +228,7 @@ export default function HomePage() {
       </section>
 
       {/* Process strip */}
-      <section className="process" style={{ borderBottom: "1px solid var(--hairline)" }}>
+      <section className="process">
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
           <ProcessLoop />
           <div className="process-overlay" />
@@ -258,7 +258,7 @@ export default function HomePage() {
       </section>
 
       {/* Proof, not portfolio */}
-      <section className="experiments" style={{ borderBottom: "1px solid var(--hairline)", background: "rgba(15,15,19,.72)" }}>
+      <section className="experiments">
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
           <Image src="/images/used/twin-visions.jpg" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--proof bg-pan" />
           <div className="experiments-overlay" />
@@ -294,7 +294,7 @@ export default function HomePage() {
       </section>
 
       {/* Teaser row */}
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
+      <section>
         <div className="ac-card-grid" style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,9vw,116px) clamp(20px,4vw,48px)", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 14 }}>
           <Reveal>
             <Card variant="flagship" className="home-teaser-card" style={{ padding: 30, height: "100%" }}>
