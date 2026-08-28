@@ -357,15 +357,17 @@ html {
 .ac-card-grid > .ac-card-ghost {
   height: 100%;
 }
+
+/* Card stack - allow natural heights on desktop, only equalize on mobile if needed */
 .ac-card-stack > * {
-  flex: 1 1 0;
-  min-height: 0;
+  flex: 0 0 auto;
+  min-height: auto;
 }
 .ac-card-stack > * > .ac-card,
 .ac-card-stack > * > .ac-card-plain,
 .ac-card-stack > * > .ac-card-flagship,
 .ac-card-stack > * > .ac-card-ghost {
-  height: 100%;
+  height: auto;
 }
 .ac-chip {
   display: inline-flex;
@@ -854,7 +856,7 @@ html {
   display: flex;
 }
 [data-main] {
-  padding-bottom: 88px;
+  padding-bottom: 0;
 }
 @media (min-width: 1000px) {
   [data-desktop-nav] {
@@ -962,10 +964,20 @@ html {
   }
 
   .ac-section-image {
-    animation: none;
-    transform: none;
     object-fit: contain;
     object-position: center;
+  }
+
+  .ac-section-image.bg-pan {
+    animation-duration: 20s;
+  }
+
+  .ac-section-image.bg-pan-slow {
+    animation-duration: 28s;
+  }
+
+  .ac-section-image.bg-pan-fast {
+    animation-duration: 16s;
   }
 
   .ac-section-image--hero {
@@ -999,6 +1011,57 @@ html {
   .ac-btn-primary,
   .ac-btn-ghost {
     width: 100%;
+  }
+}
+
+/* Fix overlapping cards in capability pages on mobile */
+@media (max-width: 767px) {
+  .ac-card-stack {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+  }
+
+  .ac-card-stack > * {
+    flex: 0 0 auto !important;
+    min-height: auto !important;
+    height: auto !important;
+  }
+
+  .ac-card-stack > * > .ac-card,
+  .ac-card-stack > * > .ac-card-plain,
+  .ac-card-stack > * > .ac-card-flagship,
+  .ac-card-stack > * > .ac-card-ghost,
+  .ac-card-stack > .ac-card,
+  .ac-card-stack > .ac-card-plain,
+  .ac-card-stack > .ac-card-flagship,
+  .ac-card-stack > .ac-card-ghost {
+    height: auto !important;
+    min-height: auto !important;
+  }
+
+  /* Ensure grid items stack properly on mobile without overlap */
+  .ac-card-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .ac-card-grid > * {
+    min-width: 0 !important;
+    height: auto !important;
+  }
+
+  .ac-card-grid > * > .ac-card,
+  .ac-card-grid > * > .ac-card-plain,
+  .ac-card-grid > * > .ac-card-flagship,
+  .ac-card-grid > * > .ac-card-ghost,
+  .ac-card-grid > .ac-card,
+  .ac-card-grid > .ac-card-plain,
+  .ac-card-grid > .ac-card-flagship,
+  .ac-card-grid > .ac-card-ghost {
+    height: auto !important;
+    min-height: auto !important;
   }
 }
 
@@ -1217,7 +1280,7 @@ html {
 .process-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(10, 10, 12, 0.76);
+  background: rgba(10, 10, 12, 0.5);
   z-index: 1;
 }
 
@@ -1304,3 +1367,153 @@ html {
 .process-step:nth-child(3) { animation-delay: 0.4s; }
 .process-step:nth-child(4) { animation-delay: 0.6s; }
 .process-step:nth-child(5) { animation-delay: 0.8s; }
+
+/* ---- Process strip: animated infinity-loop background (ProcessLoop.tsx) ---- */
+.pl-root {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.8;
+}
+.pl-root--portrait {
+  display: none;
+}
+/* Portrait viewports (phones + narrow tablets): the wide figure-8 would `slice`
+   down to an unreadable sliver, so swap in the vertical loop — width-capped,
+   centred, pinned to the top of the section as a header accent. */
+@media (max-width: 900px) {
+  .pl-root--wide {
+    display: none;
+  }
+  .pl-root--portrait {
+    display: block;
+    inset: 0 auto auto 50%;
+    width: min(100%, 460px);
+    height: auto;
+    aspect-ratio: 460 / 620;
+    transform: translateX(-50%);
+    opacity: 0.6;
+  }
+}
+
+.pl-star {
+  fill: #cdd9f2;
+  animation-name: plTwinkle;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+@keyframes plTwinkle {
+  0%, 100% { opacity: 0.12; }
+  50% { opacity: 0.7; }
+}
+
+.pl-rail {
+  fill: none;
+  stroke: rgba(127, 178, 255, 0.32);
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.pl-core {
+  fill: none;
+  stroke: rgba(70, 140, 255, 0.9);
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+.pl-core-bright {
+  fill: none;
+  stroke: #86b8ff;
+  stroke-width: 2;
+  stroke-linecap: round;
+  opacity: 0.85;
+}
+
+.pl-flow,
+.pl-flow-glow {
+  fill: none;
+  stroke-linecap: round;
+  stroke-dashoffset: 0;
+  animation: plFlow 6s linear infinite;
+}
+.pl-flow {
+  stroke: #eef4ff;
+  stroke-width: 4;
+  stroke-dasharray: 80 920;
+}
+.pl-flow-glow {
+  stroke: #8fc0ff;
+  stroke-width: 13;
+  stroke-dasharray: 120 880;
+  opacity: 0.85;
+}
+.pl-flow--2,
+.pl-flow-glow--2 {
+  animation-delay: -3s;
+  opacity: 0.4;
+}
+@keyframes plFlow {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -1000; }
+}
+
+.pl-node {
+  opacity: 0.55;
+  animation: plNodeCycle 6s ease-in-out infinite;
+}
+@keyframes plNodeCycle {
+  0%, 100% { opacity: 0.55; }
+  6% { opacity: 1; }
+  18% { opacity: 0.98; }
+  30% { opacity: 0.55; }
+}
+.pl-node-ring {
+  fill: rgba(8, 11, 20, 0.82);
+  stroke: #3b7cff;
+  stroke-width: 2;
+}
+.pl-node-glow {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: plNodeGlow 6s ease-in-out infinite;
+}
+@keyframes plNodeGlow {
+  0%, 100% { opacity: 0; transform: scale(0.5); }
+  8% { opacity: 0.8; transform: scale(1.15); }
+  26% { opacity: 0; transform: scale(1.5); }
+}
+.pl-node-icon {
+  fill: none;
+  stroke: #e2ecff;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.pl-node-icon circle {
+  fill: none;
+}
+.pl-node-label {
+  fill: #c3d5f2;
+  font-family: var(--font-jetbrains-mono), ui-monospace, "SFMono-Regular", monospace;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  paint-order: stroke;
+  stroke: rgba(6, 8, 14, 0.85);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+/* reflection transform is set inline per layout (axis differs) */
+.pl-reflection {
+  opacity: 0.18;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pl-flow,
+  .pl-flow-glow { display: none; }
+  .pl-node { opacity: 0.85; }
+  .pl-node-glow { display: none; }
+  .pl-star { opacity: 0.4; }
+}

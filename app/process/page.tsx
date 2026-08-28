@@ -73,8 +73,8 @@ export default function ProcessPage() {
   return (
     <div>
       {/* Hero */}
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(56px,8vw,104px) clamp(20px,4vw,48px) clamp(40px,6vw,64px)" }}>
+      <section>
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "calc(var(--nav-offset) + clamp(16px,3vw,32px)) clamp(20px,4vw,48px) clamp(40px,6vw,64px)" }}>
           <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11.5, letterSpacing: ".2em", color: "var(--ice)", margin: "0 0 20px" }}>
             HOW WE WORK
           </p>
@@ -99,7 +99,7 @@ export default function ProcessPage() {
       </section>
 
       {/* Phases */}
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
+      <section>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(20px,4vw,48px)" }}>
           {PHASES.map((phase, i) => (
             <Reveal
@@ -166,7 +166,7 @@ export default function ProcessPage() {
       </section>
 
       {/* Two rules that do not bend */}
-      <section style={{ background: "rgba(15,15,19,.72)", borderBottom: "1px solid var(--hairline)" }}>
+      <section>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(48px,7vw,88px) clamp(20px,4vw,48px)" }}>
           <Reveal
             as="h2"

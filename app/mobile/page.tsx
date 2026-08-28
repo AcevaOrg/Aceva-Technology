@@ -61,8 +61,8 @@ function CaptionBlock({ kicker, body }: { kicker: string; body: string }) {
 export default function MobilePage() {
   return (
     <div>
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(56px,8vw,104px) clamp(20px,4vw,48px) clamp(40px,6vw,64px)" }}>
+      <section>
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "calc(var(--nav-offset) + clamp(16px,3vw,32px)) clamp(20px,4vw,48px) clamp(40px,6vw,64px)" }}>
           <p
             style={{
               fontFamily: "var(--font-jetbrains-mono)",
@@ -206,7 +206,7 @@ export default function MobilePage() {
                     Start a Project
                   </span>
                   <span style={{ display: "block", marginTop: 9, border: "1px solid var(--hairline)", textAlign: "center", fontSize: 13, padding: 15, borderRadius: 11, color: "var(--ink)" }}>
-                    acevatechnology@gmail.com
+                    acevatech.official@gmail.com
                   </span>
                 </div>
               </ScreenFill>

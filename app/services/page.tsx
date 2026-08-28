@@ -16,7 +16,7 @@ export const metadata: Metadata = pageMetadata({
 export default function ServicesPage() {
   return (
     <div>
-      <section style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid var(--hairline)" }}>
+      <section style={{ position: "relative", overflow: "hidden" }}>
         <div
           aria-hidden="true"
           style={{
@@ -36,7 +36,7 @@ export default function ServicesPage() {
             position: "relative",
             maxWidth: 1280,
             margin: "0 auto",
-            padding: "clamp(56px,8vw,104px) clamp(20px,4vw,48px) clamp(44px,6vw,72px)",
+            padding: "calc(var(--nav-offset) + clamp(16px,3vw,32px)) clamp(20px,4vw,48px) clamp(44px,6vw,72px)",
           }}
         >
           <p

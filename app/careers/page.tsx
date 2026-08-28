@@ -33,8 +33,8 @@ const ROLE_SLOTS = [
 export default function CareersPage() {
   return (
     <div>
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(56px,8vw,104px) clamp(20px,4vw,48px) clamp(40px,6vw,64px)" }}>
+      <section>
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "calc(var(--nav-offset) + clamp(16px,3vw,32px)) clamp(20px,4vw,48px) clamp(40px,6vw,64px)" }}>
           <p
             style={{
               fontFamily: "var(--font-jetbrains-mono)",
@@ -77,7 +77,7 @@ export default function CareersPage() {
         </div>
       </section>
 
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
+      <section>
         <div
           className="ac-card-grid"
           style={{
@@ -144,7 +144,7 @@ export default function CareersPage() {
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-start" }}>
                 <a
-                  href="mailto:acevatechnology@gmail.com"
+                  href="mailto:acevatech.official@gmail.com"
                   className="ac-btn-primary"
                   style={{ padding: "15px 24px", borderRadius: 11, minHeight: 50 }}
                 >

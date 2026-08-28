@@ -15,8 +15,8 @@ export const metadata: Metadata = pageMetadata({
 export default function FaqPage() {
   return (
     <div>
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(56px,8vw,104px) clamp(20px,4vw,48px) clamp(36px,5vw,56px)" }}>
+      <section>
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "calc(var(--nav-offset) + clamp(16px,3vw,32px)) clamp(20px,4vw,48px) clamp(36px,5vw,56px)" }}>
           <p
             style={{
               fontFamily: "var(--font-jetbrains-mono)",

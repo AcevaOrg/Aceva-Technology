@@ -9,7 +9,7 @@ import { PulseButton, usePulse } from "@/components/pulse";
 import styles from "./Header.module.css";
 
 const DESKTOP_LINKS: { href: string; label: string; match: (p: string) => boolean }[] = [
-  { href: ROUTES.home, label: "Home", match: () => false },
+  { href: ROUTES.home, label: "Home", match: (p) => p === ROUTES.home },
   { href: ROUTES.services, label: "Capabilities", match: (p) => p.startsWith("/services") },
   { href: ROUTES.work, label: "Experiments", match: (p) => p === ROUTES.work },
   { href: ROUTES.process, label: "How We Work", match: (p) => p === ROUTES.process },
@@ -35,6 +35,7 @@ export default function Header() {
   const [moreOpen, setMoreOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const navRef = useRef<HTMLElement>(null);
+  const moreWrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => {
@@ -44,6 +45,18 @@ export default function Header() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Close the "More" dropdown when clicking anywhere outside it
+  useEffect(() => {
+    if (!moreOpen) return;
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (moreWrapperRef.current && !moreWrapperRef.current.contains(e.target as Node)) {
+        setMoreOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [moreOpen]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -104,37 +117,6 @@ export default function Header() {
               );
             })}
 
-            {/* More dropdown trigger */}
-            <div className={styles.moreWrapper}>
-              <button
-                type="button"
-                onClick={() => setMoreOpen((v) => !v)}
-                aria-expanded={moreOpen}
-                className={`${styles.crystalLink} ${moreActive ? styles.crystalLinkActive : ""}`}
-              >
-                More
-                <ChevronDownIcon
-                  style={{
-                    transition: "transform 220ms cubic-bezier(.16,1,.3,1)",
-                    transform: moreOpen ? "rotate(180deg)" : "none",
-                    marginLeft: 5,
-                    opacity: 0.7,
-                  }}
-                />
-              </button>
-
-              {moreOpen && (
-                <div className={styles.moreDropdown}>
-                  <div className={styles.moreDropdownInner}>
-                    {MORE_LINKS.map((l) => (
-                      <Link key={l.href} href={l.href} className={styles.moreDropdownItem}>
-                        {l.label}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
           </nav>
 
           {/* PULSE AI Button */}
@@ -153,6 +135,36 @@ export default function Header() {
             <ArrowRightIcon width={14} height={14} strokeWidth={2.2} />
           </Link>
 
+          {/* More dropdown trigger */}
+          <div ref={moreWrapperRef} className={`${styles.moreWrapper} ${styles.desktopMore}`}>
+            <button
+              type="button"
+              onClick={() => setMoreOpen((v) => !v)}
+              aria-label="More pages"
+              aria-haspopup="menu"
+              aria-expanded={moreOpen}
+              className={`${styles.menuButton} ${moreActive ? styles.menuButtonActive : ""}`}
+            >
+              <span className={styles.menuIcon} aria-hidden="true">
+                <span className={styles.menuIconLine} />
+                <span className={styles.menuIconLine} />
+                <span className={styles.menuIconLine} />
+              </span>
+            </button>
+
+            {moreOpen && (
+              <div className={styles.moreDropdown} role="menu">
+                <div className={styles.moreDropdownInner}>
+                  {MORE_LINKS.map((l) => (
+                    <Link key={l.href} href={l.href} role="menuitem" className={styles.moreDropdownItem}>
+                      {l.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Mobile burger */}
           <button
             type="button"
@@ -161,8 +173,11 @@ export default function Header() {
             aria-label="Open menu"
             className={styles.burger}
           >
-            <span className={styles.burgerLine} style={{ width: 17 }} />
-            <span className={styles.burgerLine} style={{ width: 11, opacity: 0.55 }} />
+            <span className={styles.menuIcon} aria-hidden="true">
+              <span className={styles.menuIconLine} />
+              <span className={styles.menuIconLine} />
+              <span className={styles.menuIconLine} />
+            </span>
           </button>
         </div>
       </header>
@@ -228,11 +243,11 @@ export default function Header() {
                 Start a Project
               </Link>
               <a
-                href="mailto:acevatechnology@gmail.com"
+                href="mailto:acevatech.official@gmail.com"
                 className={styles.mobileEmail}
                 style={{ animationDelay: `${760 + MORE_LINKS.length * 35}ms` }}
               >
-                acevatechnology@gmail.com
+                acevatech.official@gmail.com
               </a>
             </div>
           </div>

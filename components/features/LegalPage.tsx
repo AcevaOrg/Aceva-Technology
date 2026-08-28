@@ -63,7 +63,7 @@ export default function LegalPage({ doc }: LegalPageProps) {
             borderTop: "1px solid var(--hairline)",
           }}
         >
-          LAST UPDATED — PLACEHOLDER · CONTACT ACEVATECHNOLOGY@GMAIL.COM
+          LAST UPDATED — PLACEHOLDER · CONTACT ACEVATECH.OFFICIAL@GMAIL.COM
         </p>
       </div>
     </section>

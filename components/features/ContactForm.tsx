@@ -11,6 +11,7 @@ import {
   type ContactFieldErrors,
 } from "@/lib/validateContact";
 import { isPathKey } from "@/lib/data/paths";
+import { ContactFormSkeleton } from "@/components/ui/FormSkeleton";
 
 type Status = "idle" | "loading" | "success" | "error";
 
@@ -94,6 +95,11 @@ export default function ContactForm() {
     }
   }, [searchParams]);
 
+  // Show skeleton while Turnstile is loading
+  if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !turnstileLoaded) {
+    return <ContactFormSkeleton />;
+  }
+
   function onField<K extends keyof ContactFormValues>(key: K) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
       setForm((f) => ({ ...f, [key]: e.target.value as ContactFormValues[K] }));
@@ -147,7 +153,7 @@ export default function ContactForm() {
       setStatus("success");
     } catch {
       setStatus("error");
-      setServerMessage("We could not send that just now. Email us directly at acevatechnology@gmail.com.");
+      setServerMessage("We could not send that just now. Email us directly at acevatech.official@gmail.com.");
     }
   }
 
@@ -184,7 +190,7 @@ export default function ContactForm() {
         </span>
         <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 24, fontWeight: 600, letterSpacing: "-.02em", margin: "20px 0 0" }}>Received. A senior will read this.</p>
         <p style={{ fontSize: 15.5, lineHeight: 1.65, color: "var(--muted)", margin: "12px 0 0" }}>
-          We reply from acevatechnology@gmail.com with either a proposed next step or an honest reason we are not the right team. No drip sequence, no sales calls you did not ask for.
+          We reply from acevatech.official@gmail.com with either a proposed next step or an honest reason we are not the right team. No drip sequence, no sales calls you did not ask for.
         </p>
         <div style={{ marginTop: 24, padding: 18, border: "1px solid var(--hairline)", borderRadius: 12 }}>
           <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10.5, letterSpacing: ".14em", color: "var(--muted)", margin: "0 0 12px" }}>WHAT HAPPENS NEXT</p>

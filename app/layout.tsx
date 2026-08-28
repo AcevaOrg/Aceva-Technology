@@ -39,7 +39,7 @@ const organizationSchema = {
   name: "ACEVA Technology",
   url: siteUrl,
   logo: `${siteUrl}/favicon.ico`,
-  email: "acevatechnology@gmail.com",
+  email: "acevatech.official@gmail.com",
   description: "A software engineering company that designs, builds, and scales custom digital products.",
 };
 

@@ -40,7 +40,7 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
 
   return (
     <div>
-      <section style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid var(--hairline)" }}>
+      <section style={{ position: "relative", overflow: "hidden" }}>
         <div
           aria-hidden="true"
           style={{
@@ -60,7 +60,7 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
             position: "relative",
             maxWidth: 1280,
             margin: "0 auto",
-            padding: "clamp(40px,5vw,60px) clamp(20px,4vw,48px) clamp(44px,6vw,72px)",
+            padding: "calc(var(--nav-offset) + clamp(12px,2vw,28px)) clamp(20px,4vw,48px) clamp(44px,6vw,72px)",
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "var(--muted)" }}>
@@ -118,7 +118,7 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
         </div>
       </section>
 
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
+      <section>
         <div
           style={{
             maxWidth: 1280,
@@ -184,7 +184,7 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
               {cap.sales}
             </Reveal>
           </div>
-          <div className="ac-card-stack" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <Reveal>
               <Card style={{ padding: 26 }}>
                 <p
@@ -202,7 +202,7 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
               </Card>
             </Reveal>
             <Reveal>
-              <Card style={{ padding: 26 }}>
+              <Card style={{ padding: 26, display: "flex", flexDirection: "column" }}>
                 <p
                   style={{
                     fontFamily: "var(--font-jetbrains-mono)",
@@ -214,8 +214,8 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
                 >
                   HOW WE PROVE IT
                 </p>
-                <p style={{ fontSize: 16, lineHeight: 1.6, color: "var(--ink)", margin: 0 }}>{cap.proof}</p>
-                <ArrowLink href={ROUTES.work} style={{ marginTop: 16, fontSize: 14 }}>
+                <p style={{ fontSize: 16, lineHeight: 1.6, color: "var(--ink)", margin: "0 0 16px" }}>{cap.proof}</p>
+                <ArrowLink href={ROUTES.work} style={{ fontSize: 14, marginTop: "auto" }}>
                   Open in Experiments
                 </ArrowLink>
               </Card>
@@ -249,17 +249,20 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
                 >
                   ENGAGEMENT TYPES
                 </p>
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  <p style={{ fontSize: 15, lineHeight: 1.5, margin: 0, color: "var(--ink)" }}>
+                <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+                  <li style={{ fontSize: 15, lineHeight: 1.55, color: "var(--ink)", paddingLeft: 18, position: "relative" }}>
+                    <span aria-hidden="true" style={{ position: "absolute", left: 0, color: "var(--electric)" }}>·</span>
                     Fixed scope — written scope, milestones and acceptance criteria.
-                  </p>
-                  <p style={{ fontSize: 15, lineHeight: 1.5, margin: 0, color: "var(--ink)" }}>
+                  </li>
+                  <li style={{ fontSize: 15, lineHeight: 1.55, color: "var(--ink)", paddingLeft: 18, position: "relative" }}>
+                    <span aria-hidden="true" style={{ position: "absolute", left: 0, color: "var(--electric)" }}>·</span>
                     Dedicated team — senior-reviewed capacity, weekly demos.
-                  </p>
-                  <p style={{ fontSize: 15, lineHeight: 1.5, margin: 0, color: "var(--ink)" }}>
+                  </li>
+                  <li style={{ fontSize: 15, lineHeight: 1.55, color: "var(--ink)", paddingLeft: 18, position: "relative" }}>
+                    <span aria-hidden="true" style={{ position: "absolute", left: 0, color: "var(--electric)" }}>·</span>
                     Sprint first — a narrow paid proof before a large commitment.
-                  </p>
-                </div>
+                  </li>
+                </ul>
               </Card>
             </Reveal>
           </div>

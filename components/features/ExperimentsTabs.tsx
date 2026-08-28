@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState, type ReactNode, useEffect, useRef } from "react";
 import styles from "./ExperimentsTabs.module.css";
+import ExperimentsTabsSkeleton, { SitePanelSkeleton, DashPanelSkeleton, MobPanelSkeleton, AutoPanelSkeleton, RescuePanelSkeleton } from "./ExperimentsTabsSkeleton";
 
 export type ExperimentTabKey = "site" | "dash" | "mob" | "auto" | "rescue";
 
@@ -21,6 +22,14 @@ const TABS: { key: ExperimentTabKey; label: string }[] = [
   { key: "rescue", label: "05 · Rescue Report" },
 ];
 
+const PANEL_SKELETONS: Record<ExperimentTabKey, ReactNode> = {
+  site: <SitePanelSkeleton />,
+  dash: <DashPanelSkeleton />,
+  mob: <MobPanelSkeleton />,
+  auto: <AutoPanelSkeleton />,
+  rescue: <RescuePanelSkeleton />,
+};
+
 function tabStyle(on: boolean) {
   return {
     background: on ? "var(--elevated)" : "transparent",
@@ -31,7 +40,18 @@ function tabStyle(on: boolean) {
 
 export default function ExperimentsTabs({ site, dash, mob, auto, rescue }: ExperimentsTabsProps) {
   const [exp, setExp] = useState<ExperimentTabKey>("site");
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const panels: Record<ExperimentTabKey, ReactNode> = { site, dash, mob, auto, rescue };
+  const prevExpRef = useRef<ExperimentTabKey>("site");
+
+  const handleTabClick = (key: ExperimentTabKey) => {
+    if (key === exp) return;
+    setIsTransitioning(true);
+    prevExpRef.current = exp;
+    setExp(key);
+    // Reset transition after animation completes
+    setTimeout(() => setIsTransitioning(false), 480);
+  };
 
   return (
     <>
@@ -60,7 +80,7 @@ export default function ExperimentsTabs({ site, dash, mob, auto, rescue }: Exper
                   type="button"
                   role="tab"
                   aria-selected={exp === t.key}
-                  onClick={() => setExp(t.key)}
+                  onClick={() => handleTabClick(t.key)}
                   className={styles.tab}
                   style={{
                     flex: "none",
@@ -86,7 +106,7 @@ export default function ExperimentsTabs({ site, dash, mob, auto, rescue }: Exper
         </div>
       </section>
       <div key={exp} style={{ animation: "acBlurIn 480ms cubic-bezier(.16,1,.3,1) both" }}>
-        {panels[exp]}
+        {isTransitioning ? PANEL_SKELETONS[exp] : panels[exp]}
       </div>
     </>
   );

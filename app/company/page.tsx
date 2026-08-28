@@ -56,8 +56,8 @@ export default function CompanyPage() {
   return (
     <div>
       {/* Hero */}
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(56px,8vw,104px) clamp(20px,4vw,48px) clamp(40px,6vw,64px)" }}>
+      <section>
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "calc(var(--nav-offset) + clamp(16px,3vw,32px)) clamp(20px,4vw,48px) clamp(40px,6vw,64px)" }}>
           <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11.5, letterSpacing: ".2em", color: "var(--ice)", margin: "0 0 20px" }}>
             ABOUT US
           </p>
@@ -82,7 +82,7 @@ export default function CompanyPage() {
       </section>
 
       {/* Team structure */}
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
+      <section>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(48px,7vw,88px) clamp(20px,4vw,48px)" }}>
           <Reveal as="p" style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 26px" }}>
             HOW THE TEAM IS STRUCTURED
@@ -126,7 +126,7 @@ export default function CompanyPage() {
       </section>
 
       {/* Month one, in public */}
-      <section style={{ background: "rgba(15,15,19,.72)" }}>
+      <section>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(48px,7vw,88px) clamp(20px,4vw,48px)" }}>
           <Reveal
             as="h2"

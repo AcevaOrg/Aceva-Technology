@@ -21,7 +21,7 @@ export default function MobileCtaBar() {
       }}
     >
       <a
-        href="mailto:acevatechnology@gmail.com"
+        href="mailto:acevatech.official@gmail.com"
         aria-label="Email Aceva"
         style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 52, minHeight: 52, border: "1px solid var(--hairline)", borderRadius: 11, color: "var(--ink)" }}
       >

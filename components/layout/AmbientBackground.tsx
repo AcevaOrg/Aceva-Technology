@@ -56,21 +56,21 @@ export default function AmbientBackground() {
     <div data-bg aria-hidden="true" style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", overflow: "hidden" }}>
       {variant === "home" && (
         <Layer>
-          <div style={{ position: "absolute", top: "-30%", left: "-25%", width: "150%", height: "160%", backgroundImage: "repeating-linear-gradient(90deg,rgba(59,124,255,.07) 0 1px,transparent 1px 120px)", animation: "acBgLeft 26s linear infinite" }} />
+          <div style={{ position: "absolute", top: "-30%", left: "-25%", width: "150%", height: "160%", backgroundImage: "repeating-linear-gradient(90deg,rgba(59,124,255,.03) 0 1px,transparent 1px 120px)", animation: "acBgLeft 26s linear infinite" }} />
           <div style={{ position: "absolute", top: "-40%", right: "-30%", width: "80vw", height: "80vw", maxWidth: 1000, maxHeight: 1000, borderRadius: "50%", background: "radial-gradient(circle,rgba(59,124,255,.13),transparent 62%)", animation: "acBgGlow 30s ease-in-out infinite" }} />
           <div style={{ position: "absolute", bottom: "-45%", left: "-15%", width: "70vw", height: "70vw", maxWidth: 860, maxHeight: 860, borderRadius: "50%", background: "radial-gradient(circle,rgba(106,79,224,.10),transparent 64%)", animation: "acBgGlowAlt 38s ease-in-out infinite" }} />
         </Layer>
       )}
       {variant === "services" && (
         <Layer>
-          <div style={{ position: "absolute", top: "-40%", left: 0, width: "100%", height: "180%", backgroundImage: "repeating-linear-gradient(0deg,rgba(59,124,255,.09) 0 1px,transparent 1px 120px)", animation: "acBgUp 22s linear infinite" }} />
-          <div style={{ position: "absolute", top: 0, left: "12%", width: 1, height: "100%", background: "linear-gradient(180deg,transparent,rgba(127,178,255,.5),transparent)", animation: "acBgSweepDown 14s ease-in-out infinite" }} />
-          <div style={{ position: "absolute", top: 0, right: "22%", width: 1, height: "100%", background: "linear-gradient(180deg,transparent,rgba(127,178,255,.35),transparent)", animation: "acBgSweepDown 19s ease-in-out infinite 4s" }} />
+          <div style={{ position: "absolute", top: "-40%", left: 0, width: "100%", height: "180%", backgroundImage: "repeating-linear-gradient(0deg,rgba(59,124,255,.04) 0 1px,transparent 1px 120px)", animation: "acBgUp 22s linear infinite" }} />
+          <div style={{ position: "absolute", top: 0, left: "12%", width: 1, height: "100%", background: "linear-gradient(180deg,transparent,rgba(127,178,255,.2),transparent)", animation: "acBgSweepDown 14s ease-in-out infinite" }} />
+          <div style={{ position: "absolute", top: 0, right: "22%", width: 1, height: "100%", background: "linear-gradient(180deg,transparent,rgba(127,178,255,.14),transparent)", animation: "acBgSweepDown 19s ease-in-out infinite 4s" }} />
         </Layer>
       )}
       {variant === "capDetail" && (
         <Layer>
-          <div style={{ position: "absolute", inset: 0, backgroundImage: "repeating-linear-gradient(90deg,rgba(42,42,50,.55) 0 1px,transparent 1px 160px)" }} />
+          <div style={{ position: "absolute", inset: 0, backgroundImage: "repeating-linear-gradient(90deg,rgba(42,42,50,.25) 0 1px,transparent 1px 160px)" }} />
           <div style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "38vh", background: "linear-gradient(180deg,transparent,rgba(59,124,255,.10),transparent)", animation: "acBgSweepDown 18s cubic-bezier(.4,0,.6,1) infinite" }} />
         </Layer>
       )}
@@ -82,9 +82,9 @@ export default function AmbientBackground() {
       )}
       {variant === "process" && (
         <Layer>
-          <div style={{ position: "absolute", top: 0, left: "8%", width: 1, height: "100%", background: "repeating-linear-gradient(180deg,rgba(59,124,255,.35) 0 14px,transparent 14px 30px)", animation: "acBgDown 6s linear infinite" }} />
-          <div style={{ position: "absolute", top: 0, left: "38%", width: 1, height: "100%", background: "repeating-linear-gradient(180deg,rgba(59,124,255,.18) 0 14px,transparent 14px 30px)", animation: "acBgDown 9s linear infinite" }} />
-          <div style={{ position: "absolute", top: 0, right: "14%", width: 1, height: "100%", background: "repeating-linear-gradient(180deg,rgba(59,124,255,.24) 0 14px,transparent 14px 30px)", animation: "acBgDown 7.5s linear infinite" }} />
+          <div style={{ position: "absolute", top: 0, left: "8%", width: 1, height: "100%", background: "repeating-linear-gradient(180deg,rgba(59,124,255,.16) 0 14px,transparent 14px 30px)", animation: "acBgDown 6s linear infinite" }} />
+          <div style={{ position: "absolute", top: 0, left: "38%", width: 1, height: "100%", background: "repeating-linear-gradient(180deg,rgba(59,124,255,.08) 0 14px,transparent 14px 30px)", animation: "acBgDown 9s linear infinite" }} />
+          <div style={{ position: "absolute", top: 0, right: "14%", width: 1, height: "100%", background: "repeating-linear-gradient(180deg,rgba(59,124,255,.11) 0 14px,transparent 14px 30px)", animation: "acBgDown 7.5s linear infinite" }} />
           <div style={{ position: "absolute", bottom: "-30%", right: "-20%", width: "60vw", height: "60vw", maxWidth: 760, maxHeight: 760, borderRadius: "50%", background: "radial-gradient(circle,rgba(30,79,217,.12),transparent 64%)", animation: "acBgGlow 34s ease-in-out infinite" }} />
         </Layer>
       )}
@@ -97,13 +97,13 @@ export default function AmbientBackground() {
       )}
       {variant === "company" && (
         <Layer>
-          <div style={{ position: "absolute", inset: "-10%", backgroundImage: "linear-gradient(rgba(59,124,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(59,124,255,.08) 1px,transparent 1px)", backgroundSize: "140px 140px", animation: "acBgBreathe 16s ease-in-out infinite" }} />
+          <div style={{ position: "absolute", inset: "-10%", backgroundImage: "linear-gradient(rgba(59,124,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(59,124,255,.035) 1px,transparent 1px)", backgroundSize: "140px 140px", animation: "acBgBreathe 16s ease-in-out infinite" }} />
           <div style={{ position: "absolute", top: "-25%", left: "30%", width: "50vw", height: "50vw", maxWidth: 660, maxHeight: 660, borderRadius: "50%", background: "radial-gradient(circle,rgba(59,124,255,.10),transparent 66%)", animation: "acBgFloat 26s ease-in-out infinite" }} />
         </Layer>
       )}
       {variant === "technology" && (
         <Layer>
-          <div style={{ position: "absolute", top: "-30%", left: 0, width: "100%", height: "180%", backgroundImage: "repeating-linear-gradient(180deg,rgba(127,178,255,.07) 0 2px,transparent 2px 10px)", animation: "acBgUp 8s linear infinite" }} />
+          <div style={{ position: "absolute", top: "-30%", left: 0, width: "100%", height: "180%", backgroundImage: "repeating-linear-gradient(180deg,rgba(127,178,255,.03) 0 2px,transparent 2px 10px)", animation: "acBgUp 8s linear infinite" }} />
           <div style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "26vh", background: "linear-gradient(180deg,transparent,rgba(59,124,255,.09),transparent)", animation: "acBgSweepDown 11s linear infinite" }} />
         </Layer>
       )}
@@ -116,15 +116,15 @@ export default function AmbientBackground() {
       )}
       {variant === "testimonials" && (
         <Layer>
-          <div style={{ position: "absolute", top: "-30%", left: "-30%", width: "160%", height: "160%", backgroundImage: "repeating-linear-gradient(135deg,rgba(59,124,255,.06) 0 1px,transparent 1px 90px)", animation: "acBgDiag 30s linear infinite" }} />
+          <div style={{ position: "absolute", top: "-30%", left: "-30%", width: "160%", height: "160%", backgroundImage: "repeating-linear-gradient(135deg,rgba(59,124,255,.03) 0 1px,transparent 1px 90px)", animation: "acBgDiag 30s linear infinite" }} />
           <div style={{ position: "absolute", bottom: "-35%", left: "20%", width: "60vw", height: "60vw", maxWidth: 720, maxHeight: 720, borderRadius: "50%", background: "radial-gradient(circle,rgba(30,79,217,.11),transparent 66%)", animation: "acBgGlowAlt 32s ease-in-out infinite" }} />
         </Layer>
       )}
       {variant === "careers" && (
         <Layer>
-          <div style={{ position: "absolute", top: "18%", left: "-20%", width: "150%", height: 1, background: "repeating-linear-gradient(90deg,rgba(59,124,255,.34) 0 18px,transparent 18px 44px)", animation: "acBgLeft 9s linear infinite" }} />
-          <div style={{ position: "absolute", top: "52%", left: "-20%", width: "150%", height: 1, background: "repeating-linear-gradient(90deg,rgba(59,124,255,.22) 0 18px,transparent 18px 44px)", animation: "acBgLeft 13s linear infinite" }} />
-          <div style={{ position: "absolute", top: "81%", left: "-20%", width: "150%", height: 1, background: "repeating-linear-gradient(90deg,rgba(59,124,255,.16) 0 18px,transparent 18px 44px)", animation: "acBgLeft 17s linear infinite" }} />
+          <div style={{ position: "absolute", top: "18%", left: "-20%", width: "150%", height: 1, background: "repeating-linear-gradient(90deg,rgba(59,124,255,.15) 0 18px,transparent 18px 44px)", animation: "acBgLeft 9s linear infinite" }} />
+          <div style={{ position: "absolute", top: "52%", left: "-20%", width: "150%", height: 1, background: "repeating-linear-gradient(90deg,rgba(59,124,255,.10) 0 18px,transparent 18px 44px)", animation: "acBgLeft 13s linear infinite" }} />
+          <div style={{ position: "absolute", top: "81%", left: "-20%", width: "150%", height: 1, background: "repeating-linear-gradient(90deg,rgba(59,124,255,.07) 0 18px,transparent 18px 44px)", animation: "acBgLeft 17s linear infinite" }} />
         </Layer>
       )}
       {variant === "insights" && (
@@ -141,19 +141,19 @@ export default function AmbientBackground() {
       )}
       {variant === "contact" && (
         <Layer>
-          <div style={{ position: "absolute", inset: "-10%", backgroundImage: "linear-gradient(90deg,rgba(42,42,50,.5) 1px,transparent 1px)", backgroundSize: "110px 110px" }} />
+          <div style={{ position: "absolute", inset: "-10%", backgroundImage: "linear-gradient(90deg,rgba(42,42,50,.22) 1px,transparent 1px)", backgroundSize: "110px 110px" }} />
           <div style={{ position: "absolute", bottom: "-40%", left: "50%", width: "90vw", height: "70vw", maxWidth: 1100, maxHeight: 820, marginLeft: "-45vw", borderRadius: "50%", background: "radial-gradient(ellipse,rgba(59,124,255,.16),transparent 62%)", animation: "acBgFloat 20s ease-in-out infinite" }} />
         </Layer>
       )}
       {variant === "mobile" && (
         <Layer>
-          <div style={{ position: "absolute", inset: "-10%", backgroundImage: "linear-gradient(rgba(59,124,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(59,124,255,.07) 1px,transparent 1px)", backgroundSize: "60px 60px" }} />
+          <div style={{ position: "absolute", inset: "-10%", backgroundImage: "linear-gradient(rgba(59,124,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(59,124,255,.03) 1px,transparent 1px)", backgroundSize: "60px 60px" }} />
           <div style={{ position: "absolute", top: 0, left: 0, width: "34vw", height: "100%", background: "linear-gradient(90deg,transparent,rgba(59,124,255,.10),transparent)", animation: "acBgSweepRight 16s ease-in-out infinite" }} />
         </Layer>
       )}
       {variant === "legal" && (
         <Layer>
-          <div style={{ position: "absolute", top: "-40%", left: 0, width: "100%", height: "180%", backgroundImage: "repeating-linear-gradient(0deg,rgba(42,42,50,.45) 0 1px,transparent 1px 44px)", animation: "acBgUp 40s linear infinite" }} />
+          <div style={{ position: "absolute", top: "-40%", left: 0, width: "100%", height: "180%", backgroundImage: "repeating-linear-gradient(0deg,rgba(42,42,50,.2) 0 1px,transparent 1px 44px)", animation: "acBgUp 40s linear infinite" }} />
         </Layer>
       )}
     </div>
