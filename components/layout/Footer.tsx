@@ -71,7 +71,10 @@ export default function Footer() {
           <div className={styles.brandBlock}>
             <div className={styles.brandLockup}>
               <LogoMark id="acevaStrokeFoot" width={36} height={22} />
-              <span className={styles.brandName}>ACEVA</span>
+              <span className={styles.brandText}>
+                <span className={styles.brandName}>ACEVA</span>
+                <span className={styles.brandSub}>TECHNOLOGY</span>
+              </span>
             </div>
             <p style={{ fontSize: 14.5, lineHeight: 1.65, color: "var(--muted)", margin: "18px 0 0", maxWidth: "34ch" }}>
               Aceva builds new products, improves existing operations and rescues software that needs a stronger path forward.

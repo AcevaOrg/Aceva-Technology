@@ -112,9 +112,9 @@ export function getCapability(key: string): Capability | undefined {
   return CAPS.find((c) => c.key === key);
 }
 
-export function getAdjacentCapabilities(key: CapabilityKey): { prev: Capability; next: Capability } {
+export function getAdjacentCapabilities(key: CapabilityKey): { prev: Capability | null; next: Capability | null } {
   const idx = CAPS.findIndex((c) => c.key === key);
-  const prev = CAPS[(idx - 1 + CAPS.length) % CAPS.length];
-  const next = CAPS[(idx + 1) % CAPS.length];
+  const prev = idx > 0 ? CAPS[idx - 1] : null;
+  const next = idx >= 0 && idx < CAPS.length - 1 ? CAPS[idx + 1] : null;
   return { prev, next };
 }
