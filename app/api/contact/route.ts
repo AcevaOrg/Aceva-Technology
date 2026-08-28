@@ -11,6 +11,7 @@ interface TurnstileResult {
   success?: boolean;
   hostname?: string;
   action?: string;
+  "error-codes"?: string[];
 }
 
 async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
@@ -32,9 +33,20 @@ async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
     const data = (await res.json()) as TurnstileResult;
     const expectedHostname = process.env.TURNSTILE_EXPECTED_HOSTNAME;
     const expectedAction = process.env.TURNSTILE_EXPECTED_ACTION;
-    return data.success === true
+    const valid = data.success === true
       && (!expectedHostname || data.hostname === expectedHostname)
       && (!expectedAction || data.action === expectedAction);
+    if (!valid) {
+      console.error("[contact] Turnstile rejected", {
+        success: data.success,
+        errorCodes: data["error-codes"],
+        hostname: data.hostname,
+        expectedHostname,
+        action: data.action,
+        expectedAction,
+      });
+    }
+    return valid;
   } catch {
     return false;
   }
