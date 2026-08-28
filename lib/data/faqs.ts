@@ -40,4 +40,16 @@ export const FAQS: Faq[] = [
     q: "Can I see real client work?",
     a: "Not yet, and we will not fabricate it. What we do show is our own work: this website, an operations dashboard, a mobile journey, an automation with human approval, and a sample Rescue Report — all clearly labeled as ours.",
   },
+  {
+    q: "Do you have the capacity to handle my project?",
+    a: "Yes — and we would rather show you than tell you. Every production change on every project goes through a named senior review, with no exceptions once a deadline gets close. If we are ever near more work than that review discipline can support, we turn it down rather than let quality slip. If you want proof before committing a full budget, a Proof Sprint puts us against a real piece of your problem first — not a sales pitch.",
+  },
+  {
+    q: "We are not in New York. Can you still work with us?",
+    a: "Yes. We sell from New York because that is where we get proximity to buyers, but delivery is not tied to a location — we run engagements with clients wherever they are.",
+  },
+  {
+    q: "Will you sign an NDA before we share project details?",
+    a: "Yes — we offer one upfront, before any serious conversation about your product, data or business problem.",
+  },
 ];
