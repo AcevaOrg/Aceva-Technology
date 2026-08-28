@@ -6,7 +6,7 @@ import Card from "@/components/ui/Card";
 export const metadata: Metadata = pageMetadata({
   title: "How We Work — ACEVA Technology",
   description:
-    "Five phases with weekly demos and clear ownership — understand, design, build, launch, improve.",
+    "Five distinct phases with weekly demos and clear ownership — understand, design, build, launch, improve.",
 });
 
 interface Phase {
@@ -20,51 +20,51 @@ const PHASES: Phase[] = [
   {
     n: "01",
     title: "Understand",
-    lead: "We write down the business problem, the constraints and what success means — before anyone estimates anything.",
+    lead: "We document the business problem, constraints, and success criteria before anyone estimates anything. Technical feasibility is evaluated by a senior engineer, not a salesperson.",
     receive: [
       "A written problem statement and success criteria",
-      "Scope boundaries — including what we are not doing yet",
-      "A feasibility read from a senior engineer, not a salesperson",
+      "Scope boundaries detailing what is included and what is deferred",
+      "A feasibility evaluation from a senior engineer",
     ],
   },
   {
     n: "02",
     title: "Design",
-    lead: "Interface and architecture are designed together, so the thing that looks right is also the thing that can be built and maintained.",
+    lead: "Interface and system architecture are designed together, so the user experience is matched by clean, maintainable engineering.",
     receive: [
-      "Screens and flows for the real journeys, mobile included",
-      "An architecture plan with the decisions written down",
+      "Screens and interaction flows for primary user journeys, including mobile",
+      "An architecture plan with key decisions written down",
       "Acceptance criteria we will be measured against",
     ],
   },
   {
     n: "03",
     title: "Build",
-    lead: "AI-accelerated, senior-reviewed. No junior change reaches production without a named senior review.",
+    lead: "AI-accelerated development with mandatory senior code review. No junior change reaches production without a named senior review.",
     receive: [
-      "A working demo every week — not a status email",
-      "The week's decisions, risks and open questions in writing",
+      "A working demo every week — not just a status email",
+      "The week's decisions, risks, and open questions in writing",
       "Commit access to your own repository from day one",
     ],
   },
   {
     n: "04",
     title: "Launch",
-    lead: "Mobile QA, browser QA, security basics, content review, analytics, deployment — under accounts you control.",
+    lead: "Mobile QA, browser QA, security basics, content review, analytics, and deployment — under accounts you control.",
     receive: [
       "A launch checklist that had to pass before going live",
-      "Ownership of domain, hosting, repository and analytics",
-      "Named people responsible for bugs after launch",
+      "Ownership of domain, hosting, repository, and analytics",
+      "Named people responsible for resolving post-launch issues",
     ],
   },
   {
     n: "05",
     title: "Improve",
-    lead: "Monitoring, iteration and a modernization roadmap you can act on with us or without us.",
+    lead: "Monitoring, iteration, and a modernization roadmap you can act on with us or independently.",
     receive: [
-      "Monitoring and alerts that reach a human",
-      "A prioritized improvement list after real usage",
-      "Documentation good enough for another team to pick up",
+      "Monitoring and alerts configured to reach a human",
+      "A prioritized improvement list based on real usage",
+      "Documentation structured for another team to pick up",
     ],
   },
 ];
@@ -92,8 +92,8 @@ export default function ProcessPage() {
             Understand. Design. Build. Launch. Improve.
           </h1>
           <p style={{ fontSize: 17, lineHeight: 1.65, color: "var(--muted)", margin: "24px 0 0", maxWidth: "56ch" }}>
-            Five phases with weekly demos and clear ownership. You see working progress, decisions, risks and tests
-            every week instead of waiting until the deadline.
+            Five distinct phases with weekly demos and clear ownership. You see working progress, decisions, risks, and tests
+            every week instead of waiting for a deadline.
           </p>
         </div>
       </section>
@@ -184,25 +184,19 @@ export default function ProcessPage() {
           </Reveal>
           <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 14, marginTop: 32 }}>
             <Reveal>
-              <Card
-                variant="plain"
-                style={{ padding: 28 }}
-              >
+              <Card variant="plain" style={{ padding: 28 }}>
                 <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 20, fontWeight: 500, margin: 0 }}>Senior review, always</p>
                 <p style={{ fontSize: 15.5, lineHeight: 1.62, color: "var(--muted)", margin: "12px 0 0" }}>
-                  AI is used for speed. A senior engineer remains responsible for architecture, security and quality.
+                  AI is used for speed. A senior engineer remains responsible for architecture, security, and quality.
                   AI-accelerated, senior-reviewed, production-ready.
                 </p>
               </Card>
             </Reveal>
             <Reveal>
-              <Card
-                variant="plain"
-                style={{ padding: 28 }}
-              >
+              <Card variant="plain" style={{ padding: 28 }}>
                 <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 20, fontWeight: 500, margin: 0 }}>You own everything</p>
                 <p style={{ fontSize: 15.5, lineHeight: 1.62, color: "var(--muted)", margin: "12px 0 0" }}>
-                  Your code. Your accounts. Your data. No developer personally owns the domain, the repository or the
+                  Your code. Your accounts. Your data. No developer personally owns the domain, repository, or
                   hosting for your business.
                 </p>
               </Card>
