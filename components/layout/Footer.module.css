@@ -1,3 +1,81 @@
+.animatedBackdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(127, 178, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(127, 178, 255, 0.035) 1px, transparent 1px),
+    #08090d;
+  background-size: 64px 64px;
+}
+
+.ambientGlow {
+  position: absolute;
+  inset: -45%;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(59, 124, 255, 0.24), transparent 28%),
+    conic-gradient(from 210deg at 50% 50%, transparent 0 30%, rgba(30, 79, 217, 0.12), transparent 48% 100%);
+  filter: blur(18px);
+  animation: glowOrbit 18s ease-in-out infinite alternate;
+}
+
+.wordmarkTrack {
+  position: absolute;
+  top: 66%;
+  left: 50%;
+  width: min(68vw, 940px);
+  transform: translate(-50%, -50%);
+  animation: wordmarkFloat 12s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+}
+
+.backgroundWord {
+  display: block;
+  width: 100%;
+  height: auto;
+  opacity: 0.22;
+  filter: drop-shadow(0 0 38px rgba(59, 124, 255, 0.12));
+  animation: wordmarkSheen 9s linear infinite;
+  user-select: none;
+}
+
+.backdropVeil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(10, 10, 12, 0.84), rgba(10, 10, 12, 0.42) 34%, rgba(10, 10, 12, 0.56) 72%, rgba(10, 10, 12, 0.92)),
+    linear-gradient(90deg, rgba(10, 10, 12, 0.78), transparent 30%, transparent 70%, rgba(10, 10, 12, 0.78));
+}
+
+.brandLockup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brandName {
+  font-family: var(--font-space-grotesk), sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+}
+
+@keyframes wordmarkFloat {
+  from { transform: translate(-51.5%, -48%) scale(1); }
+  to { transform: translate(-48.5%, -52%) scale(1.035); }
+}
+
+@keyframes wordmarkSheen {
+  0%, 100% { opacity: 0.16; filter: drop-shadow(0 0 24px rgba(59, 124, 255, 0.08)); }
+  50% { opacity: 0.28; filter: drop-shadow(0 0 42px rgba(59, 124, 255, 0.18)); }
+}
+
+@keyframes glowOrbit {
+  from { transform: translate3d(-4%, 1%, 0) rotate(-4deg); }
+  to { transform: translate3d(4%, -2%, 0) rotate(5deg); }
+}
+
 .footerGrid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -77,6 +155,21 @@
 }
 
 @media (max-width: 560px) {
+  .animatedBackdrop {
+    background-size: 42px 42px;
+  }
+
+  .wordmarkTrack {
+    top: 46%;
+    width: min(100vw, 520px);
+    transform: translate(-50%, -50%) rotate(-90deg);
+    animation: wordmarkFloatMobile 12s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+  }
+
+  .backgroundWord {
+    opacity: 0.2;
+  }
+
   .footerGrid {
     grid-template-columns: 1fr;
     gap: 16px;
@@ -151,9 +244,20 @@
   transform: scaleX(1);
 }
 @media (prefers-reduced-motion: reduce) {
+  .ambientGlow,
+  .wordmarkTrack,
+  .backgroundWord {
+    animation: none;
+  }
+
   .link::after,
   .bottomLink::after {
     transition: none;
     transform: none;
   }
+}
+
+@keyframes wordmarkFloatMobile {
+  from { transform: translate(-50%, -51%) rotate(-90deg) scale(1); }
+  to { transform: translate(-50%, -47%) rotate(-90deg) scale(1.025); }
 }

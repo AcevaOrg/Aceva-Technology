@@ -38,6 +38,7 @@ export default function ContactForm() {
   const [form, setForm] = useState<ContactFormValues>(EMPTY_CONTACT_FORM);
   const [errors, setErrors] = useState<ContactFieldErrors>({});
   const [status, setStatus] = useState<Status>("idle");
+  const [submitted, setSubmitted] = useState(false);
   const [serverMessage, setServerMessage] = useState("");
   const turnstileRef = useRef<HTMLDivElement>(null);
   const turnstileWidgetId = useRef<string | undefined>(undefined);
@@ -111,6 +112,7 @@ export default function ContactForm() {
 
   async function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
     e?.preventDefault();
+    setSubmitted(true);
     const nextErrors = validateContact(form);
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
@@ -163,12 +165,13 @@ export default function ContactForm() {
     setStatus("idle");
     setServerMessage("");
     setTurnstileToken("");
+    setSubmitted(false);
     if (window.turnstile && turnstileWidgetId.current !== undefined) {
       window.turnstile.reset(turnstileWidgetId.current);
     }
   }
 
-  const fieldBorder = (key: keyof ContactFieldErrors) => (errors[key] ? "var(--error)" : "var(--hairline)");
+  const fieldBorder = (key: keyof ContactFieldErrors) => (submitted && errors[key] ? "var(--error)" : "var(--hairline)");
   const summary = serverMessage || errorSummary(errors);
   const inputStyle: React.CSSProperties = {
     background: "#0F0F13",
@@ -205,7 +208,7 @@ export default function ContactForm() {
     );
   }
 
-  const hasErrors = Object.keys(errors).length > 0 || Boolean(serverMessage);
+  const hasErrors = submitted && (Object.keys(errors).length > 0 || Boolean(serverMessage));
 
   return (
     <form onSubmit={handleSubmit} noValidate style={{ padding: "clamp(24px,3.5vw,36px)" }}>
@@ -233,10 +236,8 @@ export default function ContactForm() {
           <input value={form.email} onChange={onField("email")} type="email" autoComplete="email" required maxLength={CONTACT_LIMITS.email} aria-invalid={Boolean(errors.email)} placeholder="you@company.com" style={{ ...inputStyle, border: `1px solid ${fieldBorder("email")}` }} />
         </label>
         <label style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <span style={{ fontSize: 13.5, color: "var(--muted)" }}>
-            Company <span style={{ color: "#4b4f5b" }}>(optional)</span>
-          </span>
-          <input value={form.company} onChange={onField("company")} type="text" autoComplete="organization" maxLength={CONTACT_LIMITS.company} aria-invalid={Boolean(errors.company)} placeholder="Company name" style={{ ...inputStyle, border: `1px solid ${fieldBorder("company")}` }} />
+          <span style={{ fontSize: 13.5, color: "var(--muted)" }}>Company</span>
+          <input value={form.company} onChange={onField("company")} type="text" autoComplete="organization" required maxLength={CONTACT_LIMITS.company} aria-invalid={Boolean(errors.company)} placeholder="Company name" style={{ ...inputStyle, border: `1px solid ${fieldBorder("company")}` }} />
         </label>
         <label style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <span style={{ fontSize: 13.5, color: "var(--muted)" }}>Where you are right now</span>
@@ -258,11 +259,9 @@ export default function ContactForm() {
           </select>
         </label>
         <label style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <span style={{ fontSize: 13.5, color: "var(--muted)" }}>
-            Budget range <span style={{ color: "#4b4f5b" }}>(optional)</span>
-          </span>
-          <select value={form.budget} onChange={onField("budget")} style={{ ...inputStyle, border: "1px solid var(--hairline)" }}>
-            <option value="">Prefer not to say</option>
+          <span style={{ fontSize: 13.5, color: "var(--muted)" }}>Budget range</span>
+          <select value={form.budget} onChange={onField("budget")} style={{ ...inputStyle, border: `1px solid ${fieldBorder("budget")}` }}>
+            <option value="">Select a budget range</option>
             <option value="sprint">A sprint first, then decide</option>
             <option value="small">Small — a defined scope</option>
             <option value="mid">Mid — a full product build</option>

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-import { CONTACT_LIMITS, validateContact, errorSummary, type ContactFormValues } from "@/lib/validateContact";
+import { validateContact, errorSummary, type ContactFormValues } from "@/lib/validateContact";
 import { getClientIp, checkRateLimit, createRateLimitResponse, cleanupRateLimitStore } from "@/lib/rateLimit";
 import { checkSpamContent, isDisposableEmail } from "@/lib/spamFilter";
 
@@ -113,11 +113,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, message: "Content-Type must be application/json." }, { status: 415 });
   }
 
-  const expectedOrigin = process.env.NEXT_PUBLIC_SITE_URL;
   const origin = request.headers.get("origin");
-  if (expectedOrigin && origin) {
+  if (origin) {
     try {
-      if (new URL(origin).origin !== new URL(expectedOrigin).origin) {
+      // Compare against the origin that received this request. Using a configured
+      // canonical URL here rejects valid Vercel preview URLs and www/apex aliases.
+      if (new URL(origin).origin !== new URL(request.url).origin) {
         return NextResponse.json({ ok: false, message: "Invalid request origin." }, { status: 403 });
       }
     } catch {
@@ -163,8 +164,7 @@ export async function POST(request: Request) {
     ? (body.budget as ContactFormValues["budget"])
     : "";
 
-  const errors = validateContact({ name, email, details });
-  if (company.length > CONTACT_LIMITS.company) errors.company = true;
+  const errors = validateContact({ name, email, company, situation, service, budget, details });
   if (Object.keys(errors).length > 0) {
     return NextResponse.json({ ok: false, errors, message: errorSummary(errors) }, { status: 400 });
   }
