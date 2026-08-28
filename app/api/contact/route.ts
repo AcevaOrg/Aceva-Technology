@@ -14,11 +14,26 @@ interface TurnstileResult {
   "error-codes"?: string[];
 }
 
-async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
+interface TurnstileDebug {
+  success?: boolean;
+  errorCodes?: string[];
+  hostname?: string;
+  expectedHostname?: string;
+  action?: string;
+  expectedAction?: string;
+}
+
+interface TurnstileOutcome {
+  valid: boolean;
+  // Populated only on failure; surfaced to the client when CONTACT_DEBUG is enabled.
+  debug: TurnstileDebug | null;
+}
+
+async function verifyTurnstile(token: string, ip: string): Promise<TurnstileOutcome> {
   const secretKey = process.env.TURNSTILE_SECRET_KEY;
   const required = process.env.CONTACT_REQUIRE_TURNSTILE === "true";
-  if (!secretKey) return !required;
-  if (!token) return false;
+  if (!secretKey) return { valid: !required, debug: null };
+  if (!token) return { valid: false, debug: { errorCodes: ["missing-input-response"] } };
 
   try {
     const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
@@ -28,7 +43,7 @@ async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
       cache: "no-store",
       signal: AbortSignal.timeout(TURNSTILE_TIMEOUT_MS),
     });
-    if (!res.ok) return false;
+    if (!res.ok) return { valid: false, debug: { errorCodes: [`siteverify-http-${res.status}`] } };
 
     const data = (await res.json()) as TurnstileResult;
     const expectedHostname = process.env.TURNSTILE_EXPECTED_HOSTNAME;
@@ -37,18 +52,20 @@ async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
       && (!expectedHostname || data.hostname === expectedHostname)
       && (!expectedAction || data.action === expectedAction);
     if (!valid) {
-      console.error("[contact] Turnstile rejected", {
+      const debug: TurnstileDebug = {
         success: data.success,
         errorCodes: data["error-codes"],
         hostname: data.hostname,
         expectedHostname,
         action: data.action,
         expectedAction,
-      });
+      };
+      console.error("[contact] Turnstile rejected", debug);
+      return { valid: false, debug };
     }
-    return valid;
+    return { valid: true, debug: null };
   } catch {
-    return false;
+    return { valid: false, debug: { errorCodes: ["siteverify-request-failed"] } };
   }
 }
 
@@ -172,10 +189,16 @@ export async function POST(request: Request) {
 
   // Cloudflare Turnstile verification
   const turnstileToken = isNonEmptyString(body["cf-turnstile-response"]) ? body["cf-turnstile-response"] : "";
-  const turnstileValid = await verifyTurnstile(turnstileToken, ip);
-  if (!turnstileValid) {
+  const turnstile = await verifyTurnstile(turnstileToken, ip);
+  if (!turnstile.valid) {
     return NextResponse.json(
-      { ok: false, message: "Verification failed. Please try again." },
+      {
+        ok: false,
+        message: "Verification failed. Please try again.",
+        ...(process.env.CONTACT_DEBUG === "true" && turnstile.debug
+          ? { debug: turnstile.debug }
+          : {}),
+      },
       { status: 400 }
     );
   }
