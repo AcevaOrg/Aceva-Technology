@@ -1,13 +1,25 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useEffect } from "react";
 import Button from "@/components/ui/Button";
 import { ROUTES } from "@/lib/nav";
 
-export const metadata: Metadata = {
-  title: "Page not found",
-  robots: { index: false, follow: false },
-};
+/**
+ * Route-level error boundary. Without this, an uncaught render error in a client
+ * component (the contact form, the Pulse overlay, the experiments tabs) replaces the
+ * whole page with the default Next.js error screen, losing header, footer and branding.
+ */
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  useEffect(() => {
+    console.error(error);
+  }, [error]);
 
-export default function NotFound() {
   return (
     <section style={{ position: "relative", overflow: "hidden" }}>
       <div
@@ -20,7 +32,7 @@ export default function NotFound() {
         }}
       >
         <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11.5, letterSpacing: ".2em", color: "var(--ice)", margin: "0 0 20px" }}>
-          404
+          ERROR
         </p>
         <h1
           style={{
@@ -32,17 +44,23 @@ export default function NotFound() {
             margin: 0,
           }}
         >
-          That page doesn&apos;t exist.
+          Something went wrong.
         </h1>
         <p style={{ fontSize: 16.5, lineHeight: 1.65, color: "var(--muted)", margin: "18px auto 0", maxWidth: "42ch" }}>
-          The link may be out of date, or the page may have moved. Try the homepage, or start a project.
+          This page failed to load. Trying again usually works — if it does not, tell us what you
+          were doing and we will fix it.
         </p>
+        {error.digest && (
+          <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".1em", color: "#4b4f5b", margin: "22px 0 0" }}>
+            REFERENCE — {error.digest}
+          </p>
+        )}
         <div style={{ marginTop: 34, display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
-          <Button href={ROUTES.home} variant="primary">
-            Back to homepage
+          <Button type="button" onClick={reset} variant="primary" icon={false}>
+            Try again
           </Button>
-          <Button href={ROUTES.contact} variant="ghost">
-            Start a project
+          <Button href={ROUTES.home} variant="ghost">
+            Back to homepage
           </Button>
         </div>
       </div>

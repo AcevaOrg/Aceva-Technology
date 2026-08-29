@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { pageMetadata } from "@/lib/seo";
+import { pageMetadata, SITE_URL } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { CAPS, getCapability, getAdjacentCapabilities } from "@/lib/data/caps";
@@ -22,11 +22,13 @@ export async function generateMetadata({ params }: CapabilityPageProps): Promise
   const { capability } = await params;
   const cap = getCapability(capability);
   if (!cap) {
-    return { title: "Capability — ACEVA Technology" };
+    return { title: "Capability not found" };
   }
   return pageMetadata({
-    title: `${cap.name} — ACEVA Technology`,
-    description: cap.lead,
+    title: cap.seoTitle,
+    description: cap.seoDescription,
+    path: capabilityRoute(cap.key),
+    image: `/og/${cap.key}.jpg`,
   });
 }
 
@@ -37,9 +39,50 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
     notFound();
   }
   const { prev, next } = getAdjacentCapabilities(cap.key);
+  const canonical = `${SITE_URL}${capabilityRoute(cap.key)}`;
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        // Tells search engines what is actually being sold here, tied back to the
+        // Organization declared once in the root layout.
+        "@type": "Service",
+        "@id": `${canonical}#service`,
+        name: cap.name,
+        serviceType: cap.seoTitle,
+        description: cap.lead,
+        url: canonical,
+        provider: { "@id": `${SITE_URL}/#organization` },
+        areaServed: "Worldwide",
+        hasOfferCatalog: {
+          "@type": "OfferCatalog",
+          name: cap.name,
+          itemListElement: cap.includes.map((item) => ({
+            "@type": "Offer",
+            itemOffered: { "@type": "Service", name: item },
+          })),
+        },
+      },
+      {
+        // Lets Google show "Home › Services › <capability>" instead of a raw URL.
+        "@type": "BreadcrumbList",
+        "@id": `${canonical}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+          { "@type": "ListItem", position: 2, name: "Services", item: `${SITE_URL}${ROUTES.services}` },
+          { "@type": "ListItem", position: 3, name: cap.name },
+        ],
+      },
+    ],
+  };
 
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, "\\u003c") }}
+      />
       <section style={{ position: "relative", overflow: "hidden" }}>
         <div
           aria-hidden="true"
@@ -63,7 +106,7 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
             padding: "calc(var(--nav-offset) + clamp(12px,2vw,28px)) clamp(20px,4vw,48px) clamp(44px,6vw,72px)",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "var(--muted)" }}>
+          <nav aria-label="Breadcrumb" style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "var(--muted)" }}>
             <Link
               href={ROUTES.services}
               className={styles.crumbLink}
@@ -72,8 +115,8 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
               Capabilities
             </Link>
             <span aria-hidden="true">/</span>
-            <span style={{ color: "var(--ink)" }}>{cap.name}</span>
-          </div>
+            <span aria-current="page" style={{ color: "var(--ink)" }}>{cap.name}</span>
+          </nav>
           <p
             style={{
               fontFamily: "var(--font-jetbrains-mono)",

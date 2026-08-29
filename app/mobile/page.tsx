@@ -5,8 +5,9 @@ import PhoneFrame from "@/components/ui/PhoneFrame";
 import { MailIcon, CloseIcon, CheckIcon } from "@/components/ui/icons";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Mobile Layouts — ACEVA Technology",
+  title: "Mobile Layouts",
   description: "A design-review page for the team: the mobile decisions behind this site, shown at device scale.",
+  path: "/mobile",
   noIndex: true,
 });
 

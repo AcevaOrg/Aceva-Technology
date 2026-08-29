@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
+import { ROUTES } from "@/lib/nav";
 import Reveal from "@/components/ui/Reveal";
 import Card from "@/components/ui/Card";
 
 export const metadata: Metadata = pageMetadata({
-  title: "How We Work — ACEVA Technology",
+  title: "Our Development Process",
   description:
-    "Five phases with weekly demos and clear ownership — understand, design, build, launch, improve.",
+    "Five phases with weekly demos and clear ownership: understand, design, build, launch, improve. Written milestones and acceptance criteria on every engagement.",
+  path: ROUTES.process,
 });
 
 interface Phase {

@@ -46,7 +46,7 @@ export default function Footer() {
   return (
     <footer className="ac-hairline" style={{ borderTop: "1px solid var(--hairline)", position: "relative", zIndex: 1, overflow: "hidden" }}>
       <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-        <Image src="/images/used/aceva-footer-background-8k-4x1.png" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--footer bg-pan-slow" />
+        <Image src="/images/used/aceva-footer-background.webp" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--footer bg-pan-slow" />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(10,10,12,.72) 0%, rgba(10,10,12,.40) 30%, rgba(10,10,12,.40) 70%, rgba(10,10,12,.72) 100%)" }} />
       </div>
       <div className="image-backed-content" style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(48px,6vw,72px) clamp(20px,4vw,48px)" }}>

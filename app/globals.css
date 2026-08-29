@@ -66,6 +66,13 @@ h4 {
   text-wrap: balance;
   margin: 0;
 }
+/* Card-level titles that were promoted from <span>/<p> to real headings so each page has
+   a document outline. They must keep their original small rendering, so they opt out of
+   the mobile display-heading scale below (which uses !important and would otherwise beat
+   their inline styles) and out of the balanced wrapping used for display headings. */
+.ac-heading-sm {
+  text-wrap: wrap;
+}
 p {
   margin: 0;
 }
@@ -89,6 +96,31 @@ button {
   outline-offset: 3px;
   border-radius: 4px;
   box-shadow: 0 0 0 4px rgba(59, 124, 255, 0.16);
+}
+/* Skip link — WCAG 2.4.1 "Bypass Blocks" (Level A). Hidden until it receives keyboard
+   focus, so it lets keyboard and screen-reader users jump past ~15 nav controls without
+   changing the visual design for anyone else. */
+.ac-skip-link {
+  position: absolute;
+  left: 12px;
+  top: -100px;
+  z-index: 200;
+  padding: 12px 20px;
+  border-radius: 10px;
+  background: var(--electric, #3b7cff);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: top 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ac-skip-link:focus {
+  top: 12px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ac-skip-link {
+    transition: none;
+  }
 }
 input,
 select,
@@ -904,7 +936,7 @@ html {
     overflow-wrap: anywhere;
   }
 
-  h2 {
+  h2:not(.ac-heading-sm) {
     font-size: clamp(1.8rem, 8.5vw, 2.65rem) !important;
     line-height: 1.08 !important;
     letter-spacing: -0.035em !important;
@@ -1517,3 +1549,4 @@ html {
   .pl-node-glow { display: none; }
   .pl-star { opacity: 0.4; }
 }
+

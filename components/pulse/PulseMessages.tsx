@@ -318,7 +318,7 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
           <i>TRYING TO CHANGE?</i>
         </h2>
         <p className={styles.directionCopy} style={{ marginBottom: "1.8rem" }}>
-          Hello! I'm PULSE, ACEVA's AI assistant. Tell me what you'd like to build or improve, and I'll help map out your project.
+          Hello! I&apos;m PULSE, ACEVA&apos;s AI assistant. Tell me what you&apos;d like to build or improve, and I&apos;ll help map out your project.
         </p>
 
         <div className={styles.intentGrid}>

@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
+import { ROUTES } from "@/lib/nav";
 import Reveal from "@/components/ui/Reveal";
 import Card from "@/components/ui/Card";
 import Tag from "@/components/ui/Tag";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Careers — ACEVA Technology",
-  description: "Every junior has a named mentor, and no junior change reaches production without a named senior review.",
+  title: "Careers at ACEVA Technology — Engineering Roles",
+  description:
+    "Every junior has a named mentor, and no junior change reaches production without a named senior review. How we hire, mentor and grow engineers.",
+  path: ROUTES.careers,
+  absoluteTitle: true,
 });
 
 const LANE_CARDS = [
@@ -99,7 +103,7 @@ export default function CareersPage() {
                   height: "100%",
                 }}
               >
-                <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 19, fontWeight: 500, margin: 0 }}>{card.title}</p>
+                <h2 className="ac-heading-sm" style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 19, fontWeight: 500, margin: 0 }}>{card.title}</h2>
                 <p style={{ fontSize: 14.5, lineHeight: 1.62, color: "var(--muted)", margin: "10px 0 0" }}>{card.body}</p>
               </Card>
             </Reveal>
@@ -125,7 +129,8 @@ export default function CareersPage() {
               }}
             >
               <div>
-                <p
+                <h2
+                  className="ac-heading-sm"
                   style={{
                     fontFamily: "var(--font-space-grotesk)",
                     fontSize: "clamp(20px,2.4vw,26px)",
@@ -136,7 +141,7 @@ export default function CareersPage() {
                   }}
                 >
                   No open roles right now.
-                </p>
+                </h2>
                 <p style={{ fontSize: 15.5, lineHeight: 1.62, color: "var(--muted)", margin: "12px 0 0", maxWidth: "44ch" }}>
                   Send your work anyway — we read everything and keep it on file for when a lane opens. Tell us what you
                   want to be reviewed on.

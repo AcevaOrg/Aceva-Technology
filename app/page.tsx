@@ -1,5 +1,7 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { pageMetadata } from "@/lib/seo";
 import { CAPS } from "@/lib/data/caps";
 import { ROUTES, capabilityRoute } from "@/lib/nav";
 import Reveal from "@/components/ui/Reveal";
@@ -10,6 +12,15 @@ import ArrowLink from "@/components/ui/ArrowLink";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import PathChooser from "@/components/features/PathChooser";
 import ProcessLoop from "@/components/ui/ProcessLoop";
+
+// The brand already leads this title, so it bypasses the layout's "%s — ACEVA Technology" template.
+export const metadata: Metadata = pageMetadata({
+  title: "ACEVA Technology — Custom Software, Web & Mobile Engineering",
+  description:
+    "ACEVA Technology designs, builds and scales custom software, web and mobile products. AI-accelerated, senior-reviewed, production-ready.",
+  path: "/",
+  absoluteTitle: true,
+});
 
 const CAP_ICONS: Record<string, React.ReactNode> = {
   digital: (
@@ -82,7 +93,7 @@ export default function HomePage() {
       {/* Hero */}
       <section className="hero" style={{ position: "relative", overflow: "hidden" }}>
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/Aceva.png" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--hero bg-pan-slow" priority />
+          <Image src="/images/used/Aceva.webp" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--hero bg-pan-slow" priority />
           <div className="hero-overlay" />
         </div>
         <div style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(110px,14vw,160px) clamp(20px,4vw,48px) clamp(48px,6vw,72px)", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
@@ -142,7 +153,7 @@ export default function HomePage() {
       {/* Five capabilities */}
       <section className="capabilities">
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/holographic.png" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--contain bg-pan" style={{ objectPosition: "center 20%" }} />
+          <Image src="/images/used/holographic.webp" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--contain bg-pan" style={{ objectPosition: "center 20%" }} />
           <div className="capabilities-overlay" />
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 15%, transparent 85%, #0A0A0C 100%)" }} />
         </div>
@@ -260,7 +271,7 @@ export default function HomePage() {
       {/* Proof, not portfolio */}
       <section className="experiments">
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/twin-visions.jpg" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--proof bg-pan" />
+          <Image src="/images/used/twin-visions.webp" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--proof bg-pan" />
           <div className="experiments-overlay" />
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 20%, transparent 80%, #0A0A0C 100%)" }} />
         </div>
