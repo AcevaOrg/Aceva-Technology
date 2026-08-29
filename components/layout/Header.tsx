@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ROUTES } from "@/lib/nav";
-import { ArrowRightIcon, ChevronDownIcon, CloseIcon, LogoMark } from "@/components/ui/icons";
+import { ArrowRightIcon, CloseIcon, LogoMark } from "@/components/ui/icons";
 import { PulseButton, usePulse } from "@/components/pulse";
 import styles from "./Header.module.css";
 
@@ -190,6 +190,7 @@ export default function Header() {
             <PulseButton
               onClick={openPulse}
               expandedState={pulseState.stage !== "entry" && pulseState.stage !== "intent"}
+              className={styles.headerPulse}
             />
 
             {/* CTA Button */}

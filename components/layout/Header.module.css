@@ -20,9 +20,10 @@
   gap: 2px;
 
   /* sizing */
-  width: min(1100px, calc(100vw - 32px));
+  width: fit-content;
+  max-width: calc(100vw - 32px);
   height: 64px;
-  padding: 0 8px 0 16px;
+  padding: 0 24px;
 
   /* dark glass fill */
   background: rgba(10, 11, 18, 0.72);
@@ -450,6 +451,19 @@
   }
   .burger {
     margin-left: 0;
+  }
+}
+
+/* At compact-nav widths, let PULSE expand beneath the pill instead of
+   squeezing the logo or displacing the always-available menu button. */
+@media (min-width: 769px) and (max-width: 999px) {
+  .headerPulse[data-expanded="true"] {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    box-shadow:
+      0 12px 32px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(59, 124, 255, 0.08);
   }
 }
 
