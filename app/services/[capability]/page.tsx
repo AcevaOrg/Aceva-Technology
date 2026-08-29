@@ -324,64 +324,72 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
             gap: 14,
           }}
         >
-          <Card href={capabilityRoute(prev.key)} style={{ textAlign: "left", padding: 24, minHeight: 110 }}>
-            <span
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 9,
-                fontFamily: "var(--font-jetbrains-mono)",
-                fontSize: 11,
-                letterSpacing: ".16em",
-                color: "var(--muted)",
-              }}
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <path d="M19 12H5M11 18l-6-6 6-6" />
-              </svg>
-              PREVIOUS
-            </span>
-            <span
-              style={{
-                display: "block",
-                fontFamily: "var(--font-space-grotesk)",
-                fontSize: 19,
-                fontWeight: 500,
-                marginTop: 12,
-              }}
-            >
-              {prev.name}
-            </span>
-          </Card>
-          <Card href={capabilityRoute(next.key)} style={{ textAlign: "left", padding: 24, minHeight: 110 }}>
-            <span
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 9,
-                fontFamily: "var(--font-jetbrains-mono)",
-                fontSize: 11,
-                letterSpacing: ".16em",
-                color: "var(--muted)",
-              }}
-            >
-              NEXT
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <path d="M5 12h14M13 6l6 6-6 6" />
-              </svg>
-            </span>
-            <span
-              style={{
-                display: "block",
-                fontFamily: "var(--font-space-grotesk)",
-                fontSize: 19,
-                fontWeight: 500,
-                marginTop: 12,
-              }}
-            >
-              {next.name}
-            </span>
-          </Card>
+          {prev ? (
+            <Card href={capabilityRoute(prev.key)} style={{ textAlign: "left", padding: 24, minHeight: 110 }}>
+              <span
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 9,
+                  fontFamily: "var(--font-jetbrains-mono)",
+                  fontSize: 11,
+                  letterSpacing: ".16em",
+                  color: "var(--muted)",
+                }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <path d="M19 12H5M11 18l-6-6 6-6" />
+                </svg>
+                PREVIOUS
+              </span>
+              <span
+                style={{
+                  display: "block",
+                  fontFamily: "var(--font-space-grotesk)",
+                  fontSize: 19,
+                  fontWeight: 500,
+                  marginTop: 12,
+                }}
+              >
+                {prev.name}
+              </span>
+            </Card>
+          ) : (
+            <div aria-hidden="true" />
+          )}
+          {next ? (
+            <Card href={capabilityRoute(next.key)} style={{ textAlign: "left", padding: 24, minHeight: 110 }}>
+              <span
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 9,
+                  fontFamily: "var(--font-jetbrains-mono)",
+                  fontSize: 11,
+                  letterSpacing: ".16em",
+                  color: "var(--muted)",
+                }}
+              >
+                NEXT
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </span>
+              <span
+                style={{
+                  display: "block",
+                  fontFamily: "var(--font-space-grotesk)",
+                  fontSize: 19,
+                  fontWeight: 500,
+                  marginTop: 12,
+                }}
+              >
+                {next.name}
+              </span>
+            </Card>
+          ) : (
+            <div aria-hidden="true" />
+          )}
         </div>
       </section>
     </div>

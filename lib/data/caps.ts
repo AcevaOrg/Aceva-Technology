@@ -52,7 +52,7 @@ export const CAPS: Capability[] = [
       "Internal management systems",
       "Operational dashboards",
       "Marketplaces and portals",
-      "Custom web applications and integrations",
+      "Custom web applications and integrations — TypeScript, Next.js, Node.js, PostgreSQL",
     ],
     when: "Off-the-shelf software no longer fits your workflow or business model.",
     sales: "We engineer systems around your operation — not the other way around.",
@@ -66,18 +66,18 @@ export const CAPS: Capability[] = [
     key: "mobile",
     num: "03",
     name: "Mobile Products",
-    lead: "Mobile experiences designed for adoption, performance and growth.",
+    lead: "Customer and field-team apps for iOS and Android — built with Expo and React Native by default.",
     includes: [
-      "iOS applications",
-      "Android applications",
-      "Cross-platform products",
+      "iOS and Android apps from a single codebase (Expo / React Native)",
+      "Fully native or Flutter builds when a requirement justifies it",
       "Customer self-service apps",
       "Employee and field-work apps",
+      "Connections to your existing systems over REST and typed APIs",
     ],
     when: "Customers or employees need to complete important work from a phone.",
-    sales: "We build mobile products people can understand, trust and continue using.",
+    sales: "An app has to earn its place on someone’s phone. We build for that bar.",
     proof: "One interactive app prototype with a complete user journey — not ten disconnected screens.",
-    limit: "We do not promise separate native iOS and Android builds when the plan is a cross-platform solution.",
+    limit: "We do not promise separate native iOS and Android builds when Expo covers what the product needs.",
     seoTitle: "Mobile App Development",
     seoDescription:
       "Mobile products designed for adoption, performance and growth — for when customers or employees must complete important work from a phone.",
@@ -136,9 +136,9 @@ export function getCapability(key: string): Capability | undefined {
   return CAPS.find((c) => c.key === key);
 }
 
-export function getAdjacentCapabilities(key: CapabilityKey): { prev: Capability; next: Capability } {
+export function getAdjacentCapabilities(key: CapabilityKey): { prev: Capability | null; next: Capability | null } {
   const idx = CAPS.findIndex((c) => c.key === key);
-  const prev = CAPS[(idx - 1 + CAPS.length) % CAPS.length];
-  const next = CAPS[(idx + 1) % CAPS.length];
+  const prev = idx > 0 ? CAPS[idx - 1] : null;
+  const next = idx >= 0 && idx < CAPS.length - 1 ? CAPS[idx + 1] : null;
   return { prev, next };
 }
