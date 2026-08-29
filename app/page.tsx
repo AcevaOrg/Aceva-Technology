@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { pageMetadata } from "@/lib/seo";
-import { CAPS } from "@/lib/data/caps";
-import { ROUTES, capabilityRoute } from "@/lib/nav";
+import { ROUTES } from "@/lib/nav";
 import Reveal from "@/components/ui/Reveal";
 import Eyebrow from "@/components/ui/Eyebrow";
 import Card from "@/components/ui/Card";
@@ -13,7 +12,9 @@ import { ArrowRightIcon } from "@/components/ui/icons";
 import PathChooser from "@/components/features/PathChooser";
 import ProcessLoop from "@/components/ui/ProcessLoop";
 import ProofBoard from "@/components/ui/ProofBoard";
+import OfferTabs from "@/components/features/OfferTabs";
 
+// Static homepage metadata is exported from this Server Component.
 // The brand already leads this title, so it bypasses the layout's "%s — ACEVA Technology" template.
 export const metadata: Metadata = pageMetadata({
   title: "ACEVA Technology — Custom Software, Web & Mobile Engineering",
@@ -22,47 +23,6 @@ export const metadata: Metadata = pageMetadata({
   path: "/",
   absoluteTitle: true,
 });
-
-const CAP_ICONS: Record<string, React.ReactNode> = {
-  digital: (
-    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#3B7CFF" strokeWidth="1.6" aria-hidden="true">
-      <rect x="2" y="3" width="20" height="14" rx="2" />
-      <path d="M8 21h8M12 17v4" />
-    </svg>
-  ),
-  software: (
-    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#3B7CFF" strokeWidth="1.6" aria-hidden="true">
-      <rect x="3" y="3" width="18" height="18" rx="2" />
-      <path d="M3 9h18M9 21V9" />
-    </svg>
-  ),
-  mobile: (
-    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#3B7CFF" strokeWidth="1.6" aria-hidden="true">
-      <rect x="6" y="2" width="12" height="20" rx="2.5" />
-      <path d="M11 18h2" />
-    </svg>
-  ),
-  intelligence: (
-    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#3B7CFF" strokeWidth="1.6" aria-hidden="true">
-      <path d="M12 3v3M12 18v3M3 12h3M18 12h3M6.3 6.3l2.1 2.1M15.6 15.6l2.1 2.1M17.7 6.3l-2.1 2.1M8.4 15.6l-2.1 2.1" />
-      <circle cx="12" cy="12" r="3.4" />
-    </svg>
-  ),
-  rescue: (
-    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#7FB2FF" strokeWidth="1.6" aria-hidden="true">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
-      <path d="M9.2 12l2 2 3.6-3.6" />
-    </svg>
-  ),
-};
-
-const CAP_HOME_BLURBS: Record<string, string> = {
-  digital: "Premium websites, e-commerce, portals and customer-facing platforms.",
-  software: "SaaS products, dashboards, marketplaces and internal business systems.",
-  mobile: "iOS, Android and cross-platform applications for customers and teams.",
-  intelligence: "AI assistants, workflow automation, integrations, knowledge systems and reporting.",
-  rescue: "Audit, stabilize, secure and modernize unfinished, outdated or AI-generated software.",
-};
 
 const COMPETE_POINTS = [
   { n: "01", title: "Proof Sprint", body: "Before a large commitment, we solve or demonstrate one narrow part of the problem and hand over a roadmap." },
@@ -153,64 +113,30 @@ export default function HomePage() {
 
       {/* Five capabilities */}
       <section className="capabilities">
-        <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/The offer.jpeg" alt="" fill sizes="100vw" style={{ objectFit: "contain", objectPosition: "center center", transform: "scale(1.1)", transformOrigin: "center center" }} />
-          <div className="capabilities-overlay" />
+        <div className="offer-ambient" aria-hidden="true">
+          <span className="offer-ambient__orb offer-ambient__orb--primary" />
+          <span className="offer-ambient__orb offer-ambient__orb--secondary" />
+          <span className="offer-ambient__orbit offer-ambient__orbit--outer" />
+          <span className="offer-ambient__orbit offer-ambient__orbit--inner" />
+          <span className="offer-ambient__beam" />
+          <span className="offer-ambient__line offer-ambient__line--one" />
+          <span className="offer-ambient__line offer-ambient__line--two" />
         </div>
         <div style={{ position: "relative", zIndex: 1, maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,9vw,116px) clamp(20px,4vw,48px)" }}>
-          <Reveal style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-end", justifyContent: "space-between", gap: 16 }}>
+          <Reveal className="offer-heading">
             <div>
               <Eyebrow>02 — THE OFFER</Eyebrow>
               <h2 style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: "clamp(28px,4vw,46px)", lineHeight: 1.08, letterSpacing: "-.025em", margin: 0, maxWidth: "22ch" }}>
                 Five capabilities. One accountable engineering partner.
               </h2>
             </div>
+            <p className="offer-heading__intro">
+              From the first customer touchpoint to the systems behind it, we design, build and improve the technology your business depends on.
+            </p>
           </Reveal>
 
-          <div className="offer-frame">
+          <OfferTabs />
 
-            <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(290px,1fr))", gap: 14 }}>
-              {CAPS.map((cap) => (
-                <Reveal key={cap.key}>
-                  <Card variant="flagship" href={capabilityRoute(cap.key)} style={{ padding: 28, display: "flex", flexDirection: "column", gap: 12, minHeight: 230 }}>
-                    <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".16em", color: "var(--ice)" }}>
-                      {cap.key === "rescue" ? `${cap.num} · FLAGSHIP` : cap.num}
-                      {CAP_ICONS[cap.key]}
-                    </span>
-                    <span style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 22, fontWeight: 500, letterSpacing: "-.01em", marginTop: 6 }}>{cap.name}</span>
-                    <span style={{ fontSize: 14.5, lineHeight: 1.62, color: "#c3c8d4" }}>{CAP_HOME_BLURBS[cap.key]}</span>
-                    <span className="ac-link" style={{ marginTop: "auto", fontSize: 13.5 }}>
-                      Learn more
-                      <ArrowRightIcon />
-                    </span>
-                  </Card>
-                </Reveal>
-              ))}
-              <Reveal>
-                <Card variant="flagship" href={ROUTES.services} style={{ padding: 28, display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 10, minHeight: 230 }}>
-                  <span style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 19, fontWeight: 500, letterSpacing: "-.01em" }}>All capabilities in detail</span>
-                  <span style={{ fontSize: 14, color: "#c3c8d4" }}>What each one includes, when to buy it, and what we will not promise.</span>
-                </Card>
-              </Reveal>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* Differentiator strip */}
-      <section>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(56px,7vw,88px) clamp(20px,4vw,48px)", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))", gap: 2 }}>
-          {[
-            { n: "01", text: "AI-accelerated. Senior-reviewed. Production-ready." },
-            { n: "02", text: "Your code. Your accounts. Your data." },
-            { n: "03", text: "New York market insight. Global engineering execution." },
-          ].map((item, i, arr) => (
-            <Reveal key={item.n} style={{ padding: "26px 28px", borderRight: i < arr.length - 1 ? "1px solid var(--hairline)" : "none" }}>
-              <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--electric)", margin: "0 0 12px" }}>{item.n}</p>
-              <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: "clamp(18px,1.9vw,22px)", fontWeight: 500, lineHeight: 1.34, letterSpacing: "-.01em", margin: 0 }}>{item.text}</p>
-            </Reveal>
-          ))}
         </div>
       </section>
 

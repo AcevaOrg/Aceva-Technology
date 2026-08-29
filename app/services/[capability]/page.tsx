@@ -281,33 +281,76 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
             </Reveal>
             <Reveal>
               <Card style={{ padding: 26 }}>
-                <p
-                  style={{
-                    fontFamily: "var(--font-jetbrains-mono)",
-                    fontSize: 11,
-                    letterSpacing: ".18em",
-                    color: "var(--muted)",
-                    margin: "0 0 16px",
-                  }}
-                >
-                  ENGAGEMENT TYPES
-                </p>
-                <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 10 }}>
-                  <li style={{ fontSize: 15, lineHeight: 1.55, color: "var(--ink)", paddingLeft: 18, position: "relative" }}>
-                    <span aria-hidden="true" style={{ position: "absolute", left: 0, color: "var(--electric)" }}>·</span>
-                    Fixed scope — written scope, milestones and acceptance criteria.
-                  </li>
-                  <li style={{ fontSize: 15, lineHeight: 1.55, color: "var(--ink)", paddingLeft: 18, position: "relative" }}>
-                    <span aria-hidden="true" style={{ position: "absolute", left: 0, color: "var(--electric)" }}>·</span>
-                    Dedicated team — senior-reviewed capacity, weekly demos.
-                  </li>
-                  <li style={{ fontSize: 15, lineHeight: 1.55, color: "var(--ink)", paddingLeft: 18, position: "relative" }}>
-                    <span aria-hidden="true" style={{ position: "absolute", left: 0, color: "var(--electric)" }}>·</span>
-                    Sprint first — a narrow paid proof before a large commitment.
-                  </li>
-                </ul>
+                {cap.engagement ? (
+                  <>
+                    <p
+                      style={{
+                        fontFamily: "var(--font-jetbrains-mono)",
+                        fontSize: 11,
+                        letterSpacing: ".18em",
+                        color: "var(--muted)",
+                        margin: "0 0 16px",
+                      }}
+                    >
+                      {cap.engagement.title.toUpperCase()}
+                    </p>
+                    <ol style={{ margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 10, listStylePosition: "inside" }}>
+                      {cap.engagement.items.map((item, i) => (
+                        <li key={i} style={{ fontSize: 15, lineHeight: 1.55, color: "var(--ink)" }}>
+                          {item}
+                        </li>
+                      ))}
+                    </ol>
+                  </>
+                ) : (
+                  <>
+                    <p
+                      style={{
+                        fontFamily: "var(--font-jetbrains-mono)",
+                        fontSize: 11,
+                        letterSpacing: ".18em",
+                        color: "var(--muted)",
+                        margin: "0 0 16px",
+                      }}
+                    >
+                      ENGAGEMENT TYPES
+                    </p>
+                    <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+                      <li style={{ fontSize: 15, lineHeight: 1.55, color: "var(--ink)", paddingLeft: 18, position: "relative" }}>
+                        <span aria-hidden="true" style={{ position: "absolute", left: 0, color: "var(--electric)" }}>·</span>
+                        Fixed scope — written scope, milestones and acceptance criteria.
+                      </li>
+                      <li style={{ fontSize: 15, lineHeight: 1.55, color: "var(--ink)", paddingLeft: 18, position: "relative" }}>
+                        <span aria-hidden="true" style={{ position: "absolute", left: 0, color: "var(--electric)" }}>·</span>
+                        Dedicated team — senior-reviewed capacity, weekly demos.
+                      </li>
+                      <li style={{ fontSize: 15, lineHeight: 1.55, color: "var(--ink)", paddingLeft: 18, position: "relative" }}>
+                        <span aria-hidden="true" style={{ position: "absolute", left: 0, color: "var(--electric)" }}>·</span>
+                        Sprint first — a narrow paid proof before a large commitment.
+                      </li>
+                    </ul>
+                  </>
+                )}
               </Card>
             </Reveal>
+            {cap.closing && (
+              <Reveal>
+                <Card style={{ padding: 26, backgroundColor: "var(--card-alt)", border: "1px solid var(--royal)" }}>
+                  <p
+                    style={{
+                      fontFamily: "var(--font-jetbrains-mono)",
+                      fontSize: 11,
+                      letterSpacing: ".18em",
+                      color: "var(--electric)",
+                      margin: "0 0 14px",
+                    }}
+                  >
+                    CLOSING
+                  </p>
+                  <p style={{ fontSize: 16, lineHeight: 1.6, color: "var(--ink)", margin: 0, fontWeight: 500 }}>{cap.closing}</p>
+                </Card>
+              </Reveal>
+            )}
           </div>
         </div>
       </section>

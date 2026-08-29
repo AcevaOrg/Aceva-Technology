@@ -10,15 +10,13 @@ export interface Capability {
   sales: string;
   proof: string;
   limit: string;
-  /**
-   * Search-facing title, kept separate from `name` so the on-page heading can stay in
-   * brand language ("Digital Experiences") while the page title targets the term buyers
-   * actually search ("Website & Digital Platform Development"). The brand suffix is
-   * appended by the root layout's title template.
-   */
   seoTitle: string;
-  /** Search-facing description, 140–160 characters. */
   seoDescription: string;
+  engagement?: {
+    title: string;
+    items: string[];
+  };
+  closing?: string;
 }
 
 export const CAPS: Capability[] = [
@@ -86,27 +84,38 @@ export const CAPS: Capability[] = [
     key: "intelligence",
     num: "04",
     name: "Intelligence & Automation",
-    lead: "AI and connected workflows that reduce repetitive work and improve decisions.",
+    lead: "Aceva engineers AI-assisted workflows that retrieve approved knowledge,coordinate business systems and require human authorization at critical decision points.",
     includes: [
-      "AI assistants and knowledge search",
+      "Knowledge assistants grounded in approved repositories.",
       "Workflow and document automation",
-      "CRM, email, calendar and payment integrations",
-      "Operational dashboards and alerts",
+      "Integrations across approved CRM, email, calendar and payment systems.",
+      "Operational alerts and decision-ready reporting.",
       "Human approval and activity logging",
     ],
-    when: "Employees repeat the same work, information is scattered, or customers wait too long.",
-    sales: "We connect the work, remove repetition and keep people in control of important decisions.",
-    proof: "One controlled automation: request → data lookup → proposed action → human approval → system update.",
-    limit: "We do not call every chatbot an AI agent, and we do not promise full autonomy.",
+    when: "Use this service when teams repeatedly transfer data across disconnected tools, struggle to retrieve reliable knowledge or need faster processing without relinquishing human authorization.",
+    sales: "We automate repeatable operations while preserving accountable human oversight",
+    proof: "Demonstrate an end-to-end controlled flow: request -> approved retrieval -> proposed action -> human authorization -> system update -> audit log. Link directly to the Automation with Approval experiment.",
+    limit: "We do not sell nominal 'agents' or uncontrolled autonomy. Production workflows require explicit permissions, tested failure modes and accountable approval gates.",
     seoTitle: "AI & Workflow Automation",
     seoDescription:
       "AI and connected workflows that cut repetitive work and improve decisions — for scattered information, manual handoffs and slow customer response.",
+    engagement: {
+      title: "Automation Proof Sprint",
+      items: [
+        "Map the workflow, trigger, data and owners.",
+        "Define access, approval gates and exceptions.",
+        "Prototype one controlled flow using approved sample data.",
+        "Validate edge cases, failures and human handoffs.",
+        "Issue a risk assessment and scale-up roadmap."
+      ]
+    },
+    closing: "Identify the workflow creating the greatest delay. We will determine whether a focused proof can validate its automation potential.",
   },
   {
     key: "rescue",
     num: "05",
     name: "Product Rescue & Reliability",
-    lead: "Recover unfinished, unstable or difficult-to-scale software without rebuilding blindly.",
+    lead: "Aceva audits unfinished, unstable, inherited or AI-generated software, distinguishes recoverable assets from structural liabilities and defines an evidence-led recovery path.",
     includes: [
       "Code and architecture audit",
       "Bug stabilization and performance work",
@@ -114,13 +123,24 @@ export const CAPS: Capability[] = [
       "Security and deployment assessment",
       "Testing, documentation and modernization roadmap",
     ],
-    when: "You already spent money, but the software is broken, delayed, insecure or trapped with a previous developer.",
+    when: "Use Product Rescue when a product is unfinished, releases remain unstable, inherited or AI-generated code is unmaintainable, deployment is fragile or the business lacks evidence to choose remediation over replacement.",
     sales: "We first determine what can be saved. Then we stabilize the product and create a clear path forward.",
-    proof: "A sample Rescue Report with findings, severity, what to keep, what to replace and a 30/60/90-day plan.",
-    limit: "We do not promise that every product can be repaired, and we do not quote a rescue before senior review.",
+    proof: "The Rescue Report provides an executive diagnosis, evidence-backed risk register, architecture and security findings, maintainability gaps, a keep/remediate/replace/defer matrix and a prioritized 30/60/90-day roadmap.",
+    limit: "Not every product warrants rescue. Aceva estimates recovery only after senior technical review, and the evidence may justify replacing high-risk components.",
     seoTitle: "Product Rescue & Software Reliability",
     seoDescription:
       "Recover unfinished, unstable or unscalable software without rebuilding blindly. We audit first, rank risks by severity, then separate keep from replace.",
+    engagement: {
+      title: "Rescue Sprint",
+      items: [
+        "Triage objectives, symptoms and available access.",
+        "Assess architecture, code, dependencies, data, security, testing and deployment.",
+        "Classify components as keep, remediate, replace or defer.",
+        "Sequence critical stabilization work.",
+        "Issue a 30/60/90-day remediation roadmap."
+      ]
+    },
+    closing: "Describe what is broken, incomplete or untrustworthy. A senior will determine the evidence required and whether a Rescue Sprint is justified.",
   },
 ];
 
