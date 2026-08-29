@@ -205,6 +205,7 @@ export default function Header() {
             {/* More dropdown trigger */}
             <div ref={moreWrapperRef} className={`${styles.moreWrapper} ${styles.desktopMore}`}>
               <button
+                ref={moreButtonRef}
                 type="button"
                 onClick={() => setMoreOpen((v) => !v)}
                 aria-label="More pages"
@@ -231,40 +232,6 @@ export default function Header() {
                 </div>
               )}
             </div>
-
-            {/* Mobile burger */}
-            <button
-              ref={moreButtonRef}
-              type="button"
-              onClick={() => setMenuOpen(true)}
-              data-burger
-              aria-label="Open menu"
-              className={styles.burger}
-              onClick={() => setMoreOpen((v) => !v)}
-              aria-label="More pages"
-              aria-expanded={moreOpen}
-              className={`${styles.menuButton} ${moreActive ? styles.menuButtonActive : ""}`}
-            >
-              <span className={styles.menuIcon} aria-hidden="true">
-                <span className={styles.menuIconLine} />
-                <span className={styles.menuIconLine} />
-                <span className={styles.menuIconLine} />
-              </span>
-            </button>
-
-            {/* A list of navigation links, not an application menu: the ARIA menu roles
-                were removed because they promise arrow-key semantics this does not implement. */}
-            {moreOpen && (
-              <div className={styles.moreDropdown}>
-                <nav aria-label="More pages" className={styles.moreDropdownInner}>
-                  {MORE_LINKS.map((l) => (
-                    <Link key={l.href} href={l.href} className={styles.moreDropdownItem}>
-                      {l.label}
-                    </Link>
-                  ))}
-                </nav>
-              </div>
-            )}
           </div>
 
           {/* Mobile burger */}
