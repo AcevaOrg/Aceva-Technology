@@ -1,13 +1,17 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
+import { ROUTES } from "@/lib/nav";
 import Reveal from "@/components/ui/Reveal";
 import KeyValueRow from "@/components/ui/KeyValueRow";
 import ContactForm from "@/components/features/ContactForm";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Contact — ACEVA Technology",
-  description: "Tell Aceva what is costing you the most time, money or customer trust. A senior reads every message.",
+  title: "Contact ACEVA — Start a Project",
+  description:
+    "Tell us what is costing you the most time, money or customer trust. A senior reads every message and replies with a next step or an honest no.",
+  path: ROUTES.contact,
+  absoluteTitle: true,
 });
 
 export default function ContactPage() {

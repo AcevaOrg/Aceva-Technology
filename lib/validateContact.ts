@@ -41,6 +41,21 @@ export function validateContact(f: ContactFormValues): ContactFieldErrors {
   return errors;
 }
 
+/**
+ * Per-field messages. A red border alone fails WCAG 1.4.1 (colour is the only cue) and
+ * tells a screen-reader user nothing about what to fix.
+ */
+export const FIELD_MESSAGES: Record<keyof ContactFieldErrors, string> = {
+  name: "Enter your name.",
+  email: "Enter a valid work email, like you@company.com.",
+  company: `Enter your company name, under ${CONTACT_LIMITS.company} characters.`,
+  budget: "Choose a budget range.",
+  details: `Describe the problem in at least ${CONTACT_LIMITS.detailsMin} characters.`,
+};
+
+/** Order used to decide which invalid field receives focus after a failed submit. */
+export const FIELD_ORDER: (keyof ContactFieldErrors)[] = ["name", "email", "company", "budget", "details"];
+
 export function errorSummary(errors: ContactFieldErrors): string {
   const parts: string[] = [];
   if (errors.name) parts.push("your name");

@@ -5,13 +5,30 @@ import { useSearchParams } from "next/navigation";
 import {
   EMPTY_CONTACT_FORM,
   CONTACT_LIMITS,
+  FIELD_MESSAGES,
+  FIELD_ORDER,
   validateContact,
   errorSummary,
   type ContactFormValues,
   type ContactFieldErrors,
 } from "@/lib/validateContact";
+
 import { isPathKey } from "@/lib/data/paths";
 import { ContactFormSkeleton } from "@/components/ui/FormSkeleton";
+
+/** Field-level error text, linked to its input with aria-describedby. */
+function FieldError({ id, show, field }: { id: string; show?: boolean; field: keyof ContactFieldErrors }) {
+  if (!show) return null;
+  return (
+    <span id={id} style={{ display: "flex", alignItems: "flex-start", gap: 6, fontSize: 13, lineHeight: 1.45, color: "var(--error)" }}>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true" style={{ flex: "none", marginTop: 2 }}>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 8v5M12 16h.01" />
+      </svg>
+      {FIELD_MESSAGES[field]}
+    </span>
+  );
+}
 
 type Status = "idle" | "loading" | "success" | "error";
 
@@ -41,6 +58,7 @@ export default function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
   const [serverMessage, setServerMessage] = useState("");
   const turnstileRef = useRef<HTMLDivElement>(null);
+  const fieldRefs = useRef<Record<string, HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null>>({});
   const turnstileWidgetId = useRef<string | undefined>(undefined);
   const [turnstileToken, setTurnstileToken] = useState("");
   const [turnstileLoaded, setTurnstileLoaded] = useState(false);
@@ -116,6 +134,10 @@ export default function ContactForm() {
     const nextErrors = validateContact(form);
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
+      // Move the caret to the first problem, so a failed submit on a long form is not
+      // silent for someone whose invalid field is off-screen.
+      const firstInvalid = FIELD_ORDER.find((key) => nextErrors[key]);
+      if (firstInvalid) fieldRefs.current[firstInvalid]?.focus();
       return;
     }
 
@@ -229,15 +251,18 @@ export default function ContactForm() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 16 }}>
         <label style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <span style={{ fontSize: 13.5, color: "var(--muted)" }}>Your name</span>
-          <input value={form.name} onChange={onField("name")} type="text" autoComplete="name" required maxLength={CONTACT_LIMITS.name} aria-invalid={Boolean(errors.name)} placeholder="Jordan Ellis" style={{ ...inputStyle, border: `1px solid ${fieldBorder("name")}` }} />
+          <input ref={(el) => { fieldRefs.current.name = el; }} value={form.name} onChange={onField("name")} type="text" autoComplete="name" required maxLength={CONTACT_LIMITS.name} aria-invalid={Boolean(submitted && errors.name)} aria-describedby={submitted && errors.name ? "contact-name-error" : undefined} placeholder="Jordan Ellis" style={{ ...inputStyle, border: `1px solid ${fieldBorder("name")}` }} />
+          <FieldError id="contact-name-error" show={submitted && errors.name} field="name" />
         </label>
         <label style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <span style={{ fontSize: 13.5, color: "var(--muted)" }}>Work email</span>
-          <input value={form.email} onChange={onField("email")} type="email" autoComplete="email" required maxLength={CONTACT_LIMITS.email} aria-invalid={Boolean(errors.email)} placeholder="you@company.com" style={{ ...inputStyle, border: `1px solid ${fieldBorder("email")}` }} />
+          <input ref={(el) => { fieldRefs.current.email = el; }} value={form.email} onChange={onField("email")} type="email" autoComplete="email" required maxLength={CONTACT_LIMITS.email} aria-invalid={Boolean(submitted && errors.email)} aria-describedby={submitted && errors.email ? "contact-email-error" : undefined} placeholder="you@company.com" style={{ ...inputStyle, border: `1px solid ${fieldBorder("email")}` }} />
+          <FieldError id="contact-email-error" show={submitted && errors.email} field="email" />
         </label>
         <label style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <span style={{ fontSize: 13.5, color: "var(--muted)" }}>Company</span>
-          <input value={form.company} onChange={onField("company")} type="text" autoComplete="organization" required maxLength={CONTACT_LIMITS.company} aria-invalid={Boolean(errors.company)} placeholder="Company name" style={{ ...inputStyle, border: `1px solid ${fieldBorder("company")}` }} />
+          <input ref={(el) => { fieldRefs.current.company = el; }} value={form.company} onChange={onField("company")} type="text" autoComplete="organization" required maxLength={CONTACT_LIMITS.company} aria-invalid={Boolean(submitted && errors.company)} aria-describedby={submitted && errors.company ? "contact-company-error" : undefined} placeholder="Company name" style={{ ...inputStyle, border: `1px solid ${fieldBorder("company")}` }} />
+          <FieldError id="contact-company-error" show={submitted && errors.company} field="company" />
         </label>
         <label style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <span style={{ fontSize: 13.5, color: "var(--muted)" }}>Where you are right now</span>
@@ -260,29 +285,40 @@ export default function ContactForm() {
         </label>
         <label style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <span style={{ fontSize: 13.5, color: "var(--muted)" }}>Budget range</span>
-          <select value={form.budget} onChange={onField("budget")} style={{ ...inputStyle, border: `1px solid ${fieldBorder("budget")}` }}>
+          <select
+            ref={(el) => { fieldRefs.current.budget = el; }}
+            value={form.budget}
+            onChange={onField("budget")}
+            aria-invalid={Boolean(submitted && errors.budget)}
+            aria-describedby={submitted && errors.budget ? "contact-budget-error" : undefined}
+            style={{ ...inputStyle, border: `1px solid ${fieldBorder("budget")}` }}
+          >
             <option value="">Select a budget range</option>
             <option value="sprint">A sprint first, then decide</option>
             <option value="small">Small — a defined scope</option>
             <option value="mid">Mid — a full product build</option>
             <option value="ongoing">Ongoing — a dedicated team</option>
           </select>
+          <FieldError id="contact-budget-error" show={submitted && errors.budget} field="budget" />
         </label>
       </div>
 
       <label style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 16 }}>
         <span style={{ fontSize: 13.5, color: "var(--muted)" }}>What is the problem, in your own words</span>
         <textarea
+          ref={(el) => { fieldRefs.current.details = el; }}
           value={form.details}
           onChange={onField("details")}
           rows={5}
           required
           minLength={CONTACT_LIMITS.detailsMin}
           maxLength={CONTACT_LIMITS.detailsMax}
-          aria-invalid={Boolean(errors.details)}
+          aria-invalid={Boolean(submitted && errors.details)}
+          aria-describedby={submitted && errors.details ? "contact-details-error" : undefined}
           placeholder="What is broken, slow or missing — and what would change for the business if it were fixed?"
           style={{ ...inputStyle, border: `1px solid ${fieldBorder("details")}`, lineHeight: 1.55, resize: "vertical" }}
         />
+        <FieldError id="contact-details-error" show={submitted && errors.details} field="details" />
       </label>
 
       {/* Cloudflare Turnstile - invisible CAPTCHA */}

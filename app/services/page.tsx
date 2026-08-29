@@ -2,15 +2,16 @@ import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { CAPS } from "@/lib/data/caps";
-import { capabilityRoute } from "@/lib/nav";
+import { ROUTES, capabilityRoute } from "@/lib/nav";
 import Reveal from "@/components/ui/Reveal";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import styles from "./services.module.css";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Services — ACEVA Technology",
+  title: "Software Development Services",
   description:
-    "Five capabilities, each written in business language: what it includes, when you need it, and what we will not promise.",
+    "Five capabilities: digital experiences, custom software, mobile products, AI automation and product rescue — what each includes, and what we will not promise.",
+  path: ROUTES.services,
 });
 
 export default function ServicesPage() {
@@ -127,8 +128,9 @@ export default function ServicesPage() {
                   >
                     {cap.num}
                   </span>
-                  <span>
-                    <span
+                  <div>
+                    <h2
+                      className="ac-heading-sm"
                       style={{
                         display: "block",
                         fontFamily: "var(--font-space-grotesk)",
@@ -139,7 +141,7 @@ export default function ServicesPage() {
                       }}
                     >
                       {cap.name}
-                    </span>
+                    </h2>
                     <span
                       style={{
                         display: "block",
@@ -152,7 +154,7 @@ export default function ServicesPage() {
                     >
                       {cap.lead}
                     </span>
-                  </span>
+                  </div>
                 </div>
                 <div>
                   <span style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>

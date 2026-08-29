@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
+import { ROUTES } from "@/lib/nav";
 import Reveal from "@/components/ui/Reveal";
 import Card from "@/components/ui/Card";
 import Tag from "@/components/ui/Tag";
 
 export const metadata: Metadata = pageMetadata({
-  title: "About Us — ACEVA Technology",
-  description: "Aceva is the software division of Aceva Holdings — how the team is structured and the month-one launch plan.",
+  title: "About ACEVA Technology — Team & Structure",
+  description:
+    "Aceva is the software division of Aceva Holdings. Five senior engineers, named mentorship for every junior, and the month-one launch plan behind this site.",
+  path: ROUTES.company,
+  absoluteTitle: true,
 });
 
 interface Senior {
@@ -97,7 +101,7 @@ export default function CompanyPage() {
                   <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10.5, letterSpacing: ".14em", color: "var(--electric)", margin: "0 0 12px" }}>
                     {s.role}
                   </p>
-                  <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 18, fontWeight: 500, margin: 0 }}>{s.title}</p>
+                  <h3 className="ac-heading-sm" style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 18, fontWeight: 500, lineHeight: "normal", margin: 0 }}>{s.title}</h3>
                   <p style={{ fontSize: 14.5, lineHeight: 1.6, color: "var(--muted)", margin: "8px 0 0" }}>{s.body}</p>
                   <Tag variant="dashed" style={{ marginTop: 16 }}>
                     SENIOR-LED DELIVERY
@@ -110,7 +114,7 @@ export default function CompanyPage() {
                 <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10.5, letterSpacing: ".14em", color: "var(--muted)", margin: "0 0 12px" }}>
                   FIVE JUNIORS
                 </p>
-                <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 18, fontWeight: 500, margin: 0 }}>Growing under named mentors</p>
+                <h3 className="ac-heading-sm" style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 18, fontWeight: 500, lineHeight: "normal", margin: 0 }}>Growing under named mentors</h3>
                 <p style={{ fontSize: 14.5, lineHeight: 1.6, color: "var(--muted)", margin: "8px 0 0" }}>
                   Research, UI components, feature modules, tests, and documentation — every change reviewed by a named senior engineer before production.
                 </p>
@@ -162,7 +166,7 @@ export default function CompanyPage() {
                 <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10.5, letterSpacing: ".14em", color: "var(--electric)", margin: "0 0 12px" }}>
                   {w.label}
                 </p>
-                <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 18, fontWeight: 500, margin: 0 }}>{w.title}</p>
+                <h3 className="ac-heading-sm" style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 18, fontWeight: 500, lineHeight: "normal", margin: 0 }}>{w.title}</h3>
                 <p style={{ fontSize: 14.5, lineHeight: 1.6, color: "var(--muted)", margin: "8px 0 0" }}>{w.body}</p>
               </Reveal>
             ))}

@@ -13,9 +13,11 @@ import AutomationDemo from "@/components/features/AutomationDemo";
 import styles from "./experiments.module.css";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Experiments — ACEVA Technology",
+  title: "Experiments — Concept Demos & Internal Products",
   description:
-    "Concept demos and internal products, honestly labeled. None of these are client projects — no client names, no results, no invented metrics.",
+    "Concept demos and internal products, honestly labeled. No client names, no invented metrics — only what we actually built and what it proves.",
+  path: ROUTES.work,
+  absoluteTitle: true,
 });
 
 type Severity = "CRITICAL" | "HIGH" | "MEDIUM";

@@ -46,6 +46,8 @@ describe("validateContact", () => {
 
   it("builds a useful error summary", () => {
     expect(errorSummary({ email: true, company: true })).toContain("valid work email");
-    expect(errorSummary({ email: true, company: true })).toContain("shorter company name");
+    // Company became a required field, so the summary asks for it rather than for a
+    // shorter one. This assertion still expected the old length-limit wording.
+    expect(errorSummary({ email: true, company: true })).toContain("your company name");
   });
 });

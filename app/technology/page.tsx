@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
+import { ROUTES } from "@/lib/nav";
 import Reveal from "@/components/ui/Reveal";
 import Card from "@/components/ui/Card";
 import Tag from "@/components/ui/Tag";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Technology — ACEVA Technology",
-  description: "The real stack we build with by default, and what we switch to when a project needs it.",
+  title: "Our Technology Stack",
+  description:
+    "The stack we build with by default, and what we switch to when a project needs it — frameworks, databases, infrastructure and the reasoning behind each.",
+  path: ROUTES.technology,
 });
 
 interface TechCategory {
@@ -88,9 +91,9 @@ export default function TechnologyPage() {
                   variant="plain"
                   style={{ padding: 26 }}
                 >
-                  <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10.5, letterSpacing: ".16em", color: "var(--electric)", margin: "0 0 16px" }}>
+                  <h2 className="ac-heading-sm" style={{ fontFamily: "var(--font-jetbrains-mono)", fontWeight: 400, fontSize: 10.5, lineHeight: "normal", letterSpacing: ".16em", color: "var(--electric)", margin: "0 0 16px" }}>
                     {cat.kicker}
-                  </p>
+                  </h2>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                     {cat.chips.map((chip) => (
                       <Tag key={chip} variant="chip">
