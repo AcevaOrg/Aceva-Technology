@@ -1,21 +1,23 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { CAPS } from "@/lib/data/caps";
-import { capabilityRoute } from "@/lib/nav";
+import { ROUTES, capabilityRoute } from "@/lib/nav";
 import Reveal from "@/components/ui/Reveal";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import styles from "./services.module.css";
 
-export const metadata: Metadata = {
-  title: "Services — ACEVA Technology",
+export const metadata: Metadata = pageMetadata({
+  title: "Software Development Services",
   description:
-    "Five capabilities, each written in business language: what it includes, when you need it, and what we will not promise.",
-};
+    "Five capabilities: digital experiences, custom software, mobile products, AI automation and product rescue — what each includes, and what we will not promise.",
+  path: ROUTES.services,
+});
 
 export default function ServicesPage() {
   return (
     <div>
-      <section style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid var(--hairline)" }}>
+      <section style={{ position: "relative", overflow: "hidden" }}>
         <div
           aria-hidden="true"
           style={{
@@ -35,7 +37,7 @@ export default function ServicesPage() {
             position: "relative",
             maxWidth: 1280,
             margin: "0 auto",
-            padding: "clamp(56px,8vw,104px) clamp(20px,4vw,48px) clamp(44px,6vw,72px)",
+            padding: "calc(var(--nav-offset) + clamp(16px,3vw,32px)) clamp(20px,4vw,48px) clamp(44px,6vw,72px)",
           }}
         >
           <p
@@ -74,8 +76,8 @@ export default function ServicesPage() {
             }}
           >
             <p style={{ fontSize: 17, lineHeight: 1.65, color: "var(--muted)", margin: 0 }}>
-              Keep these five and do not add more at launch. Each one is written in business language: what it
-              includes, when you need it, and what we will not promise.
+              Each one is written in business language: what it includes, when you need it, and what we will not
+              promise.
             </p>
             <p
               style={{
@@ -126,8 +128,9 @@ export default function ServicesPage() {
                   >
                     {cap.num}
                   </span>
-                  <span>
-                    <span
+                  <div>
+                    <h2
+                      className="ac-heading-sm"
                       style={{
                         display: "block",
                         fontFamily: "var(--font-space-grotesk)",
@@ -138,7 +141,7 @@ export default function ServicesPage() {
                       }}
                     >
                       {cap.name}
-                    </span>
+                    </h2>
                     <span
                       style={{
                         display: "block",
@@ -151,7 +154,7 @@ export default function ServicesPage() {
                     >
                       {cap.lead}
                     </span>
-                  </span>
+                  </div>
                 </div>
                 <div>
                   <span style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>

@@ -1,8 +1,6 @@
 import Link from "next/link";
-import Image from "next/image";
 import { ROUTES, capabilityRoute } from "@/lib/nav";
 import { LogoMark } from "@/components/ui/icons";
-import BackToTopButton from "./BackToTopButton";
 import styles from "./Footer.module.css";
 
 const CAPABILITY_LINKS = [
@@ -26,14 +24,13 @@ const RESOURCE_LINKS = [
   { href: ROUTES.technology, label: "Technology Stack" },
   { href: ROUTES.insights, label: "Insights" },
   { href: ROUTES.faq, label: "FAQs" },
-  { href: ROUTES.mobile, label: "Mobile Layouts" },
 ];
 
-function LinkColumn({ title, links }: { title: string; links: { href: string; label: string }[] }) {
+function LinkColumn({ title, links, card = false }: { title: string; links: { href: string; label: string }[]; card?: boolean }) {
   return (
-    <div>
-      <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 16px" }}>{title}</p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 11, alignItems: "flex-start" }}>
+    <div className={card ? styles.navCard : undefined}>
+      <p className={styles.navTitle}>{title}</p>
+      <div className={styles.linkList}>
         {links.map((l) => (
           <Link key={l.href} href={l.href} className={styles.link}>
             {l.label}
@@ -47,16 +44,37 @@ function LinkColumn({ title, links }: { title: string; links: { href: string; la
 export default function Footer() {
   return (
     <footer className="ac-hairline" style={{ borderTop: "1px solid var(--hairline)", position: "relative", zIndex: 1, overflow: "hidden" }}>
-      <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-        <Image src="/images/used/nav-footer-bg.png" alt="" fill className="bg-pan-slow" style={{ objectFit: "cover", objectPosition: "center center", opacity: 0.35 }} />
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 30%, transparent 70%, #0A0A0C 100%)" }} />
+      <div aria-hidden="true" className={styles.animatedBackdrop}>
+        <div className={styles.ambientGlow} />
+        <div className={styles.wordmarkTrack}>
+          <svg className={styles.backgroundWord} viewBox="0 0 1000 170" role="presentation">
+            <defs>
+              <linearGradient id="footerWordmarkFill" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stopColor="#315baf" />
+                <stop offset="0.48" stopColor="#dce9ff" />
+                <stop offset="1" stopColor="#3b7cff" />
+              </linearGradient>
+            </defs>
+            <g fill="url(#footerWordmarkFill)">
+              <path d="M20 150 100 20l80 130h-32l-48-79-48 79Z" />
+              <path d="M380 20H280l-60 65 60 65h100v-26h-89l-39-39 39-39h89Z" />
+              <path d="M420 20h160v26H420Zm0 54h140v22H420Zm0 50h160v26H420Z" />
+              <path d="m620 20 32 1 48 81 48-81 32-1-80 130Z" />
+              <path d="m820 150 80-130 80 130h-32l-48-79-48 79Z" />
+            </g>
+          </svg>
+        </div>
+        <div className={styles.backdropVeil} />
       </div>
-      <div style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(48px,6vw,72px) clamp(20px,4vw,48px)" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: "36px 28px" }}>
-          <div style={{ gridColumn: "span 2", minWidth: 220 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <LogoMark id="acevaStrokeFoot" width={26} height={26} />
-              <span style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: 16, letterSpacing: ".16em" }}>ACEVA</span>
+      <div className="image-backed-content" style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(48px,6vw,72px) clamp(20px,4vw,48px)" }}>
+        <div className={styles.footerGrid}>
+          <div className={styles.brandBlock}>
+            <div className={styles.brandLockup}>
+              <LogoMark id="acevaStrokeFoot" width={36} height={22} />
+              <span className={styles.brandText}>
+                <span className={styles.brandName}>ACEVA</span>
+                <span className={styles.brandSub}>TECHNOLOGY</span>
+              </span>
             </div>
             <p style={{ fontSize: 14.5, lineHeight: 1.65, color: "var(--muted)", margin: "18px 0 0", maxWidth: "34ch" }}>
               Aceva builds new products, improves existing operations and rescues software that needs a stronger path forward.
@@ -66,24 +84,21 @@ export default function Footer() {
             </p>
           </div>
 
-          <LinkColumn title="CAPABILITIES" links={CAPABILITY_LINKS} />
-          <LinkColumn title="COMPANY" links={COMPANY_LINKS} />
-          <LinkColumn title="RESOURCES" links={RESOURCE_LINKS} />
+          <LinkColumn title="CAPABILITIES" links={CAPABILITY_LINKS} card />
+          <LinkColumn title="COMPANY" links={COMPANY_LINKS} card />
+          <LinkColumn title="RESOURCES" links={RESOURCE_LINKS} card />
 
-          <div>
+          <div className={styles.contactBlock}>
             <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 16px" }}>CONTACT</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 11, alignItems: "flex-start" }}>
-              <a href="mailto:acevatechnology@gmail.com" style={{ fontSize: 14, color: "var(--ink)" }}>
-                acevatechnology@gmail.com
+              <a href="mailto:acevatech.official@gmail.com" style={{ fontSize: 14, color: "var(--ink)" }}>
+                acevatech.official@gmail.com
               </a>
-              <span style={{ color: "#4b4f5b", fontFamily: "var(--font-jetbrains-mono)", fontSize: 12 }}>PHONE — PLACEHOLDER</span>
-              <span style={{ color: "#4b4f5b", fontFamily: "var(--font-jetbrains-mono)", fontSize: 12 }}>NEW YORK ADDRESS — PLACEHOLDER</span>
-              <span style={{ color: "#4b4f5b", fontFamily: "var(--font-jetbrains-mono)", fontSize: 12 }}>LINKEDIN / GITHUB — PLACEHOLDER</span>
             </div>
           </div>
         </div>
 
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "14px 26px", alignItems: "center", justifyContent: "space-between", marginTop: "clamp(36px,5vw,56px)", paddingTop: 24, borderTop: "1px solid var(--hairline)" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "14px 26px", alignItems: "center", justifyContent: "space-between", marginTop: "clamp(36px,5vw,56px)", paddingTop: 24 }}>
           <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11.5, color: "#4b4f5b", margin: 0 }}>© 2026 ACEVA TECHNOLOGY. ALL RIGHTS RESERVED.</p>
           <div style={{ display: "flex", gap: 22, alignItems: "center" }}>
             <Link href={ROUTES.privacy} className={styles.bottomLink}>
@@ -92,7 +107,6 @@ export default function Footer() {
             <Link href={ROUTES.terms} className={styles.bottomLink}>
               Terms of Service
             </Link>
-            <BackToTopButton />
           </div>
         </div>
       </div>

@@ -1,5 +1,7 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { pageMetadata } from "@/lib/seo";
 import { CAPS } from "@/lib/data/caps";
 import { ROUTES, capabilityRoute } from "@/lib/nav";
 import Reveal from "@/components/ui/Reveal";
@@ -8,8 +10,18 @@ import Card from "@/components/ui/Card";
 import Tag from "@/components/ui/Tag";
 import ArrowLink from "@/components/ui/ArrowLink";
 import { ArrowRightIcon } from "@/components/ui/icons";
-import HeroCanvas from "@/components/ui/HeroCanvas";
 import PathChooser from "@/components/features/PathChooser";
+import ProcessLoop from "@/components/ui/ProcessLoop";
+import ProofBoard from "@/components/ui/ProofBoard";
+
+// The brand already leads this title, so it bypasses the layout's "%s — ACEVA Technology" template.
+export const metadata: Metadata = pageMetadata({
+  title: "ACEVA Technology — Custom Software, Web & Mobile Engineering",
+  description:
+    "ACEVA Technology designs, builds and scales custom software, web and mobile products. AI-accelerated, senior-reviewed, production-ready.",
+  path: "/",
+  absoluteTitle: true,
+});
 
 const CAP_ICONS: Record<string, React.ReactNode> = {
   digital: (
@@ -69,10 +81,10 @@ const PROCESS_STEPS = [
 ];
 
 const PROOF_CARDS = [
-  { badge: "LIVE PROOF", title: "This website", body: "Digital Experiences, demonstrated by the thing you are using now.", variant: "default" as const, ice: true },
-  { badge: "CONCEPT DEMO", title: "Operations dashboard", body: "Users, permissions, tasks, data and reporting in one realistic workflow.", variant: "default" as const, ice: false },
-  { badge: "CONCEPT DEMO", title: "Mobile journey", body: "One complete journey from sign-in to a useful outcome — not ten loose screens.", variant: "default" as const, ice: false },
-  { badge: "CONCEPT DEMO", title: "Automation with approval", body: "Request, lookup, proposed action, human approval, system update.", variant: "default" as const, ice: false },
+  { badge: "LIVE PROOF", title: "This website", body: "Digital Experiences, demonstrated by the thing you are using now.", variant: "flagship" as const, ice: true },
+  { badge: "CONCEPT DEMO", title: "Operations dashboard", body: "Users, permissions, tasks, data and reporting in one realistic workflow.", variant: "flagship" as const, ice: true },
+  { badge: "CONCEPT DEMO", title: "Mobile journey", body: "One complete journey from sign-in to a useful outcome — not ten loose screens.", variant: "flagship" as const, ice: true },
+  { badge: "CONCEPT DEMO", title: "Automation with approval", body: "Request, lookup, proposed action, human approval, system update.", variant: "flagship" as const, ice: true },
   { badge: "SAMPLE REPORT", title: "Rescue Report", body: "Findings, severity, what to keep, what to replace, and a 30/60/90-day plan.", variant: "flagship" as const, ice: true },
 ];
 
@@ -80,34 +92,40 @@ export default function HomePage() {
   return (
     <div>
       {/* Hero */}
-      <section className="hero" style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid var(--hairline)" }}>
+      <section className="hero" style={{ position: "relative", overflow: "hidden" }}>
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/shared-skyline.jpg" alt="" fill className="bg-pan-slow" style={{ objectFit: "cover", objectPosition: "center center", opacity: 1 }} priority />
+          <Image src="/images/used/Aceva.webp" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--hero bg-pan-slow" priority />
           <div className="hero-overlay" />
         </div>
-        <div style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,10vw,120px) clamp(20px,4vw,48px) clamp(48px,6vw,72px)", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
-          <p style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, fontFamily: "var(--font-jetbrains-mono)", fontSize: 11.5, letterSpacing: ".2em", color: "var(--ice)", margin: "0 0 clamp(24px,4vw,38px)", animation: "acFadeUp 700ms cubic-bezier(.16,1,.3,1) both" }}>
+        <div style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(110px,14vw,160px) clamp(20px,4vw,48px) clamp(48px,6vw,72px)", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+          <p style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, fontFamily: "var(--font-jetbrains-mono)", fontSize: 11.5, letterSpacing: ".2em", color: "var(--ice)", margin: "0 0 clamp(24px,4vw,38px)", animation: "acTrackIn 900ms cubic-bezier(.16,1,.3,1) both" }}>
             <span style={{ width: 22, height: 1, background: "var(--electric)" }} />
             ACEVA HOLDINGS / SOFTWARE DIVISION
             <span aria-hidden="true" style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--success)", boxShadow: "0 0 8px rgba(47,190,122,.5)", animation: "acPulseDot 2.8s ease-in-out infinite" }} />
           </p>
-          <h1 style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: "clamp(38px,6.6vw,72px)", lineHeight: 1.04, letterSpacing: "-.03em", margin: "0 auto", maxWidth: 800, animation: "acFadeUp 800ms cubic-bezier(.16,1,.3,1) 60ms both" }}>
-            Build what your business needs next.
+          <h1 style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: "clamp(38px,6.6vw,72px)", lineHeight: 1.04, letterSpacing: "-.03em", margin: "0 auto", maxWidth: 800, animation: "acMaskUp 900ms cubic-bezier(.16,1,.3,1) 80ms both" }}>
+            <span className="ac-text-shimmer">
+              Build what your business <span className="hero-title-accent">needs next.</span>
+            </span>
           </h1>
-          <p style={{ fontSize: "clamp(16.5px,1.5vw,19.5px)", lineHeight: 1.62, color: "var(--muted)", maxWidth: "60ch", margin: "clamp(22px,3vw,30px) auto 0", animation: "acFadeUp 800ms cubic-bezier(.16,1,.3,1) 140ms both" }}>
+          <p style={{ fontSize: "clamp(16.5px,1.5vw,19.5px)", lineHeight: 1.62, color: "var(--muted)", maxWidth: "60ch", margin: "clamp(22px,3vw,30px) auto 0", animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 160ms both" }}>
             Aceva designs digital experiences, custom software, mobile products and intelligent systems — and rescues products that need a stronger path forward.
           </p>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 12, marginTop: "clamp(30px,4vw,42px)", animation: "acFadeUp 800ms cubic-bezier(.16,1,.3,1) 220ms both" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 12, marginTop: "clamp(30px,4vw,42px)", animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 260ms both" }}>
             <Link href={ROUTES.contact} className="ac-btn-primary" style={{ minHeight: 52, padding: "16px 26px" }}>
               Start a Project
               <ArrowRightIcon width={15} height={15} strokeWidth={2.2} />
+            </Link>
+            <Link href={ROUTES.contact} className="ac-btn-ghost" style={{ minHeight: 52, padding: "16px 26px" }}>
+              Contact Us
+              <ArrowRightIcon width={15} height={15} />
             </Link>
             <Link href={ROUTES.work} className="ac-btn-ghost" style={{ minHeight: 52, padding: "16px 26px" }}>
               Explore Experiments
               <ArrowRightIcon width={15} height={15} />
             </Link>
           </div>
-          <p style={{ fontSize: 13.5, color: "var(--muted)", margin: "clamp(28px,4vw,40px) 0 0", animation: "acFadeUp 800ms cubic-bezier(.16,1,.3,1) 300ms both" }}>
+          <p style={{ fontSize: 13.5, color: "var(--muted)", margin: "clamp(28px,4vw,40px) 0 0", animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 360ms both" }}>
             For buyers with a clear idea or problem — or visitors who want to see how Aceva thinks and builds.
           </p>
           <p className="ac-scroll-cue" aria-hidden="true" style={{ margin: "clamp(32px,5vw,64px) auto 0" }}>
@@ -117,22 +135,10 @@ export default function HomePage() {
             </svg>
           </p>
         </div>
-        <div style={{ borderTop: "1px solid var(--hairline)", background: "rgba(20,20,24,.5)" }}>
-          <div style={{ maxWidth: 1280, margin: "0 auto", padding: "22px clamp(20px,4vw,48px)", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "18px 32px" }}>
-            <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: 0 }}>CLIENT LOGOS — PLACEHOLDER UNTIL FIRST ENGAGEMENTS LAUNCH</p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-              {[0, 1, 2, 3].map((i) => (
-                <Tag key={i} variant="dashed" style={{ width: 104, height: 34 }}>
-                  LOGO SLOT
-                </Tag>
-              ))}
-            </div>
-          </div>
-        </div>
       </section>
 
       {/* Paths */}
-      <section id="paths" style={{ borderBottom: "1px solid var(--hairline)" }}>
+      <section id="paths">
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,9vw,116px) clamp(20px,4vw,48px)" }}>
           <Reveal style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", justifyContent: "space-between", gap: 16 }}>
             <div>
@@ -146,48 +152,54 @@ export default function HomePage() {
       </section>
 
       {/* Five capabilities */}
-      <section className="capabilities" style={{ borderBottom: "1px solid var(--hairline)" }}>
+      <section className="capabilities">
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/architectural-blueprint.jpg" alt="" fill className="bg-pan" style={{ objectFit: "cover", objectPosition: "center center", opacity: 1 }} />
+          <Image src="/images/used/The offer.jpeg" alt="" fill sizes="100vw" style={{ objectFit: "contain", objectPosition: "center center", transform: "scale(1.1)", transformOrigin: "center center" }} />
           <div className="capabilities-overlay" />
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 15%, transparent 85%, #0A0A0C 100%)" }} />
         </div>
         <div style={{ position: "relative", zIndex: 1, maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,9vw,116px) clamp(20px,4vw,48px)" }}>
-          <Reveal>
-            <Eyebrow>02 — THE OFFER</Eyebrow>
-            <h2 style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: "clamp(28px,4vw,46px)", lineHeight: 1.08, letterSpacing: "-.025em", margin: 0, maxWidth: "22ch" }}>
-              Five capabilities. One accountable engineering partner.
-            </h2>
+          <Reveal style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-end", justifyContent: "space-between", gap: 16 }}>
+            <div>
+              <Eyebrow>02 — THE OFFER</Eyebrow>
+              <h2 style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: "clamp(28px,4vw,46px)", lineHeight: 1.08, letterSpacing: "-.025em", margin: 0, maxWidth: "22ch" }}>
+                Five capabilities. One accountable engineering partner.
+              </h2>
+            </div>
           </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(290px,1fr))", gap: 14, marginTop: "clamp(30px,4vw,48px)" }}>
-            {CAPS.map((cap) => (
-              <Reveal key={cap.key}>
-                <Card variant={cap.key === "rescue" ? "flagship" : "default"} href={capabilityRoute(cap.key)} style={{ padding: 28, display: "flex", flexDirection: "column", gap: 12, minHeight: 230 }}>
-                  <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".16em", color: cap.key === "rescue" ? "var(--ice)" : "var(--muted)" }}>
-                    {cap.key === "rescue" ? `${cap.num} · FLAGSHIP` : cap.num}
-                    {CAP_ICONS[cap.key]}
-                  </span>
-                  <span style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 22, fontWeight: 500, letterSpacing: "-.01em", marginTop: 6 }}>{cap.name}</span>
-                  <span style={{ fontSize: 14.5, lineHeight: 1.62, color: cap.key === "rescue" ? "#c3c8d4" : "var(--muted)" }}>{CAP_HOME_BLURBS[cap.key]}</span>
-                  <span className="ac-link" style={{ marginTop: "auto", fontSize: 13.5 }}>
-                    Learn more
-                    <ArrowRightIcon />
-                  </span>
+
+          <div className="offer-frame">
+
+            <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(290px,1fr))", gap: 14 }}>
+              {CAPS.map((cap) => (
+                <Reveal key={cap.key}>
+                  <Card variant="flagship" href={capabilityRoute(cap.key)} style={{ padding: 28, display: "flex", flexDirection: "column", gap: 12, minHeight: 230 }}>
+                    <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".16em", color: "var(--ice)" }}>
+                      {cap.key === "rescue" ? `${cap.num} · FLAGSHIP` : cap.num}
+                      {CAP_ICONS[cap.key]}
+                    </span>
+                    <span style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 22, fontWeight: 500, letterSpacing: "-.01em", marginTop: 6 }}>{cap.name}</span>
+                    <span style={{ fontSize: 14.5, lineHeight: 1.62, color: "#c3c8d4" }}>{CAP_HOME_BLURBS[cap.key]}</span>
+                    <span className="ac-link" style={{ marginTop: "auto", fontSize: 13.5 }}>
+                      Learn more
+                      <ArrowRightIcon />
+                    </span>
+                  </Card>
+                </Reveal>
+              ))}
+              <Reveal>
+                <Card variant="flagship" href={ROUTES.services} style={{ padding: 28, display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 10, minHeight: 230 }}>
+                  <span style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 19, fontWeight: 500, letterSpacing: "-.01em" }}>All capabilities in detail</span>
+                  <span style={{ fontSize: 14, color: "#c3c8d4" }}>What each one includes, when to buy it, and what we will not promise.</span>
                 </Card>
               </Reveal>
-            ))}
-            <Reveal>
-              <Card variant="ghost" href={ROUTES.services} style={{ padding: 28, display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 10, minHeight: 230 }}>
-                <span style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 19, fontWeight: 500, letterSpacing: "-.01em" }}>All capabilities in detail</span>
-                <span style={{ fontSize: 14, color: "var(--muted)" }}>What each one includes, when to buy it, and what we will not promise.</span>
-              </Card>
-            </Reveal>
+            </div>
           </div>
+
         </div>
       </section>
 
       {/* Differentiator strip */}
-      <section style={{ borderBottom: "1px solid var(--hairline)", background: "rgba(15,15,19,.72)" }}>
+      <section>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(56px,7vw,88px) clamp(20px,4vw,48px)", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))", gap: 2 }}>
           {[
             { n: "01", text: "AI-accelerated. Senior-reviewed. Production-ready." },
@@ -203,7 +215,7 @@ export default function HomePage() {
       </section>
 
       {/* How we compete */}
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
+      <section>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,9vw,116px) clamp(20px,4vw,48px)" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: "clamp(30px,5vw,72px)" }}>
             <Reveal>
@@ -234,9 +246,9 @@ export default function HomePage() {
       </section>
 
       {/* Process strip */}
-      <section className="process" style={{ borderBottom: "1px solid var(--hairline)" }}>
+      <section className="process">
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/process-bg.png" alt="" fill className="bg-pan-fast" style={{ objectFit: "cover", objectPosition: "center center", opacity: 0.4 }} />
+          <ProcessLoop />
           <div className="process-overlay" />
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 15%, transparent 85%, #0A0A0C 100%)" }} />
         </div>
@@ -264,9 +276,9 @@ export default function HomePage() {
       </section>
 
       {/* Proof, not portfolio */}
-      <section className="experiments" style={{ borderBottom: "1px solid var(--hairline)", background: "rgba(15,15,19,.72)" }}>
+      <section className="experiments">
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/twin-visions.jpg" alt="" fill className="bg-pan" style={{ objectFit: "cover", objectPosition: "center center", opacity: 1 }} />
+          <ProofBoard />
           <div className="experiments-overlay" />
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 20%, transparent 80%, #0A0A0C 100%)" }} />
         </div>
@@ -283,7 +295,7 @@ export default function HomePage() {
               <ArrowRightIcon />
             </Link>
           </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 14, marginTop: "clamp(30px,4vw,48px)" }}>
+          <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 14, marginTop: "clamp(30px,4vw,48px)" }}>
             {PROOF_CARDS.map((c) => (
               <Reveal key={c.title}>
                 <Card variant={c.variant} href={ROUTES.work} style={{ padding: 24, minHeight: 180, display: "flex", flexDirection: "column", gap: 10 }}>
@@ -300,10 +312,10 @@ export default function HomePage() {
       </section>
 
       {/* Teaser row */}
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,9vw,116px) clamp(20px,4vw,48px)", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 14 }}>
+      <section>
+        <div className="ac-card-grid" style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,9vw,116px) clamp(20px,4vw,48px)", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 14 }}>
           <Reveal>
-            <Card style={{ padding: 30 }}>
+            <Card variant="flagship" className="home-teaser-card" style={{ padding: 30, height: "100%" }}>
               <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 16px" }}>CLIENT FEEDBACK</p>
               <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 21, fontWeight: 500, lineHeight: 1.34, letterSpacing: "-.01em", margin: 0 }}>Coming soon.</p>
               <p style={{ fontSize: 14.5, lineHeight: 1.6, color: "var(--muted)", margin: "12px 0 0" }}>We publish quotes only after real engagements close. Nothing here is invented.</p>
@@ -313,7 +325,7 @@ export default function HomePage() {
             </Card>
           </Reveal>
           <Reveal>
-            <Card style={{ padding: 30 }}>
+            <Card variant="flagship" className="home-teaser-card" style={{ padding: 30, height: "100%" }}>
               <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 16px" }}>CAREERS</p>
               <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 21, fontWeight: 500, lineHeight: 1.34, letterSpacing: "-.01em", margin: 0 }}>Five seniors. Five juniors. Every change reviewed.</p>
               <p style={{ fontSize: 14.5, lineHeight: 1.6, color: "var(--muted)", margin: "12px 0 0" }}>No junior change reaches production without a named senior review. That is how people grow here.</p>
@@ -323,7 +335,7 @@ export default function HomePage() {
             </Card>
           </Reveal>
           <Reveal>
-            <Card style={{ padding: 30 }}>
+            <Card variant="flagship" className="home-teaser-card" style={{ padding: 30, height: "100%" }}>
               <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 16px" }}>COMMON QUESTIONS</p>
               {["How do we start?", "Fixed scope or dedicated team?"].map((q) => (
                 <p key={q} style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 16, fontWeight: 500, lineHeight: 1.4, margin: "0 0 10px", paddingBottom: 12, borderBottom: "1px solid var(--hairline)" }}>
@@ -347,14 +359,14 @@ export default function HomePage() {
             Tell us what is costing you the most time, money or customer trust.
           </Reveal>
           <Reveal style={{ fontSize: "clamp(16px,1.5vw,18.5px)", lineHeight: 1.6, color: "var(--muted)", margin: "24px 0 0", maxWidth: "52ch" }}>
-            A short qualification form, then a meeting. We reply from acevatechnology@gmail.com.
+            A short qualification form, then a meeting. We reply from acevatech.official@gmail.com.
           </Reveal>
           <Reveal style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 34 }}>
             <Link href={ROUTES.contact} className="ac-btn-primary" style={{ minHeight: 52, padding: "16px 26px" }}>
               Start a Project
               <ArrowRightIcon width={15} height={15} strokeWidth={2.2} />
             </Link>
-            <a href="mailto:acevatechnology@gmail.com" className="ac-btn-ghost" style={{ minHeight: 52, padding: "16px 26px" }}>
+            <a href="mailto:acevatech.official@gmail.com" className="ac-btn-ghost" style={{ minHeight: 52, padding: "16px 26px" }}>
               Email us directly
             </a>
           </Reveal>

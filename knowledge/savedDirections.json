@@ -1,0 +1,371 @@
+{
+  "PLS-260826-883": {
+    "pulseId": "PLS-260826-883",
+    "lead": {
+      "name": "Test Lead",
+      "contact": "test@example.com",
+      "method": "Email"
+    },
+    "context": {
+      "industry": "Restaurant",
+      "intent": "Online Ordering"
+    },
+    "recommendedModules": [
+      "Digital menu",
+      "Order tracking"
+    ],
+    "createdAt": "2026-08-29T17:28:23.394Z"
+  },
+  "PLS-260826-615": {
+    "pulseId": "PLS-260826-615",
+    "lead": {
+      "name": "Ahmed Mustafa",
+      "contact": "bhurgrimustafa203@gmail.com",
+      "method": "Email"
+    },
+    "context": {
+      "intent": "Start something new",
+      "industry": "Commerce",
+      "business": "Product business",
+      "friction": [
+        "Users: sales teams",
+        "Managers",
+        "Admins\n CRM: Salesforce\nKey metrics: sales pipeline"
+      ],
+      "goals": [
+        "Mobile access: Yes",
+        "Fully mobile-friendly for phones",
+        "Tablets\n Dashboards: Detailed drill-downs by region"
+      ],
+      "current": "Users: sales teams, managers, and admins\n CRM: Salesforce\nKey metrics: sales pipelin",
+      "scale": "Users: sales reps, managers, and admins\n AI tasks: lead scorin",
+      "timeline": "Salesforce data: opportunity stage, close date, produc"
+    },
+    "answers": [
+      "Product: SaaS web platform\n Key features: AI automation, analytics dashboard, reporting, and CRM integration\n Timeline: 3–4 months",
+      "Users: sales teams, managers, and admins\n CRM: Salesforce\nKey metrics: sales pipeline, conversion rates, revenue, customer lifetime value, and campaign performance",
+      "Users: sales reps, managers, and admins\n AI tasks: lead scoring, email follow-ups, data entry, and customer insights\n Reports: PDF, Excel, and dashboard snapshots",
+      "Mobile access: Yes, fully mobile-friendly for phones and tablets\n Dashboards: Detailed drill-downs by region, product, and sales team",
+      "Salesforce data: opportunity stage, close date, product, deal value, lead status, and sales activity\n Permissions: reps see their own deals, managers see team data, admins see all data"
+    ],
+    "recommendedModules": [
+      "Conversion-focused web experience",
+      "Product inventory system",
+      "Fulfillment flow integration",
+      "Customer lifecycle engine",
+      "Commerce intelligence reporting"
+    ],
+    "createdAt": "2026-08-26T15:15:56.865Z"
+  },
+  "PLS-260826-419": {
+    "pulseId": "PLS-260826-419",
+    "lead": {
+      "name": "Muhammad Tahir",
+      "contact": "mtahirdars32@gmail.com",
+      "method": "Email"
+    },
+    "context": {
+      "intent": "Start something new",
+      "industry": "Business Services",
+      "business": "I want an algorithm for the counting of my cows using the live",
+      "current": "Business & Scope – My farm name is TD Farms and number if cows have now 20000.\nCurre",
+      "friction": [
+        "Business & Scope – My farm name is TD Farms",
+        "Number if cows have now 20000",
+        "Current Setup – I want a simple app that has camera access after full view of the cows I need just number to be printed \nKey Features – I want a simple tabled time text that summarizes the needed information\nTimeline & Budget – Timeline is As soon as possible"
+      ],
+      "scale": "I want the application to use the camera to scan the area and ",
+      "goals": [
+        "I have already told you this"
+      ],
+      "timeline": "I have answered this"
+    },
+    "answers": [
+      "I want an algorithm for the counting of my cows using the live video \nIt solves the counting problem of thousand algorithms \nI want to as soon as possible",
+      "Business & Scope – My farm name is TD Farms and number if cows have now 20000.\nCurrent Setup – I want a simple app that has camera access after full view of the cows I need just number to be printed \nKey Features – I want a simple tabled time text that summarizes the needed information\nTimeline & Budget – Timeline is As soon as possible and budget depends on timeline and quality of app.\nDecision‑Maker – My technical team will be approving and signing off the app.",
+      "I want the application to use the camera to scan the area and automatically detect and count all the cows visible in the camera view. It should then show the total number of cows clearly on the screen.\nI want it to run on both mobile and tablet and it must run everywhere it is used.",
+      "I have already told you this .",
+      "I have answered this"
+    ],
+    "recommendedModules": [
+      "Digital foundation platform",
+      "Connected team workflow",
+      "Operational control dashboard",
+      "Customer experience portal",
+      "Decision intelligence analytics"
+    ],
+    "createdAt": "2026-08-26T15:27:32.472Z"
+  },
+  "PLS-260826-933": {
+    "pulseId": "PLS-260826-933",
+    "lead": {
+      "name": "ahmed",
+      "contact": "ahmed@gmail.com",
+      "method": "Email"
+    },
+    "context": {
+      "intent": "Start something new",
+      "industry": "Business Services",
+      "business": "I am thinking to make a reliable website for my college",
+      "current": "It should contain student details, teachers details, staff details, enroll any new s",
+      "friction": [
+        "It should contain student details",
+        "Teachers details",
+        "Staff details"
+      ],
+      "scale": "Ahmed Mustafa: 0319-4764775\nProject timeline: 2 weeks",
+      "goals": [
+        "Project: College management portal\n*Users: Students",
+        "Teachers",
+        "Staff"
+      ],
+      "timeline": "contact details confirmed"
+    },
+    "answers": [
+      "I am thinking to make a reliable website for my college",
+      "It should contain student details, teachers details, staff details, enroll any new student",
+      "Ahmed Mustafa: 0319-4764775\nProject timeline: 2 weeks",
+      "Project: College management portal\n*Users: Students, teachers, staff, and administrators\n Features: Student records, online enrollment, applications, and admin dashboard\n Security: Role-based access, secure login, and encrypted data\n Goal: Make college data and enrollment management simple and efficient",
+      "contact details confirmed"
+    ],
+    "recommendedModules": [
+      "Digital foundation platform",
+      "Connected team workflow",
+      "Operational control dashboard",
+      "Customer experience portal",
+      "Decision intelligence analytics"
+    ],
+    "createdAt": "2026-08-26T15:41:11.397Z"
+  },
+  "PLS-260826-227": {
+    "pulseId": "PLS-260826-227",
+    "lead": {
+      "name": "ali",
+      "contact": "ali12@gmail.com",
+      "method": "Email"
+    },
+    "context": {
+      "intent": "Start something new",
+      "industry": "Software & Technology",
+      "business": "Digital product or SaaS platform",
+      "friction": [
+        "Writing: keyboard",
+        "Handwriting\n Media: photos",
+        "Voice recordings\n Organization: folders"
+      ],
+      "goals": [
+        "I am ready\nHere are my contact details\nname: ahmed\ncontact: 03123456789\nemail: ali12@gmail"
+      ],
+      "current": "Writing: keyboard and handwriting\n Media: photos and voice recordings\n Organization:",
+      "scale": "Go ahead",
+      "timeline": "sent"
+    },
+    "answers": [
+      "I want a mobile app that works as a notebook for me",
+      "Writing: keyboard and handwriting\n Media: photos and voice recordings\n Organization: folders, tags, and search\n Sync: sync across all devices with a private mode\n Goal: simple, fast, and secure note-taking anywhere",
+      "Go ahead",
+      "I am ready\nHere are my contact details\nname: ahmed\ncontact: 03123456789\nemail: ali12@gmail.com",
+      "sent"
+    ],
+    "recommendedModules": [
+      "Custom Start something new Core Platform",
+      "Role-Based User Management & Security Vault",
+      "Automated Customer & Team Workflow Engine",
+      "Real-Time Operational Command Dashboard",
+      "Performance Telemetry & Growth Analytics"
+    ],
+    "createdAt": "2026-08-26T15:47:20.401Z"
+  },
+  "PLS-260827-371": {
+    "pulseId": "PLS-260827-371",
+    "lead": {
+      "name": "alii",
+      "contact": "alii123@gmail.com",
+      "method": "Email"
+    },
+    "context": {
+      "intent": "Start something new",
+      "industry": "Education & E-Learning",
+      "business": "Educational institution or academy",
+      "friction": [
+        "It must have student",
+        "Teachers",
+        "Staff details also new enrollments"
+      ],
+      "goals": [
+        "Operational clarity",
+        "Measurable growth"
+      ],
+      "current": "It must have student, teachers, and staff details also new enrollments",
+      "scale": "in 2 weeks",
+      "timeline": "save"
+    },
+    "answers": [
+      "I want a website for my college",
+      "It must have student, teachers, and staff details also new enrollments",
+      "in 2 weeks",
+      "Yes",
+      "save"
+    ],
+    "recommendedModules": [
+      "Course Catalog & Video Lesson Portal",
+      "Student & Parent Dashboard (Grades, Attendance)",
+      "Online Tuition Fee Payment Gateway",
+      "Automated Certificate & Quiz Engine",
+      "Academic Administration Analytics Dashboard"
+    ],
+    "createdAt": "2026-08-27T11:39:52.633Z"
+  },
+  "PLS-260827-331": {
+    "pulseId": "PLS-260827-331",
+    "lead": {
+      "name": "Ahmed Mustafa",
+      "contact": "bhurgrimustafa203@gmail.com",
+      "method": "Email"
+    },
+    "context": {
+      "intent": "Sell something",
+      "industry": "Business Services",
+      "business": "I have made a new digital product that helps in reading withou",
+      "current": "It is a simple, lightweight e-reader the size of a smartphone. You can send books fr",
+      "friction": [
+        "It is a simple",
+        "Lightweight e-reader the size of a smartphone",
+        "You can send books from your phone via Bluetooth"
+      ],
+      "scale": "I have developed it in mobile looking device that has its own ",
+      "goals": [
+        "It is a simple",
+        "Lightweight e-reader the size of a smartphone",
+        "You can send books from your phone via Bluetooth"
+      ],
+      "timeline": "Smartphone-sized e-reader device\n Built-in memory and "
+    },
+    "answers": [
+      "I have made a new digital product that helps in reading without any interruptions or distractions.",
+      "It is a simple, lightweight e-reader the size of a smartphone. You can send books from your phone via Bluetooth, save them on the device, and read, highlight, or delete them. It has no camera, audio, or unnecessary features—just everything you need for a focused reading experience.",
+      "I have developed it in mobile looking device that has its own battery, a little space(memory) and navigation/gesture support and also independence of doing all these things that we do in a mobile.",
+      "It is a simple, lightweight e-reader the size of a smartphone. You can send books from your phone via Bluetooth, save them on the device, and read, highlight, or delete them. It has no camera, audio, or unnecessary features—just everything you need for a focused reading experience.",
+      "Smartphone-sized e-reader device\n Built-in memory and adjustable reading light\n Gesture and navigation support\n Bluetooth connectivity\n Send and save books directly from a mobile phone\n Read, highlight, mark, and write on books\n Fully developed and ready to present to companies for sale\nand the target timeline is 5 weeks and budget is 5000 INR"
+    ],
+    "recommendedModules": [
+      "Custom Sell something Core Platform",
+      "Role-Based User Management & Security Vault",
+      "Automated Customer & Team Workflow Engine",
+      "Real-Time Operational Command Dashboard",
+      "Performance Telemetry & Growth Analytics"
+    ],
+    "createdAt": "2026-08-27T13:33:09.106Z"
+  },
+  "PLS-260827-870": {
+    "pulseId": "PLS-260827-870",
+    "lead": {
+      "name": "Ahmed Mustafa",
+      "contact": "bhurgrimustafa203@gmail.com",
+      "method": "Email"
+    },
+    "context": {
+      "intent": "Improve what I have",
+      "industry": "Business Services",
+      "business": "I have legacy code on Java8 I want it to be moved from 8 to 25",
+      "current": "My App lacks efficiency and productivity and connectivity at some functions that is ",
+      "friction": [
+        "My App lacks efficiency",
+        "Productivity",
+        "Connectivity at some functions that is why I want to be completely real time"
+      ],
+      "scale": "Both things ,  connectivity or efficiency.",
+      "goals": [
+        "Target Users: 34K users now 50k will be till next year"
+      ],
+      "timeline": "timeline is 5 weeks."
+    },
+    "answers": [
+      "I have legacy code on Java8 I want it to be moved from 8 to 25 and some parts of then to be implemented in Kotlin",
+      "My App lacks efficiency and productivity and connectivity at some functions that is why I want to be completely real time and fully efficient.",
+      "Both things ,  connectivity or efficiency.",
+      "Target Users: 34K users now 50k will be till next year.",
+      "timeline is 5 weeks."
+    ],
+    "recommendedModules": [
+      "Custom Improve what i have Core Platform",
+      "Role-Based User Management & Security Vault",
+      "Automated Customer & Team Workflow Engine",
+      "Real-Time Operational Command Dashboard",
+      "Performance Telemetry & Growth Analytics"
+    ],
+    "createdAt": "2026-08-27T14:06:59.634Z"
+  },
+  "PLS-260827-999": {
+    "pulseId": "PLS-260827-999",
+    "lead": {
+      "name": "Test Client",
+      "contact": "client@test.com",
+      "method": "Email"
+    },
+    "context": {
+      "industry": "Hospitality & Restaurant",
+      "intent": "Start something new",
+      "timeline": "Operational within 6 weeks with $15,000 budget",
+      "scale": "3 restaurant branches in Karachi",
+      "goals": [
+        "Direct ordering",
+        "Live order tracking"
+      ],
+      "friction": [
+        "High delivery commission fees"
+      ]
+    },
+    "answers": [
+      "I want a mobile app for ordering food",
+      "High delivery commission fees from third parties",
+      "3 restaurant branches in Karachi with 20 staff",
+      "Direct ordering with live order tracking",
+      "Operational within 6 weeks with $15,000 budget"
+    ],
+    "recommendedModules": [
+      "Custom Digital Ordering & Menu Portal",
+      "Kitchen Display System"
+    ],
+    "createdAt": "2026-08-27T14:16:00.270Z"
+  },
+  "PLS-260827-871": {
+    "pulseId": "PLS-260827-871",
+    "lead": {
+      "name": "Naveed Ahmed",
+      "contact": "naveedbhurgriwala@gmail.com",
+      "method": "Email"
+    },
+    "context": {
+      "intent": "Start something new",
+      "industry": "Hospitality & Restaurant",
+      "business": "Restaurant operation",
+      "friction": [
+        "Everything",
+        "An online menu",
+        "Reservation system"
+      ],
+      "goals": [
+        "I am thinking to launch it right after 6 weeks"
+      ],
+      "current": "everything, an online menu, reservation system, or perhaps an ordering system for de",
+      "scale": "everything, local customers, tourists, or perhaps a specific d",
+      "timeline": "I can provide it in  200K PKR."
+    },
+    "answers": [
+      "i want a website for my restaurant.",
+      "everything, an online menu, reservation system, or perhaps an ordering system for delivery and pickup.",
+      "everything, local customers, tourists, or perhaps a specific demographic. and the number of users are between 10000 and 35000 now.",
+      "I am thinking to launch it right after 6 weeks.",
+      "I can provide it in  200K PKR."
+    ],
+    "recommendedModules": [
+      "Custom Digital Ordering & Menu Portal",
+      "Real-Time Table Booking & Reservation Engine",
+      "Kitchen Display System (KDS) & Order Tracker",
+      "Customer Loyalty & Automated SMS Reminders",
+      "Owner Revenue & Sales Analytics Dashboard"
+    ],
+    "createdAt": "2026-08-27T14:22:10.537Z"
+  }
+}

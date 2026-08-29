@@ -1,19 +1,24 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
+import { ROUTES } from "@/lib/nav";
 import Reveal from "@/components/ui/Reveal";
 import KeyValueRow from "@/components/ui/KeyValueRow";
 import ContactForm from "@/components/features/ContactForm";
 
-export const metadata: Metadata = {
-  title: "Contact — ACEVA Technology",
-  description: "Tell Aceva what is costing you the most time, money or customer trust. A senior reads every message.",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Contact ACEVA — Start a Project",
+  description:
+    "Tell us what is costing you the most time, money or customer trust. A senior reads every message and replies with a next step or an honest no.",
+  path: ROUTES.contact,
+  absoluteTitle: true,
+});
 
 export default function ContactPage() {
   return (
     <section style={{ position: "relative", overflow: "hidden" }}>
       <div aria-hidden="true" style={{ position: "absolute", top: "-30%", left: "-10%", width: "60vw", height: "60vw", maxWidth: 760, maxHeight: 760, background: "radial-gradient(circle at 50% 50%, rgba(59,124,255,.13), transparent 66%)", pointerEvents: "none" }} />
-      <div style={{ position: "relative", maxWidth: 1280, margin: "0 auto", padding: "clamp(56px,8vw,96px) clamp(20px,4vw,48px) clamp(56px,8vw,104px)", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))", gap: "clamp(30px,5vw,72px)", alignItems: "start" }}>
+      <div style={{ position: "relative", maxWidth: 1280, margin: "0 auto", padding: "calc(var(--nav-offset) + clamp(16px,3vw,32px)) clamp(20px,4vw,48px) clamp(56px,8vw,104px)", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))", gap: "clamp(30px,5vw,72px)", alignItems: "start" }}>
         <Reveal>
           <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11.5, letterSpacing: ".2em", color: "var(--ice)", margin: "0 0 20px" }}>START A PROJECT</p>
           <h1 style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: "clamp(32px,4.6vw,54px)", lineHeight: 1.05, letterSpacing: "-.03em", margin: 0, maxWidth: "18ch" }}>
@@ -23,15 +28,12 @@ export default function ContactPage() {
             Answer that in a few lines. A senior reads it — not a form-filling assistant — and replies with either a next step or an honest no.
           </p>
           <div style={{ marginTop: 36, display: "flex", flexDirection: "column", borderTop: "1px solid var(--hairline)" }}>
-            <KeyValueRow first label="Email" value={<a href="mailto:acevatechnology@gmail.com">acevatechnology@gmail.com</a>} />
-            <KeyValueRow label="Phone" value={<span style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "#4b4f5b" }}>PLACEHOLDER</span>} />
-            <KeyValueRow label="Office" value={<span style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "#4b4f5b" }}>NEW YORK — PLACEHOLDER</span>} />
-            <KeyValueRow label="Reply time" value={<span style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "#4b4f5b" }}>PLACEHOLDER — E.G. 1 BUSINESS DAY</span>} />
-            <KeyValueRow label="Meeting booking" value={<span style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "#4b4f5b" }}>CALENDAR LINK — PLACEHOLDER</span>} />
+            <KeyValueRow first label="Email" value={<a href="mailto:acevatech.official@gmail.com">acevatech.official@gmail.com</a>} />
+            <KeyValueRow label="Reply" value={<span style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "var(--muted)" }}>A HUMAN RESPONSE, NOT AN AUTOMATED SEQUENCE</span>} />
           </div>
         </Reveal>
 
-        <div style={{ border: "1px solid var(--hairline)", borderRadius: 16, background: "rgba(20,20,24,.55)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", overflow: "hidden" }}>
+        <div className="ac-card-flagship" style={{ borderRadius: 16, overflow: "hidden" }}>
           <Suspense fallback={<div style={{ padding: "clamp(24px,3.5vw,36px)", minHeight: 420 }} />}>
             <ContactForm />
           </Suspense>

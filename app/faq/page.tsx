@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata, SITE_URL } from "@/lib/seo";
 import Link from "next/link";
 import { FAQS } from "@/lib/data/faqs";
 import { ROUTES } from "@/lib/nav";
@@ -6,16 +7,38 @@ import { ArrowRightIcon } from "@/components/ui/icons";
 import FaqAccordion from "@/components/features/FaqAccordion";
 import Reveal from "@/components/ui/Reveal";
 
-export const metadata: Metadata = {
-  title: "FAQ — ACEVA Technology",
-  description: "Questions buyers actually ask about working with Aceva.",
+export const metadata: Metadata = pageMetadata({
+  title: "Frequently Asked Questions",
+  description:
+    "Questions buyers actually ask: how projects start, what a Proof Sprint is, who owns the code and accounts, and how we keep AI-assisted code safe.",
+  path: ROUTES.faq,
+});
+
+/**
+ * Generated from FAQS so the structured data can never drift from the rendered answers.
+ * Makes the page eligible for FAQ rich results and gives AI answer engines a parseable
+ * source for the questions buyers actually ask.
+ */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": `${SITE_URL}${ROUTES.faq}#faq`,
+  mainEntity: FAQS.map((faq) => ({
+    "@type": "Question",
+    name: faq.q,
+    acceptedAnswer: { "@type": "Answer", text: faq.a },
+  })),
 };
 
 export default function FaqPage() {
   return (
     <div>
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(56px,8vw,104px) clamp(20px,4vw,48px) clamp(36px,5vw,56px)" }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema).replace(/</g, "\\u003c") }}
+      />
+      <section>
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "calc(var(--nav-offset) + clamp(16px,3vw,32px)) clamp(20px,4vw,48px) clamp(36px,5vw,56px)" }}>
           <p
             style={{
               fontFamily: "var(--font-jetbrains-mono)",

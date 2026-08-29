@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { ROUTES } from "@/lib/nav";
 import Reveal from "@/components/ui/Reveal";
@@ -6,15 +7,18 @@ import Callout from "@/components/ui/Callout";
 import Tag from "@/components/ui/Tag";
 import KeyValueRow from "@/components/ui/KeyValueRow";
 import PhoneFrame from "@/components/ui/PhoneFrame";
+import KpiStat from "@/components/ui/KpiStat";
 import ExperimentsTabs from "@/components/features/ExperimentsTabs";
 import AutomationDemo from "@/components/features/AutomationDemo";
 import styles from "./experiments.module.css";
 
-export const metadata: Metadata = {
-  title: "Experiments — ACEVA Technology",
+export const metadata: Metadata = pageMetadata({
+  title: "Experiments — Concept Demos & Internal Products",
   description:
-    "Concept demos and internal products, honestly labeled. None of these are client projects — no client names, no results, no invented metrics.",
-};
+    "Concept demos and internal products, honestly labeled. No client names, no invented metrics — only what we actually built and what it proves.",
+  path: ROUTES.work,
+  absoluteTitle: true,
+});
 
 type Severity = "CRITICAL" | "HIGH" | "MEDIUM";
 
@@ -106,14 +110,6 @@ function SitePanel() {
               <KeyValueRow label="Mobile behavior" value="Native menu, sticky action bar" />
               <KeyValueRow label="Accessibility target" value="WCAG AA, keyboard complete" />
               <KeyValueRow label="Lead flow" value="Qualification form → meeting" />
-              <KeyValueRow
-                label="Measured scores"
-                value={
-                  <span style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 13, color: "#4b4f5b" }}>
-                    PENDING LAUNCH AUDIT
-                  </span>
-                }
-              />
             </div>
             <Link
               href={ROUTES.home}
@@ -170,7 +166,7 @@ function SitePanel() {
                   padding: "5px 10px",
                 }}
               >
-                aceva.example / temporary subdomain at launch
+                {(process.env.NEXT_PUBLIC_SITE_URL || "https://acevatech.com").replace(/^https?:\/\//, "")}
               </span>
             </div>
             <div style={{ padding: "26px 24px 30px", background: "linear-gradient(180deg,#0F0F13,#141418)" }}>
@@ -403,20 +399,26 @@ function DashPanel() {
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(140px,1fr))", gap: 10 }}>
                 <div style={{ border: "1px solid var(--hairline)", borderRadius: 12, padding: 16, background: "rgba(20,20,24,.55)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
                   <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10, letterSpacing: ".14em", color: "var(--muted)", margin: "0 0 10px" }}>OPEN JOBS</p>
-                  <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 27, fontWeight: 600, margin: 0, letterSpacing: "-.02em" }}>128</p>
+                  <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 27, fontWeight: 600, margin: 0, letterSpacing: "-.02em" }}>
+                    <KpiStat value={128} />
+                  </p>
                 </div>
                 <div style={{ border: "1px solid var(--hairline)", borderRadius: 12, padding: 16, background: "rgba(20,20,24,.55)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
                   <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10, letterSpacing: ".14em", color: "var(--muted)", margin: "0 0 10px" }}>ON TIME</p>
-                  <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 27, fontWeight: 600, margin: 0, letterSpacing: "-.02em", color: "var(--success)" }}>94%</p>
+                  <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 27, fontWeight: 600, margin: 0, letterSpacing: "-.02em", color: "var(--success)" }}>
+                    <KpiStat value={94} suffix="%" />
+                  </p>
                 </div>
                 <div style={{ border: "1px solid var(--hairline)", borderRadius: 12, padding: 16, background: "rgba(20,20,24,.55)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
                   <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10, letterSpacing: ".14em", color: "var(--muted)", margin: "0 0 10px" }}>OVERDUE</p>
-                  <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 27, fontWeight: 600, margin: 0, letterSpacing: "-.02em", color: "var(--warning)" }}>7</p>
+                  <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 27, fontWeight: 600, margin: 0, letterSpacing: "-.02em", color: "var(--warning)" }}>
+                    <KpiStat value={7} />
+                  </p>
                 </div>
                 <div style={{ border: "1px solid var(--hairline)", borderRadius: 12, padding: 16, background: "rgba(20,20,24,.55)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}>
                   <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10, letterSpacing: ".14em", color: "var(--muted)", margin: "0 0 10px" }}>AVG DWELL</p>
                   <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 27, fontWeight: 600, margin: 0, letterSpacing: "-.02em" }}>
-                    2.4<span style={{ fontSize: 14, color: "var(--muted)", fontWeight: 400 }}> days</span>
+                    <KpiStat value={2.4} decimals={1} unit="days" />
                   </p>
                 </div>
               </div>
@@ -838,8 +840,8 @@ function RescuePanel() {
 export default function ExperimentsPage() {
   return (
     <div>
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(56px,8vw,104px) clamp(20px,4vw,48px) clamp(36px,5vw,56px)" }}>
+      <section>
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "calc(var(--nav-offset) + clamp(16px,3vw,32px)) clamp(20px,4vw,48px) clamp(36px,5vw,56px)" }}>
           <p
             style={{
               fontFamily: "var(--font-jetbrains-mono)",

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { ROUTES } from "@/lib/nav";
 import { ArrowRightIcon } from "@/components/ui/icons";
@@ -6,16 +7,18 @@ import Reveal from "@/components/ui/Reveal";
 import Card from "@/components/ui/Card";
 import Tag from "@/components/ui/Tag";
 
-export const metadata: Metadata = {
-  title: "Client Feedback — ACEVA Technology",
+export const metadata: Metadata = pageMetadata({
+  title: "Client Feedback",
   description: "Aceva has no testimonials yet, and will not write its own. Here is what we will publish, and when.",
-};
+  path: ROUTES.testimonials,
+  noIndex: true,
+});
 
 export default function TestimonialsPage() {
   return (
     <div>
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(56px,8vw,104px) clamp(20px,4vw,48px) clamp(40px,6vw,64px)" }}>
+      <section>
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "calc(var(--nav-offset) + clamp(16px,3vw,32px)) clamp(20px,4vw,48px) clamp(40px,6vw,64px)" }}>
           <p
             style={{
               fontFamily: "var(--font-jetbrains-mono)",
@@ -58,12 +61,12 @@ export default function TestimonialsPage() {
         </div>
       </section>
 
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
+      <section>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(44px,6vw,80px) clamp(20px,4vw,48px)" }}>
           <Reveal as="p" style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 22px" }}>
             WHAT WE WILL PUBLISH — AND WHEN
           </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 12 }}>
+          <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 12 }}>
             <Reveal>
               <Card variant="ghost" style={{ padding: 26, minHeight: 200, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                 <Tag variant="dashed">QUOTE SLOT 01</Tag>

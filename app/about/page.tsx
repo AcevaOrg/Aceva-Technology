@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { ROUTES } from "@/lib/nav";
 import Reveal from "@/components/ui/Reveal";
 import Callout from "@/components/ui/Callout";
 import Button from "@/components/ui/Button";
 
-export const metadata: Metadata = {
-  title: "Why Aceva — ACEVA Technology",
+export const metadata: Metadata = pageMetadata({
+  title: "Why ACEVA — How We Position, Sell and Deliver",
   description:
-    "We will not compete by saying more. We will compete by proving more — how Aceva positions, sells and delivers.",
-};
+    "We will not compete by saying more — we compete by proving more. How Aceva is positioned, how we sell, and how we deliver software that survives handover.",
+  path: ROUTES.about,
+  absoluteTitle: true,
+});
 
 interface Fact {
   kicker: string;
@@ -51,7 +54,7 @@ export default function AboutPage() {
   return (
     <div>
       {/* Hero */}
-      <section style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid var(--hairline)" }}>
+      <section style={{ position: "relative", overflow: "hidden" }}>
         <div
           aria-hidden="true"
           style={{
@@ -66,7 +69,7 @@ export default function AboutPage() {
             pointerEvents: "none",
           }}
         />
-        <div style={{ position: "relative", maxWidth: 1280, margin: "0 auto", padding: "clamp(56px,8vw,104px) clamp(20px,4vw,48px) clamp(40px,6vw,64px)" }}>
+        <div style={{ position: "relative", maxWidth: 1280, margin: "0 auto", padding: "calc(var(--nav-offset) + clamp(16px,3vw,32px)) clamp(20px,4vw,48px) clamp(40px,6vw,64px)" }}>
           <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11.5, letterSpacing: ".2em", color: "var(--ice)", margin: "0 0 20px" }}>
             WHY ACEVA
           </p>
@@ -92,7 +95,7 @@ export default function AboutPage() {
       </section>
 
       {/* Four facts */}
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
+      <section>
         <div
           style={{
             maxWidth: 1280,
@@ -114,7 +117,7 @@ export default function AboutPage() {
               <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10.5, letterSpacing: ".16em", color: "var(--electric)", margin: "0 0 14px" }}>
                 {f.kicker}
               </p>
-              <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 19, fontWeight: 500, lineHeight: 1.32, margin: 0 }}>{f.title}</p>
+              <h2 className="ac-heading-sm" style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 19, fontWeight: 500, lineHeight: 1.32, margin: 0 }}>{f.title}</h2>
               <p style={{ fontSize: 14.5, lineHeight: 1.6, color: "var(--muted)", margin: "10px 0 0" }}>{f.body}</p>
             </Reveal>
           ))}
@@ -122,7 +125,7 @@ export default function AboutPage() {
       </section>
 
       {/* What we are not claiming */}
-      <section style={{ borderBottom: "1px solid var(--hairline)", background: "rgba(15,15,19,.72)" }}>
+      <section>
         <div
           style={{
             maxWidth: 1280,

@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
+import { ROUTES } from "@/lib/nav";
 import Reveal from "@/components/ui/Reveal";
 import Card from "@/components/ui/Card";
 import Tag from "@/components/ui/Tag";
 
-export const metadata: Metadata = {
-  title: "Insights — ACEVA Technology",
+export const metadata: Metadata = pageMetadata({
+  title: "Insights",
   description: "Writing starts after the first engagements, not before. Here is what is planned.",
-};
+  path: ROUTES.insights,
+  noIndex: true,
+});
 
 const PLANNED = [
   { label: "PLANNED · 01", title: "How to review AI-generated code before it reaches production" },
@@ -18,8 +22,8 @@ const PLANNED = [
 export default function InsightsPage() {
   return (
     <div>
-      <section style={{ borderBottom: "1px solid var(--hairline)" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(56px,8vw,104px) clamp(20px,4vw,48px) clamp(40px,6vw,64px)" }}>
+      <section>
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "calc(var(--nav-offset) + clamp(16px,3vw,32px)) clamp(20px,4vw,48px) clamp(40px,6vw,64px)" }}>
           <p
             style={{
               fontFamily: "var(--font-jetbrains-mono)",
@@ -64,7 +68,7 @@ export default function InsightsPage() {
 
       <section>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(44px,6vw,80px) clamp(20px,4vw,48px)" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 12 }}>
+          <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 12 }}>
             {PLANNED.map((item) => (
               <Reveal key={item.label}>
                 <Card variant="ghost" style={{ padding: 26, minHeight: 190, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
