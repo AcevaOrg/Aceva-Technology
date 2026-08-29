@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
+import { ROUTES } from "@/lib/nav";
 import Reveal from "@/components/ui/Reveal";
 import Card from "@/components/ui/Card";
 import Tag from "@/components/ui/Tag";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Insights — ACEVA Technology",
+  title: "Insights",
   description: "Writing starts after the first engagements, not before. Here is what is planned.",
+  path: ROUTES.insights,
   noIndex: true,
 });
 

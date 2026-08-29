@@ -3,7 +3,7 @@ import Button from "@/components/ui/Button";
 import { ROUTES } from "@/lib/nav";
 
 export const metadata: Metadata = {
-  title: "Page not found — ACEVA Technology",
+  title: "Page not found",
   robots: { index: false, follow: false },
 };
 

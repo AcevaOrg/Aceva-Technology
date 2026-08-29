@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { ROUTES, capabilityRoute } from "@/lib/nav";
 import { LogoMark } from "@/components/ui/icons";
 import styles from "./Footer.module.css";
@@ -45,16 +44,37 @@ function LinkColumn({ title, links, card = false }: { title: string; links: { hr
 export default function Footer() {
   return (
     <footer className="ac-hairline" style={{ borderTop: "1px solid var(--hairline)", position: "relative", zIndex: 1, overflow: "hidden" }}>
-      <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-        <Image src="/images/used/aceva-footer-background-8k-4x1.png" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--footer bg-pan-slow" />
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(10,10,12,.72) 0%, rgba(10,10,12,.40) 30%, rgba(10,10,12,.40) 70%, rgba(10,10,12,.72) 100%)" }} />
+      <div aria-hidden="true" className={styles.animatedBackdrop}>
+        <div className={styles.ambientGlow} />
+        <div className={styles.wordmarkTrack}>
+          <svg className={styles.backgroundWord} viewBox="0 0 1000 170" role="presentation">
+            <defs>
+              <linearGradient id="footerWordmarkFill" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stopColor="#315baf" />
+                <stop offset="0.48" stopColor="#dce9ff" />
+                <stop offset="1" stopColor="#3b7cff" />
+              </linearGradient>
+            </defs>
+            <g fill="url(#footerWordmarkFill)">
+              <path d="M20 150 100 20l80 130h-32l-48-79-48 79Z" />
+              <path d="M380 20H280l-60 65 60 65h100v-26h-89l-39-39 39-39h89Z" />
+              <path d="M420 20h160v26H420Zm0 54h140v22H420Zm0 50h160v26H420Z" />
+              <path d="m620 20 32 1 48 81 48-81 32-1-80 130Z" />
+              <path d="m820 150 80-130 80 130h-32l-48-79-48 79Z" />
+            </g>
+          </svg>
+        </div>
+        <div className={styles.backdropVeil} />
       </div>
       <div className="image-backed-content" style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(48px,6vw,72px) clamp(20px,4vw,48px)" }}>
         <div className={styles.footerGrid}>
           <div className={styles.brandBlock}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div className={styles.brandLockup}>
               <LogoMark id="acevaStrokeFoot" width={36} height={22} />
-              <span style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: 16, letterSpacing: ".16em" }}>ACEVA</span>
+              <span className={styles.brandText}>
+                <span className={styles.brandName}>ACEVA</span>
+                <span className={styles.brandSub}>TECHNOLOGY</span>
+              </span>
             </div>
             <p style={{ fontSize: 14.5, lineHeight: 1.65, color: "var(--muted)", margin: "18px 0 0", maxWidth: "34ch" }}>
               Aceva builds new products, improves existing operations and rescues software that needs a stronger path forward.

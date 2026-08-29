@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 
 const EASE = "cubic-bezier(.16,1,.3,1)";
 const SHIMMER_DURATION = 1500;
@@ -48,19 +49,8 @@ export default function Skeleton({
   children,
 }: SkeletonProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const reduceMotion = usePrefersReducedMotion();
   const [inView, setInView] = useState(false);
-
-  // Detect reduced motion preference
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduceMotion(mediaQuery.matches);
-
-    const handler = (e: MediaQueryListEvent) => setReduceMotion(e.matches);
-    mediaQuery.addEventListener("change", handler);
-    return () => mediaQuery.removeEventListener("change", handler);
-  }, []);
 
   // Optional: trigger animation on intersection (for performance)
   useEffect(() => {
@@ -225,18 +215,9 @@ export function SkeletonText({
   spacing = "0.625rem",
   ...props
 }: Omit<SkeletonProps, "variant" | "lines" | "lastLineWidth"> & { lines?: number; lastLineWidth?: string; lineHeight?: number; spacing?: string }) {
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const reduceMotion = usePrefersReducedMotion();
   const [inView, setInView] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduceMotion(mediaQuery.matches);
-    const handler = (e: MediaQueryListEvent) => setReduceMotion(e.matches);
-    mediaQuery.addEventListener("change", handler);
-    return () => mediaQuery.removeEventListener("change", handler);
-  }, []);
 
   useEffect(() => {
     const el = containerRef.current;

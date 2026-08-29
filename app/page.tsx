@@ -1,5 +1,7 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { pageMetadata } from "@/lib/seo";
 import { CAPS } from "@/lib/data/caps";
 import { ROUTES, capabilityRoute } from "@/lib/nav";
 import Reveal from "@/components/ui/Reveal";
@@ -10,6 +12,16 @@ import ArrowLink from "@/components/ui/ArrowLink";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import PathChooser from "@/components/features/PathChooser";
 import ProcessLoop from "@/components/ui/ProcessLoop";
+import ProofBoard from "@/components/ui/ProofBoard";
+
+// The brand already leads this title, so it bypasses the layout's "%s — ACEVA Technology" template.
+export const metadata: Metadata = pageMetadata({
+  title: "ACEVA Technology — Custom Software, Web & Mobile Engineering",
+  description:
+    "ACEVA Technology designs, builds and scales custom software, web and mobile products. AI-accelerated, senior-reviewed, production-ready.",
+  path: "/",
+  absoluteTitle: true,
+});
 
 const CAP_ICONS: Record<string, React.ReactNode> = {
   digital: (
@@ -82,7 +94,7 @@ export default function HomePage() {
       {/* Hero */}
       <section className="hero" style={{ position: "relative", overflow: "hidden" }}>
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/Aceva.png" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--hero bg-pan-slow" priority />
+          <Image src="/images/used/Aceva.webp" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--hero bg-pan-slow" priority />
           <div className="hero-overlay" />
         </div>
         <div style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(110px,14vw,160px) clamp(20px,4vw,48px) clamp(48px,6vw,72px)", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
@@ -104,10 +116,10 @@ export default function HomePage() {
               Start a Project
               <ArrowRightIcon width={15} height={15} strokeWidth={2.2} />
             </Link>
-            <a href="mailto:acevatech.official@gmail.com" className="ac-btn-ghost" style={{ minHeight: 52, padding: "16px 26px" }}>
+            <Link href={ROUTES.contact} className="ac-btn-ghost" style={{ minHeight: 52, padding: "16px 26px" }}>
               Contact Us
               <ArrowRightIcon width={15} height={15} />
-            </a>
+            </Link>
             <Link href={ROUTES.work} className="ac-btn-ghost" style={{ minHeight: 52, padding: "16px 26px" }}>
               Explore Experiments
               <ArrowRightIcon width={15} height={15} />
@@ -142,41 +154,47 @@ export default function HomePage() {
       {/* Five capabilities */}
       <section className="capabilities">
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/holographic.png" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--contain bg-pan" style={{ objectPosition: "center 20%" }} />
+          <Image src="/images/used/The offer.jpeg" alt="" fill sizes="100vw" style={{ objectFit: "contain", objectPosition: "center center", transform: "scale(1.1)", transformOrigin: "center center" }} />
           <div className="capabilities-overlay" />
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 15%, transparent 85%, #0A0A0C 100%)" }} />
         </div>
         <div style={{ position: "relative", zIndex: 1, maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,9vw,116px) clamp(20px,4vw,48px)" }}>
-          <Reveal>
-            <Eyebrow>02 — THE OFFER</Eyebrow>
-            <h2 style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: "clamp(28px,4vw,46px)", lineHeight: 1.08, letterSpacing: "-.025em", margin: 0, maxWidth: "22ch" }}>
-              Five capabilities. One accountable engineering partner.
-            </h2>
+          <Reveal style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-end", justifyContent: "space-between", gap: 16 }}>
+            <div>
+              <Eyebrow>02 — THE OFFER</Eyebrow>
+              <h2 style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: "clamp(28px,4vw,46px)", lineHeight: 1.08, letterSpacing: "-.025em", margin: 0, maxWidth: "22ch" }}>
+                Five capabilities. One accountable engineering partner.
+              </h2>
+            </div>
           </Reveal>
-          <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(290px,1fr))", gap: 14, marginTop: "clamp(30px,4vw,48px)" }}>
-            {CAPS.map((cap) => (
-              <Reveal key={cap.key}>
-                <Card variant="flagship" href={capabilityRoute(cap.key)} style={{ padding: 28, display: "flex", flexDirection: "column", gap: 12, minHeight: 230 }}>
-                  <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".16em", color: "var(--ice)" }}>
-                    {cap.key === "rescue" ? `${cap.num} · FLAGSHIP` : cap.num}
-                    {CAP_ICONS[cap.key]}
-                  </span>
-                  <span style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 22, fontWeight: 500, letterSpacing: "-.01em", marginTop: 6 }}>{cap.name}</span>
-                  <span style={{ fontSize: 14.5, lineHeight: 1.62, color: "#c3c8d4" }}>{CAP_HOME_BLURBS[cap.key]}</span>
-                  <span className="ac-link" style={{ marginTop: "auto", fontSize: 13.5 }}>
-                    Learn more
-                    <ArrowRightIcon />
-                  </span>
+
+          <div className="offer-frame">
+
+            <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(290px,1fr))", gap: 14 }}>
+              {CAPS.map((cap) => (
+                <Reveal key={cap.key}>
+                  <Card variant="flagship" href={capabilityRoute(cap.key)} style={{ padding: 28, display: "flex", flexDirection: "column", gap: 12, minHeight: 230 }}>
+                    <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".16em", color: "var(--ice)" }}>
+                      {cap.key === "rescue" ? `${cap.num} · FLAGSHIP` : cap.num}
+                      {CAP_ICONS[cap.key]}
+                    </span>
+                    <span style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 22, fontWeight: 500, letterSpacing: "-.01em", marginTop: 6 }}>{cap.name}</span>
+                    <span style={{ fontSize: 14.5, lineHeight: 1.62, color: "#c3c8d4" }}>{CAP_HOME_BLURBS[cap.key]}</span>
+                    <span className="ac-link" style={{ marginTop: "auto", fontSize: 13.5 }}>
+                      Learn more
+                      <ArrowRightIcon />
+                    </span>
+                  </Card>
+                </Reveal>
+              ))}
+              <Reveal>
+                <Card variant="flagship" href={ROUTES.services} style={{ padding: 28, display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 10, minHeight: 230 }}>
+                  <span style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 19, fontWeight: 500, letterSpacing: "-.01em" }}>All capabilities in detail</span>
+                  <span style={{ fontSize: 14, color: "#c3c8d4" }}>What each one includes, when to buy it, and what we will not promise.</span>
                 </Card>
               </Reveal>
-            ))}
-            <Reveal>
-              <Card variant="flagship" href={ROUTES.services} style={{ padding: 28, display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 10, minHeight: 230 }}>
-                <span style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 19, fontWeight: 500, letterSpacing: "-.01em" }}>All capabilities in detail</span>
-                <span style={{ fontSize: 14, color: "#c3c8d4" }}>What each one includes, when to buy it, and what we will not promise.</span>
-              </Card>
-            </Reveal>
+            </div>
           </div>
+
         </div>
       </section>
 
@@ -260,7 +278,7 @@ export default function HomePage() {
       {/* Proof, not portfolio */}
       <section className="experiments">
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/twin-visions.jpg" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--proof bg-pan" />
+          <ProofBoard />
           <div className="experiments-overlay" />
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 20%, transparent 80%, #0A0A0C 100%)" }} />
         </div>

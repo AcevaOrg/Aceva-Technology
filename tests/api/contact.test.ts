@@ -69,6 +69,19 @@ describe("POST /api/contact", () => {
     expect(response.status).toBe(415);
   });
 
+  it("accepts the deployed request origin even when the canonical URL differs", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "http://localhost:3000");
+    const response = await POST(request(validBody, { origin: "https://example.com" }));
+    expect(response.status).toBe(200);
+    expect(send).toHaveBeenCalledOnce();
+  });
+
+  it("rejects a cross-origin submission", async () => {
+    const response = await POST(request(validBody, { origin: "https://attacker.example" }));
+    expect(response.status).toBe(403);
+    expect(send).not.toHaveBeenCalled();
+  });
+
   it("reports an email-provider rejection", async () => {
     send.mockResolvedValue({ data: null, error: { name: "validation_error", message: "Rejected" } });
     const response = await POST(request(validBody));
