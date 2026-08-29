@@ -15,7 +15,7 @@ const initialGreetingMessage = {
   timestamp: "",
 };
 
-const initialState: PulseState = {
+export const initialState: PulseState = {
   open: false,
   stage: "entry",
   step: 0,
@@ -24,7 +24,7 @@ const initialState: PulseState = {
   messages: [initialGreetingMessage],
 };
 
-function pulseReducer(state: PulseState, action: PulseAction): PulseState {
+export function pulseReducer(state: PulseState, action: PulseAction): PulseState {
   switch (action.type) {
     case "OPEN":
       return {
@@ -59,6 +59,15 @@ function pulseReducer(state: PulseState, action: PulseAction): PulseState {
         answers: [...state.answers, action.value],
         context: { ...state.context, ...action.inferred },
         messages: [...state.messages, newMessage],
+        step: state.step + 1,
+      };
+    }
+
+    case "RECORD_VALID_ANSWER": {
+      return {
+        ...state,
+        answers: [...state.answers, action.value],
+        context: { ...state.context, ...action.inferred },
         step: state.step + 1,
       };
     }
@@ -124,12 +133,39 @@ function pulseReducer(state: PulseState, action: PulseAction): PulseState {
       };
 
     case "RESTART":
+      try {
+        if (typeof window !== "undefined") {
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      } catch {
+        // Ignore storage errors
+      }
       return {
         ...initialState,
         open: true,
         stage: "intent",
         messages: [initialGreetingMessage],
       };
+
+    case "UNDO_LAST_ANSWER": {
+      if (state.step <= 0) return state;
+
+      const newAnswers = state.answers.slice(0, -1);
+      // Remove last pulse response and last user message
+      let newMessages = [...state.messages];
+      if (newMessages.length >= 2) {
+        newMessages = newMessages.slice(0, -2);
+      } else if (newMessages.length === 1) {
+        newMessages = [];
+      }
+
+      return {
+        ...state,
+        answers: newAnswers,
+        messages: newMessages.length > 0 ? newMessages : [initialGreetingMessage],
+        step: Math.max(0, state.step - 1),
+      };
+    }
 
     default:
       return state;
@@ -141,7 +177,7 @@ interface PulseContextType {
   dispatch: React.Dispatch<PulseAction>;
   openPulse: () => void;
   closePulse: () => void;
-  sendChatMessage: (text: string) => Promise<void>;
+  sendChatMessage: (text: string, inferredContext?: Partial<PulseState["context"]>) => Promise<void>;
 }
 
 const PulseContext = createContext<PulseContextType | undefined>(undefined);
@@ -175,7 +211,8 @@ export function PulseProvider({ children }: { children: React.ReactNode }) {
   const openPulse = () => dispatch({ type: "OPEN" });
   const closePulse = () => dispatch({ type: "CLOSE" });
 
-  const sendChatMessage = async (text: string) => {
+  const sendChatMessage = async (text: string, inferredContext?: Partial<PulseState["context"]>) => {
+    dispatch({ type: "SEND_MESSAGE", text });
     dispatch({ type: "SET_LOADING", loading: true });
     try {
       const historyPayload = state.messages.map((m) => ({
@@ -195,6 +232,18 @@ export function PulseProvider({ children }: { children: React.ReactNode }) {
       const data = await res.json();
       if (res.ok && data.answer) {
         dispatch({ type: "ADD_PULSE_RESPONSE", text: data.answer });
+        if (data.isValid) {
+          dispatch({
+            type: "RECORD_VALID_ANSWER",
+            value: text,
+            inferred: inferredContext,
+          });
+          if (state.step + 1 >= 5) {
+            setTimeout(() => {
+              dispatch({ type: "COMPLETE" });
+            }, 1200);
+          }
+        }
       } else {
         dispatch({
           type: "ADD_PULSE_RESPONSE",

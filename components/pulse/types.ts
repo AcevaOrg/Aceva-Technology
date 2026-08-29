@@ -42,6 +42,7 @@ export type PulseAction =
   | { type: "CLOSE" }
   | { type: "INTENT"; value: string }
   | { type: "ANSWER"; value: string; inferred?: Partial<PulseContextData> }
+  | { type: "RECORD_VALID_ANSWER"; value: string; inferred?: Partial<PulseContextData> }
   | { type: "SEND_MESSAGE"; text: string }
   | { type: "SET_LOADING"; loading: boolean }
   | { type: "ADD_PULSE_RESPONSE"; text: string }
@@ -49,7 +50,8 @@ export type PulseAction =
   | { type: "CONTACT" }
   | { type: "CONFIRM"; lead: PulseLead; id: string }
   | { type: "RESTORE"; session: Partial<PulseState> }
-  | { type: "RESTART" };
+  | { type: "RESTART" }
+  | { type: "UNDO_LAST_ANSWER" };
 
 export interface WizardStepSpec {
   label: string;

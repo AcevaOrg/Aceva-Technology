@@ -30,7 +30,7 @@ describe("POST /api/chat Route Handler", () => {
     const response = await POST(createChatRequest({ message: "What is ACEVA?" }));
     expect(response.status).toBe(200);
     const data = await response.json();
-    expect(data).toEqual({ answer: "**ACEVA Official Answer**" });
+    expect(data).toEqual({ answer: "**ACEVA Official Answer**", isValid: true });
     expect(mockGeneratePulseCompletion).toHaveBeenCalledOnce();
   });
 

@@ -2,8 +2,17 @@ import { generateEmbedding } from "./embeddings";
 import { findSimilarChunks } from "./vectorStore";
 import { LLMMessage } from "./llm";
 
+export const GREETING_REJECTION =
+  "Hello! Please enter a specific question about ACEVA's services or describe your project so I can help map out your project direction.";
+
 export const OUT_OF_SCOPE_REJECTION =
-  "I'm PULSE, ACEVA Technology's AI assistant. I can help with ACEVA's services, capabilities, process, and company information, but I can't help with unrelated topics.";
+  "Please enter a clear, relevant question about your project or ACEVA's software development services.";
+
+// Standalone greeting patterns
+const GREETING_PATTERNS = [
+  /^(hi|hello|hey|greetings|good morning|good afternoon|good evening|yo|sup|hola)(\s+pulse)?[\s!.]*$/i,
+  /^(hey|hello|hi)\s+there[\s!.]*$/i,
+];
 
 // Explicit ACEVA domain keywords & intent indicators
 const ACEVA_DOMAIN_TERMS = [
@@ -94,6 +103,8 @@ const SOFTWARE_SERVICE_INTENT = [
   "delivery",
   "booking",
   "checkout",
+  "algorithm",
+  "camera",
 ];
 
 // Out-of-scope trigger patterns (Trivia, general programming, math, recipes, sports, astronomy, general trivia, etc.)
@@ -125,6 +136,44 @@ const OUT_OF_SCOPE_PATTERNS = [
 ];
 
 /**
+ * Check if the input is a standalone greeting.
+ */
+export function isGreetingInput(userMessage: string): boolean {
+  const clean = userMessage.trim();
+  if (!clean) return false;
+  return GREETING_PATTERNS.some((pattern) => pattern.test(clean));
+}
+
+/**
+ * Check if the input is raw, unclear, or gibberish.
+ */
+export function isInvalidOrUnclearInput(
+  userMessage: string,
+  history?: LLMMessage[],
+  projectContext?: Record<string, unknown>
+): boolean {
+  const clean = userMessage.trim();
+  if (!clean) return true;
+
+  // Pulse ID reference code (e.g. PLS-260829-123)
+  if (/PLS-\d{6}-\d{3}/i.test(clean)) return false;
+
+  // Very short non-alphanumeric noise (e.g. "?", "a", "1", "..")
+  if (clean.length < 2) return true;
+  if (!/[a-zA-Z0-9]/.test(clean)) return true;
+
+  // Check repeating characters / keyboard smashes (e.g. "aaaaaaa", "asdfghjkl", "qwertyuiop")
+  if (/^(.)\1{4,}$/i.test(clean)) return true;
+  if (/^(asdfghjkl|qwertyuiop|zxcvbnm){1,}/i.test(clean.toLowerCase()) && clean.length > 5) return true;
+
+  // Out of scope pattern match
+  const isOOS = OUT_OF_SCOPE_PATTERNS.some((pattern) => pattern.test(clean));
+  if (isOOS) return true;
+
+  return false;
+}
+
+/**
  * Robust server-side check to determine if a user question is relevant to ACEVA Technology.
  */
 export async function isQuestionInScope(
@@ -142,30 +191,30 @@ export async function isQuestionInScope(
     return true;
   }
 
-  // 1. Explicit Out-of-Scope Pattern Match -> High confidence IRRELEVANT (Trivia, Homework, Weather, Python code)
+  // 1. Explicit Out-of-Scope Pattern Match -> High confidence IRRELEVANT
   const matchesOOS = OUT_OF_SCOPE_PATTERNS.some((pattern) => pattern.test(clean));
   if (matchesOOS) {
     return false;
   }
 
-  // 2. Active Multi-Turn Conversation or Project Context -> Always IN-SCOPE for follow-ups & answers
-  const isOngoingConversation = Boolean(
-    (history && history.length > 0) ||
-    (projectContext && Object.keys(projectContext).length > 0)
-  );
-  if (isOngoingConversation) {
-    return true;
-  }
-
-  // 3. Direct ACEVA keyword match -> High confidence RELEVANT
+  // 2. Direct ACEVA keyword match -> High confidence RELEVANT
   const hasAcevaTerm = ACEVA_DOMAIN_TERMS.some((term) => lower.includes(term));
   if (hasAcevaTerm) {
     return true;
   }
 
-  // 4. Software/Agency Service Intent match (e.g. "Can you build my app?", "How much does a project cost?")
+  // 3. Software/Agency Service Intent match
   const hasServiceIntent = SOFTWARE_SERVICE_INTENT.some((term) => lower.includes(term));
   if (hasServiceIntent) {
+    return true;
+  }
+
+  // 4. Active Multi-Turn Conversation or Project Context
+  const isOngoingConversation = Boolean(
+    (history && history.length > 0) ||
+    (projectContext && Object.keys(projectContext).length > 0)
+  );
+  if (isOngoingConversation) {
     return true;
   }
 
