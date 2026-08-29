@@ -427,20 +427,29 @@
   color: var(--ink);
 }
 
+.mobileActionsGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
 /* ─── Responsive overrides ────────────────────────────────────── */
 /* On small screens: hide desktop nav & cta, show burger */
 @media (max-width: 999px) {
   .crystalPill {
     height: 58px;
-    padding: 0 8px 0 14px;
+    padding: 0 12px 0 14px;
+    justify-content: space-between;
   }
   .crystalNav,
   .crystalCta,
-  .desktopMore {
-    display: none;
-  }
+  .desktopMore,
   .pillDivider {
     display: none;
+  }
+  .burger {
+    margin-left: 0;
   }
 }
 
@@ -452,7 +461,7 @@
   .crystalPill {
     width: 100%;
     height: 56px;
-    padding-left: 13px;
+    padding: 0 10px 0 13px;
     border-color: rgba(127, 178, 255, 0.25);
     background: rgba(10, 11, 18, 0.82);
     box-shadow:
@@ -468,10 +477,14 @@
     font-size: 6.5px;
   }
 
+  .mobileActionsGroup {
+    gap: 8px;
+  }
+
   .burger {
-    width: 42px;
-    height: 42px;
-    margin-left: auto;
+    width: 40px;
+    height: 40px;
+    margin-left: 0;
   }
 
   .mobileOverlay {

@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { generatePulseCompletion } from "@/lib/pulse/llm";
 import { logPulseDiagnostic } from "@/lib/pulse/errors";
+import {
+  isGreetingInput,
+  isInvalidOrUnclearInput,
+  GREETING_REJECTION,
+  OUT_OF_SCOPE_REJECTION,
+} from "@/lib/pulse/scope";
 
 interface RateLimitRecord {
   count: number;
@@ -131,10 +137,14 @@ export async function POST(request: Request) {
 
     // 3. Process LLM Response via Primary LLM Provider Orchestration
     const answer = await generatePulseCompletion(message, history, context, requestId);
+    const isGreeting = isGreetingInput(message);
+    const isInvalid = isInvalidOrUnclearInput(message, history, context);
+    const isValid = !isGreeting && !isInvalid && answer !== GREETING_REJECTION && answer !== OUT_OF_SCOPE_REJECTION;
 
     return NextResponse.json(
       {
         answer,
+        isValid,
       },
       { status: 200 }
     );

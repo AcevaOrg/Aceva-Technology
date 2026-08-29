@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import styles from "./pulse.module.css";
 import { PulseState } from "./types";
 
@@ -21,6 +21,7 @@ const DEFAULT_SYSTEM_TAGS: Record<string, string[]> = {
 };
 
 export default function PulseMapPanel({ state, score }: PulseMapPanelProps) {
+  const [mobileExpanded, setMobileExpanded] = useState(false);
   const ctx = state.context;
   const industry = ctx.industry || "Default";
   const systemTags = DEFAULT_SYSTEM_TAGS[industry] || DEFAULT_SYSTEM_TAGS.Default;
@@ -34,13 +35,35 @@ export default function PulseMapPanel({ state, score }: PulseMapPanelProps) {
     { label: "DESIRED OUTCOME", value: ctx.goals?.join(" / ") },
   ];
 
+  const activeNodesCount = nodeFields.filter((n) => n.value).length;
   const isDirectionActive = ["direction", "contact", "confirmation"].includes(state.stage);
 
   return (
     <aside className={styles.mapPanel} aria-label="Live project map panel">
-      <div className={styles.mapTop}>
-        <span>LIVE PROJECT MAP</span>
+      <div
+        className={styles.mapTop}
+        onClick={() => setMobileExpanded((prev) => !prev)}
+        style={{ cursor: "pointer" }}
+        role="button"
+        tabIndex={0}
+        aria-expanded={mobileExpanded}
+      >
+        <span>
+          LIVE PROJECT MAP <small className={styles.mobileBadge}>({activeNodesCount} MAPPED {mobileExpanded ? "▲" : "▼"})</small>
+        </span>
         <b>{String(score).padStart(2, "0")}%</b>
+      </div>
+
+      {/* Collapsible Mobile Parameter Drawer */}
+      <div className={`${styles.mobileDrawer} ${mobileExpanded ? styles.drawerOpen : ""}`}>
+        <div className={styles.mobileDrawerGrid}>
+          {nodeFields.map((node, i) => (
+            <div key={node.label} className={styles.mobileDrawerCard}>
+              <span>0{i + 1} / {node.label}</span>
+              <strong>{node.value || "Awaiting context..."}</strong>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className={styles.mapCanvas}>

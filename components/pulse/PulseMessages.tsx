@@ -7,6 +7,8 @@ import { usePulse } from "./PulseContext";
 import PulseInput from "./PulseInput";
 
 import PulseFormattedText from "./PulseFormattedText";
+import { downloadPulseBlueprintDocx } from "@/lib/pulse/docxGenerator";
+import { getRecommendedModules } from "@/lib/pulse/modules";
 
 interface PulseMessagesProps {
   state: PulseState;
@@ -119,180 +121,6 @@ function inferContextFromText(text: string, stepIndex: number) {
   return contextUpdate;
 }
 
-function getRecommendedModules(industry?: string, context?: PulseContextData): string[] {
-  const ind = (industry || "").toLowerCase();
-  const intent = String(context?.intent || context?.business || "").toLowerCase();
-
-  if (ind.includes("hospitality") || ind.includes("restaurant") || intent.includes("restaurant") || intent.includes("food") || intent.includes("cafe")) {
-    return [
-      "Custom Digital Ordering & Menu Portal",
-      "Real-Time Table Booking & Reservation Engine",
-      "Kitchen Display System (KDS) & Order Tracker",
-      "Customer Loyalty & Automated SMS Reminders",
-      "Owner Revenue & Sales Analytics Dashboard",
-    ];
-  }
-
-  if (ind.includes("dairy") || ind.includes("agriculture") || intent.includes("dairy") || intent.includes("farm") || intent.includes("milk")) {
-    return [
-      "Daily Milk Production & Yield Tracker",
-      "Cattle Health & Veterinary Records Module",
-      "Dairy Collection & Distributor Dispatch Portal",
-      "Feed Inventory & Supply Management System",
-      "Farm Profitability & Buyer Order Dashboard",
-    ];
-  }
-
-  if (ind.includes("hotel") || intent.includes("hotel") || intent.includes("resort") || intent.includes("room")) {
-    return [
-      "Direct Room Reservation & Booking Engine",
-      "Guest Self-Service Check-In & Concierge Portal",
-      "Housekeeping & Room Maintenance Tracker",
-      "Direct Online Payment Gateway Integration",
-      "Occupancy & RevPAR Analytics Dashboard",
-    ];
-  }
-
-  if (ind.includes("healthcare") || ind.includes("clinic") || intent.includes("clinic") || intent.includes("doctor") || intent.includes("patient")) {
-    return [
-      "Online Patient Appointment Scheduling Portal",
-      "Doctor Directory & Specialty Slot Manager",
-      "Secure Patient History & Prescription Vault",
-      "Telehealth Video Consultation System",
-      "Clinic Billing & Automated SMS Reminders",
-    ];
-  }
-
-  if (ind.includes("real estate") || ind.includes("property") || intent.includes("estate") || intent.includes("tenant")) {
-    return [
-      "Interactive Property Listing & Virtual Tour Showcase",
-      "Tenant Portal for Rent Collection & Lease Sign-off",
-      "Maintenance Request & Work Order Dispatching",
-      "Site Inspection Daily Logs & Photo Upload",
-      "Property Portfolio & Revenue Dashboard",
-    ];
-  }
-
-  if (ind.includes("commerce") || ind.includes("retail") || intent.includes("shop") || intent.includes("store") || intent.includes("e-commerce")) {
-    return [
-      "High-Converting Online Store & Product Catalog",
-      "Secure Cart & Multi-Currency Payment Checkout",
-      "Multi-Location Inventory Control & Sync",
-      "Shipment Tracking & Automated Courier Alerts",
-      "Customer Retention & Store Revenue Analytics",
-    ];
-  }
-
-  if (ind.includes("logistics") || ind.includes("transport") || intent.includes("fleet") || intent.includes("delivery") || intent.includes("warehouse")) {
-    return [
-      "Dispatch Control Tower & Route Assignment",
-      "Driver Mobile App with Electronic Proof of Delivery",
-      "Live Fleet Location & Shipment Tracking",
-      "Warehouse Inventory & Bin Allocation Manager",
-      "Operations Throughput & Fuel Efficiency Dashboard",
-    ];
-  }
-
-  if (ind.includes("construction") || intent.includes("construction") || intent.includes("builder")) {
-    return [
-      "Field Activity & Worker Daily Reporting Portal",
-      "Subcontractor Schedule & Job Coordination",
-      "Client Progress Visibility & Photo Updates",
-      "Job Cost & Material Inventory Tracker",
-      "Project Milestone & Margin Control Dashboard",
-    ];
-  }
-
-  if (ind.includes("education") || ind.includes("school") || intent.includes("school") || intent.includes("course") || intent.includes("student")) {
-    return [
-      "Course Catalog & Video Lesson Portal",
-      "Student & Parent Dashboard (Grades, Attendance)",
-      "Online Tuition Fee Payment Gateway",
-      "Automated Certificate & Quiz Engine",
-      "Academic Administration Analytics Dashboard",
-    ];
-  }
-
-  if (ind.includes("beauty") || ind.includes("wellness") || intent.includes("salon") || intent.includes("spa")) {
-    return [
-      "Online Self-Booking Calendar & Staff Scheduler",
-      "Service Menu & Stylist Availability Selector",
-      "Client Preference & History Record Notes",
-      "Automated SMS Appointment & Birthday Reminders",
-      "Salon Revenue & Service Analytics Dashboard",
-    ];
-  }
-
-  if (ind.includes("fitness") || intent.includes("gym") || intent.includes("workout")) {
-    return [
-      "Member Mobile Check-In & Class Booking App",
-      "Trainer Scheduling & Personal Session Tracker",
-      "Membership Subscription Billing Portal",
-      "Workout & Fitness Goal Tracking Module",
-      "Gym Attendance & Revenue Analytics Dashboard",
-    ];
-  }
-
-  if (ind.includes("legal") || ind.includes("professional") || intent.includes("law") || intent.includes("consulting")) {
-    return [
-      "Qualified Client Intake & Questionnaire Portal",
-      "Matter & Document Workflow Tracker",
-      "Secure Client Portal & Encrypted File Vault",
-      "Automated Time Tracking & Invoicing Module",
-      "Practice Performance & Billing Dashboard",
-    ];
-  }
-
-  if (ind.includes("event") || intent.includes("ticket") || intent.includes("event")) {
-    return [
-      "Event Landing Page & Direct Ticket Checkout",
-      "QR Code Ticket Scanner & Check-In App",
-      "Guest RSVP & Seating Arrangement Manager",
-      "Speaker Schedule & Interactive Event Agenda",
-      "Ticket Sales & Attendee Demographics Dashboard",
-    ];
-  }
-
-  if (ind.includes("finance") || intent.includes("fintech") || intent.includes("loan") || intent.includes("wallet")) {
-    return [
-      "Digital Customer Onboarding & KYC Verification",
-      "Loan Application & Automated Approval Workflow",
-      "Secure Customer Account & Wallet Dashboard",
-      "Transaction Processing & Payment Gateway",
-      "Financial Risk Assessment & Audit Dashboard",
-    ];
-  }
-
-  if (ind.includes("mobile") || intent.includes("mobile app") || intent.includes("ios") || intent.includes("android")) {
-    return [
-      "Custom iOS & Android Mobile User Experience",
-      "Push Notifications & Instant Mobile Messaging",
-      "Offline Data Sync & Location Services",
-      "User Profile & Authentication Security Vault",
-      "Mobile App Engagement & Usage Analytics",
-    ];
-  }
-
-  if (ind.includes("web") || intent.includes("website") || intent.includes("landing page")) {
-    return [
-      "High-Converting Custom Web Design Platform",
-      "Lead Qualification & Interactive Intake Forms",
-      "Content & Case Study Management System",
-      "Customer Account & Inquiry Dashboard",
-      "Website Analytics & Conversion Telemetry",
-    ];
-  }
-
-  const customTitle = intent.length > 5 ? intent.charAt(0).toUpperCase() + intent.slice(1, 35) : "Custom Digital System";
-  return [
-    `Custom ${customTitle} Core Platform`,
-    "Role-Based User Management & Security Vault",
-    "Automated Customer & Team Workflow Engine",
-    "Real-Time Operational Command Dashboard",
-    "Performance Telemetry & Growth Analytics",
-  ];
-}
-
 export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
   const { sendChatMessage } = usePulse();
   const [contactName, setContactName] = useState("");
@@ -300,6 +128,9 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
   const [contactMethod, setContactMethod] = useState<"Email" | "Phone" | "Text">("Email");
   const [submittingLead, setSubmittingLead] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [copiedId, setCopiedId] = useState(false);
+  const [showLookupInput, setShowLookupInput] = useState(false);
+  const [lookupPulseId, setLookupPulseId] = useState("");
   const chatListRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -310,55 +141,111 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
 
   // Stage 1: Intent Selection
   if (state.stage === "intent") {
+    const INTENT_DETAILS = [
+      { title: "Start something new", desc: "Launch MVP or custom platform" },
+      { title: "Improve what I have", desc: "Modernize existing software & UI" },
+      { title: "Automate something", desc: "Streamline workflows & APIs" },
+      { title: "Sell something", desc: "E-commerce & transaction portal" },
+      { title: "Solve a problem", desc: "Fix operational friction & scale" },
+      { title: "I don't know yet", desc: "Explore recommendations & scope" },
+    ];
+
     return (
       <div className={styles.introBlock}>
-        <p className={styles.stepLabel}>01 / BEGIN</p>
+        <div className={styles.heroBadge}>
+          <span className={styles.badgePulseDot} />
+          <span>ACEVA PULSE AI • SYSTEM ARCHITECT</span>
+        </div>
+
         <h2>
-          WHAT ARE YOU<br />
-          <i>TRYING TO CHANGE?</i>
+          TURN YOUR VISION INTO A<br />
+          <i>SYSTEM BLUEPRINT.</i>
         </h2>
+
         <p className={styles.directionCopy} style={{ marginBottom: "1.8rem" }}>
           Hello! I&apos;m PULSE, ACEVA&apos;s AI assistant. Tell me what you&apos;d like to build or improve, and I&apos;ll help map out your project.
         </p>
 
         <div className={styles.intentGrid}>
-          {INTENT_OPTIONS.map((intent, i) => (
+          {INTENT_DETAILS.map((item, i) => (
             <button
-              key={intent}
+              key={item.title}
               type="button"
               onClick={() => {
-                dispatch({ type: "INTENT", value: intent });
+                dispatch({ type: "INTENT", value: item.title });
                 const promptText =
-                  intent === "Start something new"
+                  item.title === "Start something new"
                     ? "I want to start something new."
-                    : intent === "Improve what I have"
+                    : item.title === "Improve what I have"
                     ? "I want to improve what I have."
-                    : intent === "Automate something"
+                    : item.title === "Automate something"
                     ? "I want to automate something."
-                    : intent === "Sell something"
+                    : item.title === "Sell something"
                     ? "I want to sell something online."
-                    : intent === "Solve a problem"
+                    : item.title === "Solve a problem"
                     ? "I want to solve a business problem."
                     : "I'm not sure yet, can you help me figure out what I need?";
                 sendChatMessage(promptText);
               }}
             >
               <span>0{i + 1}</span>
-              {intent}
+              <div className={styles.intentTextGroup}>
+                <strong>{item.title}</strong>
+                <small>{item.desc}</small>
+              </div>
               <b>↗</b>
             </button>
           ))}
         </div>
 
         <PulseInput
-          placeholder="Describe what is on your mind…"
-          buttonText="ENTER ↗"
+          placeholder="Or describe your project vision in your own words…"
+          buttonText="MAP THIS VISION ↗"
           onSubmit={(text) => {
             dispatch({ type: "INTENT", value: "Solve a problem" });
-            dispatch({ type: "ANSWER", value: text, inferred: inferContextFromText(text, 0) });
-            sendChatMessage(text);
+            const inferred = inferContextFromText(text, 0);
+            sendChatMessage(text, inferred);
           }}
         />
+
+        <div style={{ marginTop: "1rem", display: "flex", justifyContent: "flex-end" }}>
+          <button
+            type="button"
+            className={styles.finishEarly}
+            onClick={() => setShowLookupInput((prev) => !prev)}
+          >
+            {showLookupInput ? "HIDE LOOKUP ▲" : "LOOKUP SAVED PULSE ID 🔍"}
+          </button>
+        </div>
+
+        {showLookupInput && (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (lookupPulseId.trim()) {
+                dispatch({ type: "INTENT", value: "Lookup Direction" });
+                sendChatMessage(lookupPulseId.trim());
+                setLookupPulseId("");
+              }
+            }}
+            style={{ marginTop: "0.8rem" }}
+          >
+            <div className={styles.inlineInput}>
+              <div>
+                <input
+                  type="text"
+                  value={lookupPulseId}
+                  onChange={(e) => setLookupPulseId(e.target.value)}
+                  placeholder="Enter reference ID (e.g. PLS-260829-123)"
+                  aria-label="Enter reference PULSE ID"
+                />
+                <button type="submit" disabled={!lookupPulseId.trim()}>
+                  LOOKUP 🔍
+                </button>
+              </div>
+            </div>
+          </form>
+        )}
       </div>
     );
   }
@@ -429,23 +316,22 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
           placeholder={currentStep.placeholder}
           buttonText={state.loading ? "PROCESSING..." : "MAP THIS ↗"}
           onSubmit={(text) => {
-            const nextStep = state.step + 1;
-            dispatch({
-              type: "ANSWER",
-              value: text,
-              inferred: inferContextFromText(text, state.step),
-            });
-            sendChatMessage(text);
-
-            if (nextStep >= 5) {
-              setTimeout(() => {
-                dispatch({ type: "COMPLETE" });
-              }, 1200);
-            }
+            const inferred = inferContextFromText(text, state.step);
+            sendChatMessage(text, inferred);
           }}
         />
 
         <div className={styles.actionRow}>
+          {state.step > 0 && (
+            <button
+              type="button"
+              className={styles.finishEarly}
+              onClick={() => dispatch({ type: "UNDO_LAST_ANSWER" })}
+              disabled={Boolean(state.loading)}
+            >
+              UNDO LAST ANSWER ↩
+            </button>
+          )}
           <button
             type="button"
             className={styles.finishEarly}
@@ -625,6 +511,24 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
 
   // Stage 5: Saved Confirmation View
   if (state.stage === "confirmation") {
+    const pulseId = state.id || "PLS-260826-901";
+
+    const handleCopyId = () => {
+      if (typeof window !== "undefined" && navigator.clipboard) {
+        navigator.clipboard.writeText(pulseId);
+        setCopiedId(true);
+        setTimeout(() => setCopiedId(false), 2000);
+      }
+    };
+
+    const handleDownloadBlueprint = () => {
+      downloadPulseBlueprintDocx(state, pulseId);
+    };
+
+    const handleOk = () => {
+      dispatch({ type: "RESTART" });
+    };
+
     return (
       <div className={styles.confirmation}>
         <div className={styles.savedMark}>
@@ -640,8 +544,20 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
 
         <div className={styles.sessionId}>
           <span>PULSE ID</span>
-          <strong>{state.id || "PLS-260826-901"}</strong>
-          <small>Reference this ID when speaking with Aceva.</small>
+          <strong>{pulseId}</strong>
+          <small style={{ marginBottom: "1rem" }}>Reference this ID when speaking with Aceva.</small>
+
+          <div className={styles.idRowActions}>
+            <button type="button" className={styles.copyBtn} onClick={handleCopyId}>
+              {copiedId ? "COPIED! ✓" : "COPY ID 📋"}
+            </button>
+            <button type="button" className={styles.copyBtn} onClick={handleDownloadBlueprint}>
+              DOWNLOAD WORD BLUEPRINT (.DOCX) 📄
+            </button>
+            <button type="button" className={styles.primaryCta} onClick={handleOk}>
+              OK <b>↗</b>
+            </button>
+          </div>
         </div>
 
         <p className={styles.demoNote}>

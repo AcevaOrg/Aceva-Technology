@@ -17,31 +17,46 @@ export default function PulseButton({
   className = "",
 }: PulseButtonProps) {
   const [autoExpanded, setAutoExpanded] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    // Subtle initial expanding state animation like demo
-    const timer1 = setTimeout(() => setAutoExpanded(true), 4800);
-    const timer2 = setTimeout(() => setAutoExpanded(false), 9200);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    // Subtle initial expanding state animation only on desktop
+    if (typeof window !== "undefined" && window.innerWidth > 768) {
+      const timer1 = setTimeout(() => setAutoExpanded(true), 4800);
+      const timer2 = setTimeout(() => setAutoExpanded(false), 9200);
+
+      return () => {
+        clearTimeout(timer1);
+        clearTimeout(timer2);
+        window.removeEventListener("resize", checkMobile);
+      };
+    }
 
     return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
+      window.removeEventListener("resize", checkMobile);
     };
   }, []);
 
-  const isExpanded = expandedState || autoExpanded;
-  const labelText = activeContextText || (isExpanded ? "TURN AN IDEA INTO DIRECTION" : "PULSE");
+  // On mobile screens, strictly show "PULSE"
+  const isExpanded = !isMobile && (expandedState || autoExpanded);
+  const labelText = isMobile ? "PULSE" : activeContextText || (isExpanded ? "TURN AN IDEA INTO DIRECTION" : "PULSE");
 
   return (
     <button
       type="button"
       className={`${styles.pulseTrigger} ${isExpanded ? styles.expanded : ""} ${className}`.trim()}
       onClick={onClick}
-      aria-label="Open ACEVA Pulse — turn your idea into a direction"
+      aria-label="Open ACEVA Pulse"
     >
       <span className={styles.liveDot} aria-hidden="true" />
       <span>{labelText}</span>
-      <em>Turn your idea into a direction.</em>
+      {!isMobile && <em>Turn your idea into a direction.</em>}
     </button>
   );
 }

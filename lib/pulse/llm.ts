@@ -1,7 +1,13 @@
 import OpenAI from "openai";
 import { generateEmbedding } from "./embeddings";
 import { findSimilarChunks } from "./vectorStore";
-import { isQuestionInScope, OUT_OF_SCOPE_REJECTION } from "./scope";
+import {
+  isQuestionInScope,
+  isGreetingInput,
+  isInvalidOrUnclearInput,
+  GREETING_REJECTION,
+  OUT_OF_SCOPE_REJECTION,
+} from "./scope";
 import { getOpenAIApiKey, getOpenAIModel } from "./env";
 import { classifyProviderError, logPulseDiagnostic } from "./errors";
 import { getDirection } from "./directionStore";
@@ -105,6 +111,18 @@ How can I help you move this project direction forward today?`;
 
 Please check the ID or feel free to describe your project directly, and I'll help map it out for you!`;
     }
+  }
+
+  // Step 0.1: Greeting detection
+  if (isGreetingInput(userMessage)) {
+    logPulseDiagnostic(requestId, "greeting_detected");
+    return GREETING_REJECTION;
+  }
+
+  // Step 0.2: Invalid or unclear input check
+  if (isInvalidOrUnclearInput(userMessage, history, projectContext)) {
+    logPulseDiagnostic(requestId, "invalid_unclear_rejected");
+    return OUT_OF_SCOPE_REJECTION;
   }
 
   // Step 1: Scope check with multi-turn conversation awareness
