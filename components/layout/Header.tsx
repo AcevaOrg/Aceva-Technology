@@ -119,31 +119,60 @@ export default function Header() {
 
           </nav>
 
-          {/* PULSE AI Button */}
-          <PulseButton
-            onClick={openPulse}
-            expandedState={pulseState.stage !== "entry" && pulseState.stage !== "intent"}
-          />
+          {/* Mobile Right Action Group (PULSE AI + Burger) */}
+          <div className={styles.mobileActionsGroup}>
+            <PulseButton
+              onClick={openPulse}
+              expandedState={pulseState.stage !== "entry" && pulseState.stage !== "intent"}
+            />
 
-          {/* CTA Button */}
-          <Link
-            href={ROUTES.contact}
-            data-desktop-cta
-            className={styles.crystalCta}
-          >
-            Start a Project
-            <ArrowRightIcon width={14} height={14} strokeWidth={2.2} />
-          </Link>
+            {/* CTA Button */}
+            <Link
+              href={ROUTES.contact}
+              data-desktop-cta
+              className={styles.crystalCta}
+            >
+              Start a Project
+              <ArrowRightIcon width={14} height={14} strokeWidth={2.2} />
+            </Link>
 
-          {/* More dropdown trigger */}
-          <div ref={moreWrapperRef} className={`${styles.moreWrapper} ${styles.desktopMore}`}>
+            {/* More dropdown trigger */}
+            <div ref={moreWrapperRef} className={`${styles.moreWrapper} ${styles.desktopMore}`}>
+              <button
+                type="button"
+                onClick={() => setMoreOpen((v) => !v)}
+                aria-label="More pages"
+                aria-haspopup="menu"
+                aria-expanded={moreOpen}
+                className={`${styles.menuButton} ${moreActive ? styles.menuButtonActive : ""}`}
+              >
+                <span className={styles.menuIcon} aria-hidden="true">
+                  <span className={styles.menuIconLine} />
+                  <span className={styles.menuIconLine} />
+                  <span className={styles.menuIconLine} />
+                </span>
+              </button>
+
+              {moreOpen && (
+                <div className={styles.moreDropdown} role="menu">
+                  <div className={styles.moreDropdownInner}>
+                    {MORE_LINKS.map((l) => (
+                      <Link key={l.href} href={l.href} role="menuitem" className={styles.moreDropdownItem}>
+                        {l.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Mobile burger */}
             <button
               type="button"
-              onClick={() => setMoreOpen((v) => !v)}
-              aria-label="More pages"
-              aria-haspopup="menu"
-              aria-expanded={moreOpen}
-              className={`${styles.menuButton} ${moreActive ? styles.menuButtonActive : ""}`}
+              onClick={() => setMenuOpen(true)}
+              data-burger
+              aria-label="Open menu"
+              className={styles.burger}
             >
               <span className={styles.menuIcon} aria-hidden="true">
                 <span className={styles.menuIconLine} />
@@ -151,34 +180,7 @@ export default function Header() {
                 <span className={styles.menuIconLine} />
               </span>
             </button>
-
-            {moreOpen && (
-              <div className={styles.moreDropdown} role="menu">
-                <div className={styles.moreDropdownInner}>
-                  {MORE_LINKS.map((l) => (
-                    <Link key={l.href} href={l.href} role="menuitem" className={styles.moreDropdownItem}>
-                      {l.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
-
-          {/* Mobile burger */}
-          <button
-            type="button"
-            onClick={() => setMenuOpen(true)}
-            data-burger
-            aria-label="Open menu"
-            className={styles.burger}
-          >
-            <span className={styles.menuIcon} aria-hidden="true">
-              <span className={styles.menuIconLine} />
-              <span className={styles.menuIconLine} />
-              <span className={styles.menuIconLine} />
-            </span>
-          </button>
         </div>
       </header>
 

@@ -2,19 +2,26 @@
   "PLS-260826-883": {
     "pulseId": "PLS-260826-883",
     "lead": {
-      "name": "Test Lead",
-      "contact": "test@example.com",
+      "name": "Jordan Ellis",
+      "contact": "jordan@example.com",
       "method": "Email"
     },
     "context": {
-      "industry": "Restaurant",
-      "intent": "Online Ordering"
+      "intent": "Automate something",
+      "industry": "Logistics",
+      "business": "Distributed operation",
+      "friction": [
+        "Dispatch visibility"
+      ],
+      "goals": [
+        "Live operations"
+      ]
     },
     "recommendedModules": [
-      "Digital menu",
-      "Order tracking"
+      "Dispatch control tower",
+      "Fleet tracking & visibility"
     ],
-    "createdAt": "2026-08-27T14:17:13.255Z"
+    "createdAt": "2026-08-29T18:45:08.710Z"
   },
   "PLS-260826-615": {
     "pulseId": "PLS-260826-615",
@@ -367,5 +374,116 @@
       "Owner Revenue & Sales Analytics Dashboard"
     ],
     "createdAt": "2026-08-27T14:22:10.537Z"
+  },
+  "PLS-260829-813": {
+    "pulseId": "PLS-260829-813",
+    "lead": {
+      "name": "ali",
+      "contact": "ali90@gmail.com",
+      "method": "Email"
+    },
+    "context": {
+      "intent": "Solve a problem",
+      "industry": "Web Experience",
+      "business": "Custom web platform",
+      "friction": [
+        "I want a website for my restaurant which has 2 branches"
+      ],
+      "goals": [
+        "Perhaps both",
+        "I expect 500 users daily"
+      ],
+      "current": "I want a website for my restaurant which has 2 branches",
+      "scale": "Like online menu, different qr code printed for every single t",
+      "timeline": "Ahh I want that to be completed and launched in 3 weeks"
+    },
+    "answers": [
+      "i want a website",
+      "I want a website for my restaurant which has 2 branches",
+      "Like online menu, different qr code printed for every single table, reservation system",
+      "Perhaps both and I expect 500 users daily",
+      "Ahh I want that to be completed and launched in 3 weeks"
+    ],
+    "recommendedModules": [
+      "High-Converting Custom Web Design Platform",
+      "Lead Qualification & Interactive Intake Forms",
+      "Content & Case Study Management System",
+      "Customer Account & Inquiry Dashboard",
+      "Website Analytics & Conversion Telemetry"
+    ],
+    "createdAt": "2026-08-29T13:23:12.735Z"
+  },
+  "PLS-260829-576": {
+    "pulseId": "PLS-260829-576",
+    "lead": {
+      "name": "Ahmed Mustafa",
+      "contact": "bhurgrimustafa203@gmail.com",
+      "method": "Email"
+    },
+    "context": {
+      "intent": "Start something new",
+      "current": "i want a website",
+      "friction": [
+        "I want a website"
+      ],
+      "scale": "everything for hostels",
+      "goals": [
+        "All of them"
+      ],
+      "timeline": "exactly like AirBnB"
+    },
+    "answers": [
+      "I want to start something new.",
+      "i want a website",
+      "everything for hostels",
+      "all of them",
+      "exactly like AirBnB"
+    ],
+    "recommendedModules": [
+      "Custom Start something new Core Platform",
+      "Role-Based User Management & Security Vault",
+      "Automated Customer & Team Workflow Engine",
+      "Real-Time Operational Command Dashboard",
+      "Performance Telemetry & Growth Analytics"
+    ],
+    "createdAt": "2026-08-29T17:42:18.713Z"
+  },
+  "PLS-260829-430": {
+    "pulseId": "PLS-260829-430",
+    "lead": {
+      "name": "Naveed Ahmed",
+      "contact": "naveedbhurgriwala@gmail.com",
+      "method": "Email"
+    },
+    "context": {
+      "intent": "Start something new",
+      "current": "i want an app for ordering and tacking food deals ordered",
+      "friction": [
+        "I want an app for ordering",
+        "Tacking food deals ordered"
+      ],
+      "scale": "yeah I want these things but right now for Hyderabad, PK only",
+      "goals": [
+        "Everyday consumers",
+        "Just Hyderabad K",
+        "Urban"
+      ],
+      "timeline": "Six weeks max."
+    },
+    "answers": [
+      "I want to start something new.",
+      "i want an app for ordering and tacking food deals ordered",
+      "yeah I want these things but right now for Hyderabad, PK only",
+      "everyday consumers, just Hyderabad K , urban",
+      "Six weeks max."
+    ],
+    "recommendedModules": [
+      "Custom Start something new Core Platform",
+      "Role-Based User Management & Security Vault",
+      "Automated Customer & Team Workflow Engine",
+      "Real-Time Operational Command Dashboard",
+      "Performance Telemetry & Growth Analytics"
+    ],
+    "createdAt": "2026-08-29T18:38:34.631Z"
   }
 }

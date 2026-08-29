@@ -284,6 +284,49 @@
   color: var(--pulse-ink);
 }
 
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0.85rem;
+  background: rgba(216, 255, 56, 0.06);
+  border: 1px solid rgba(216, 255, 56, 0.2);
+  border-radius: 20px;
+  color: var(--pulse-acid);
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  margin-bottom: 1.5rem;
+}
+
+.badgePulseDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--pulse-acid);
+  box-shadow: 0 0 0 3px rgba(216, 255, 56, 0.25);
+}
+
+.featurePills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 2rem;
+}
+
+.featurePills span {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.75rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--pulse-line);
+  border-radius: 6px;
+  color: #c9cac5;
+  font-family: var(--font-space-grotesk), sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
 /* Stage 1: Intent Grid */
 
 .intentGrid {
@@ -297,17 +340,16 @@
   display: grid;
   grid-template-columns: 28px 1fr auto;
   align-items: center;
-  min-height: 68px;
-  padding: 0.8rem 1rem;
+  min-height: 76px;
+  padding: 1rem 1.2rem;
   background: transparent;
   border: none;
   border-bottom: 1px solid var(--pulse-line);
   color: #dedfda;
   font-family: var(--font-instrument-sans), sans-serif;
-  font-size: 0.88rem;
   text-align: left;
   cursor: pointer;
-  transition: background 0.22s ease, color 0.22s ease;
+  transition: all 0.22s ease;
 }
 
 .intentGrid button:nth-child(odd) {
@@ -316,8 +358,27 @@
 
 .intentGrid button:hover,
 .intentGrid button:focus-visible {
-  background: #f0f1ec;
-  color: #090a09;
+  background: rgba(216, 255, 56, 0.06);
+  border-color: rgba(216, 255, 56, 0.3);
+  color: #ffffff;
+}
+
+.intentTextGroup strong {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #f5f5ef;
+  margin-bottom: 0.15rem;
+}
+
+.intentTextGroup small {
+  display: block;
+  font-size: 0.72rem;
+  color: #8a8c85;
+}
+
+.intentGrid button:hover .intentTextGroup strong {
+  color: var(--pulse-acid);
 }
 
 .intentGrid button span {
@@ -327,12 +388,19 @@
 }
 
 .intentGrid button:hover span {
-  color: #333333;
+  color: var(--pulse-acid);
 }
 
 .intentGrid button b {
   font-weight: 400;
-  font-size: 0.9rem;
+  font-size: 1.1rem;
+  color: #777a73;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.intentGrid button:hover b {
+  color: var(--pulse-acid);
+  transform: translate(2px, -2px);
 }
 
 /* Custom Prompt Input Form */
@@ -881,6 +949,38 @@
   color: var(--pulse-acid);
 }
 
+.idRowActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.copyBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 0 1.4rem;
+  background: transparent;
+  border: 1px solid var(--pulse-line, #393b36);
+  border-radius: var(--radius-sm, 10px);
+  color: #f5f5ef;
+  font-family: var(--font-space-grotesk), sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.copyBtn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--pulse-acid);
+  color: var(--pulse-acid);
+}
+
 .demoNote {
   margin-top: 1.8rem !important;
   font-size: 0.82rem;
@@ -923,6 +1023,56 @@
 .mapBottom {
   border-top: 1px solid var(--pulse-line);
   border-bottom: none;
+}
+
+.mobileBadge {
+  display: none;
+  color: var(--pulse-acid);
+  font-size: 0.6rem;
+  margin-left: 0.5rem;
+}
+
+.mobileDrawer {
+  display: none;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  background: rgba(18, 19, 17, 0.95);
+  border-bottom: 1px solid var(--pulse-line);
+}
+
+.drawerOpen {
+  max-height: 360px;
+  padding: 1rem 1.2rem;
+  overflow-y: auto;
+}
+
+.mobileDrawerGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+
+.mobileDrawerCard {
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--pulse-line);
+  border-radius: 6px;
+}
+
+.mobileDrawerCard span {
+  display: block;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 0.55rem;
+  color: #777a73;
+  margin-bottom: 0.25rem;
+}
+
+.mobileDrawerCard strong {
+  display: block;
+  font-size: 0.78rem;
+  color: #f5f5ef;
+  word-break: break-word;
 }
 
 .mapCanvas {
@@ -1180,6 +1330,14 @@
    -------------------------------------------------------------------------- */
 
 @media (max-width: 800px) {
+  .pulseTrigger {
+    min-width: auto !important;
+  }
+
+  .pulseTrigger em {
+    display: none !important;
+  }
+
   .pulseHead {
     height: 64px;
     padding: 0 1rem;
@@ -1208,7 +1366,12 @@
   .mapPanel {
     border-left: none;
     border-top: 1px solid var(--pulse-line);
-    min-height: 580px;
+    min-height: auto;
+  }
+
+  .mobileBadge,
+  .mobileDrawer {
+    display: block;
   }
 
   .pulseFooter {
