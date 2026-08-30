@@ -56,8 +56,8 @@ describe("POST /api/pulse/save-direction Route Handler", () => {
     expect(send).toHaveBeenCalledOnce();
     expect(send).toHaveBeenCalledWith(
       expect.objectContaining({
-        to: "acevatech.official@gmail.com",
-        subject: expect.stringContaining("PLS-260826-883"),
+        to: "acevatechnology@gmail.com",
+        subject: expect.stringContaining("Jordan Ellis"),
         replyTo: "jordan@example.com",
       })
     );
@@ -70,7 +70,7 @@ describe("POST /api/pulse/save-direction Route Handler", () => {
     expect(response.status).toBe(400);
     const data = await response.json();
     expect(data.ok).toBe(false);
-    expect(data.message).toContain("Name and contact information are required");
+    expect(data.message).toContain("Please check your details");
     expect(send).not.toHaveBeenCalled();
   });
 
@@ -84,7 +84,7 @@ describe("POST /api/pulse/save-direction Route Handler", () => {
     expect(response.status).toBe(400);
     const data = await response.json();
     expect(data.ok).toBe(false);
-    expect(data.message).toContain("permanent email address");
+    expect(data.message).toContain("Please use your real work email address");
     expect(send).not.toHaveBeenCalled();
   });
 });

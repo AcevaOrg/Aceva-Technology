@@ -8,18 +8,35 @@ export const GREETING_REJECTION =
 export const OUT_OF_SCOPE_REJECTION =
   "Please enter a clear, relevant question about your project or ACEVA's software development services.";
 
+// Helper function to normalize stretched characters (e.g. "hyyyyyyyyyyyyyyyy" -> "hy", "heyyyyyyyy" -> "hey", "salaaaam" -> "salam")
+function normalizeStretchedText(text: string): string {
+  return text.toLowerCase().replace(/(.)\1{2,}/g, "$1");
+}
+
+// Helper to detect incoherent / meaningless WH-questions consisting entirely of WH-words, auxiliaries, and pronouns
+export function isIncoherentQuestion(cleanMessage: string): boolean {
+  const normalized = normalizeStretchedText(cleanMessage).replace(/[^\w\s]/g, "").trim();
+  const words = normalized.split(/\s+/).filter(Boolean);
+  if (words.length === 0) return false;
+
+  const INCOHERENT_WORDS = new Set([
+    "who", "what", "why", "how", "when", "where", "which",
+    "can", "could", "does", "do", "did", "is", "are", "am", "was", "were",
+    "you", "your", "it", "that", "this", "then", "be", "happen"
+  ]);
+
+  // If every single word in the message belongs to INCOHERENT_WORDS, it's a meaningless question chain
+  return words.every((w) => INCOHERENT_WORDS.has(w));
+}
+
 // Standalone greeting & casual conversational patterns (should NOT increase question/progress percentage)
 const GREETING_PATTERNS = [
-  /^(hi|hello|hey|greetings|good morning|good afternoon|good evening|yo|sup|hola)(\s+pulse)?[\s!.]*$/i,
-  /^(hey|hello|hi)\s+(there|\d+)[\s!.]*$/i,
+  /^(hi|hii|hiii|hello|helo|heloo|hey|heyy|heyyy|greetings|good morning|good afternoon|good evening|yo|sup|hola|hallo|halo|hy|hyy|hyyy|salam|salaam|assalamu?\s*alaikum|assalam?\s*o?\s*alaikum|asalam\s*o?\s*alaikum|aoa)[\s!.]*$/i,
+  /^(hey|hello|hi|hy)\s+(there|\d+|bro|friend|team)[\s!.]*$/i,
   /^how\s+(are|r)\s+(you|u)(\s+doing)?[\s?!.]*$/i,
   /^how\s+is\s+it\s+going[\s?!.]*$/i,
   /^what('?s|\s+is)\s+up[\s?!.]*$/i,
-  /^what\s+is\s+aceva(\s+technologies)?[\s?!.]*$/i,
-  /^what\s+does\s+aceva(\s+technologies)?\s+do[\s?!.]*$/i,
   /^(who|what)\s+are\s+you[\s?!.]*$/i,
-  /^tell\s+me\s+about\s+aceva[\s?!.]*$/i,
-  /^where\s+are\s+you\s+located[\s?!.]*$/i,
   /^(ok|okay|cool|nice|thanks|thank you|great|awesome|got it|understood)[\s!.]*$/i,
   /^(good to see you|nice to meet you|hope you'?re doing well|let'?s talk|listen to this|can we talk|can we chat|are you there|are you available|are you okay|what can you do|i'?m bored|make me laugh|tell me something|guess what|nothing|random)[\s!.]*$/i,
   /^(blah\s+){1,}blah[\s!.]*$/i,
@@ -30,6 +47,7 @@ const GREETING_PATTERNS = [
 const ACEVA_DOMAIN_TERMS = [
   "aceva",
   "pulse",
+  "seva",
   "proof sprint",
   "rescue sprint",
   "product rescue",
@@ -130,11 +148,13 @@ const OUT_OF_SCOPE_PATTERNS = [
 
   // General Knowledge Trivia, Geography, History, People, Science
   /\b(capital|president|prime minister|governor|king|queen|emperor|ceo|founder)\s+of\b/i,
-  /\bwho\s+(won|is|was|played|scored|painted|wrote|invented|created|founded)\s+(the|a)?\s*(cricket|football|match|world cup|super bowl|oscar|election|game|mona lisa|romeo|telephone|apple)?\b/i,
+  /\bwho\s+(won|is|was|played|scored|painted|wrote|invented|created|founded)\s+(the|a)?\s*(cricket|football|match|world cup|super bowl|oscar|election|game|mona lisa|romeo|telephone|apple|bitcoin)?\b/i,
   /\b(weather|temperature|forecast|rain|snow)\s+(today|tomorrow|in|this)\b/i,
   /\b(tell|give)\s+me\s+a\s+(joke|riddle|story|poem|song|recipe|quote|movie|film|bedtime story)\b/i,
   /\b(recipe|ingredients|cook|bake|kitchen|tea|coffee|cake|pizza)\s+(for|how|to)?\b/i,
-  /\b(planet|planets|solar system|galaxy|universe|space|star|stars|astronomy|physics|biology|chemistry|moon|everest|ocean|trench|photosynthesis|airplane|airplanes)\b/i,
+  /\b(planet|planets|solar system|galaxy|universe|space|star|stars|astronomy|physics|biology|chemistry|moon|everest|ocean|trench|photosynthesis|airplane|airplanes|sky|evolution)\b/i,
+  /\bwhy\s+is\s+the\s+(sky|ocean|sea|sun|grass)\s+(blue|green|yellow|red)\b/i,
+  /\b(news|happened)\s+(today|in the news)\b/i,
 
   // Development, origins, history topics ("How did X develop?", "Where did X originate?")
   /\bhow\s+did\s+.*?\s+(develop|originate|start|begin|become)\b/i,
@@ -152,20 +172,21 @@ const OUT_OF_SCOPE_PATTERNS = [
   /\bpythagorean\s+theorem\b/i,
 ];
 
-// Company & FAQ Questions about ACEVA (MUST NOT advance project progress)
+// Company & FAQ Questions about ACEVA, SEVA, Pulse (MUST NOT advance project progress)
 const ACEVA_FAQ_PATTERNS = [
-  /what('?s|\s+is)\s+aceva(\s+technologies)?/i,
-  /what\s+does\s+aceva(\s+technologies)?\s+(do|build|offer|provide)/i,
-  /who\s+(is|are)\s+(aceva|you)/i,
-  /tell\s+me\s+about\s+aceva/i,
+  /what('?s|\s+is)\s+(aceva|seva|pulse)(\s+technologies)?/i,
+  /what\s+does\s+(aceva|seva|pulse)(\s+technologies)?\s+(do|build|offer|provide|work)/i,
+  /who\s+(is|are|created|leads?)\s+(aceva|seva|pulse|you)/i,
+  /tell\s+me\s+about\s+(aceva|seva|pulse)/i,
   /where\s+are\s+you\s+(located|based)/i,
-  /what\s+(services|capabilities)\s+do\s+(you|aceva)\s+(offer|provide)/i,
-  /how\s+(does|is|do|can|did)\s+aceva\b/i,
-  /how\s+aceva\s+(works?|operates?|functions?|builds?)/i,
-  /how\s+much\s+does\s+aceva\s+cost/i,
-  /\baceva'?s?\s*(internal|mechanism|workers?|staff|leads?|founders?|ceo|process|operation)/i,
-  /\bwho\s+(works?\s+at|leads?)\s+aceva\b/i,
-  /\b(how|what|who|why|where)\b.*?\baceva\b/i,
+  /what\s+(services|capabilities)\s+do\s+(you|aceva|seva|pulse)\s+(offer|provide)/i,
+  /how\s+(does|is|do|can|did)\s+(aceva|seva|pulse)\b/i,
+  /how\s+(aceva|seva|pulse)\s+(works?|operates?|functions?|builds?)/i,
+  /how\s+much\s+does\s+(aceva|seva|pulse)\s+cost/i,
+  /\b(aceva|seva|pulse)'?s?\s*(internal|mechanism|workers?|staff|leads?|founders?|ceo|process|operation|technology)/i,
+  /\bwho\s+(works?\s+at|leads?)\s+(aceva|seva|pulse)\b/i,
+  /\bwhy\s+does\s+pulse\s+ask\s+questions\b/i,
+  /\b(how|what|who|why|where)\b.*?\b(aceva|seva|pulse)\b/i,
 ];
 
 // General Tech History, Trivia, Comparison, Meta, or Educational Questions (MUST NOT advance project progress)
@@ -192,24 +213,28 @@ export function isProjectDiscoveryInput(userMessage: string): boolean {
   const clean = userMessage.trim();
   if (!clean) return false;
 
-  // 1. Gibberish or keyboard smash check -> INVALID
+  // 1. Gibberish, keyboard smash, or noise check -> INVALID
   if (isGibberishInput(clean)) return false;
 
-  const lower = clean.toLowerCase();
+  // 2. Incoherent / meaningless WH-questions check -> INVALID
+  if (isIncoherentQuestion(clean)) return false;
 
-  // Explicit non-discovery meta/question checks FIRST (e.g. "Why do you need this information?", "Why do websites need servers?")
+  const lower = clean.toLowerCase();
+  const normalized = normalizeStretchedText(clean);
+
+  // Explicit non-discovery meta/question checks FIRST
   if (/\bwhy\s+do\s+you\s+(need|ask)\b/i.test(lower)) return false;
   if (/\bwhy\s+do\s+(websites|apps|systems)\s+(need|use)\b/i.test(lower)) return false;
 
   // Check for explicit project discovery intent (including mixed intent statements)
   const hasExplicitProjectIntent =
-    /\b(build|we need|i need|need (an?|to|a)|we want|i want|want (an?|to|a)|create (an?|a)|develop (an?|a)|refactor|migrate|redesign|modernize|start a (new )?project|budget|timeline|asap|flexible|discuss (with|\w+)|booking system|ordering system|admin dashboard|e-commerce|web app|mobile app|java to kotlin|target users|target audience|business owners|customer accounts|staff accounts|platform to work|both web and mobile)\b/i.test(
+    /\b(build|we need|i need|need (an?|to|a)|we want|i want|want (an?|to|a)|create (an?|a)|develop (an?|a)|refactor|migrate|redesign|modernize|start a (new )?project|budget|timeline|asap|flexible|discuss (with|\w+)|booking system|ordering system|admin dashboard|e-commerce|web app|mobile app|java to kotlin|target users|target audience|business owners|customer accounts|staff accounts|platform to work|both web and mobile|managed through|managed via|our current process|handled via)\b/i.test(
       lower
     ) ||
     (/\b(app|website|platform|portal|dashboard|software|system)\b/i.test(lower) &&
-      /\b(restaurant|food|dairy|farm|clinic|telehealth|real estate|logistics|fleet|delivery|inventory|checkout|booking|cart|store|shop)\b/i.test(lower));
+      /\b(restaurant|food|dairy|farm|clinic|telehealth|real estate|logistics|fleet|delivery|inventory|checkout|booking|cart|store|shop|business)\b/i.test(lower));
 
-  // If the message contains explicit project intent (even if mixed with trivia or greetings), it is valid/partial valid!
+  // If the message contains explicit project intent (even if mixed with trivia or greetings), it is valid!
   if (hasExplicitProjectIntent) {
     return true;
   }
@@ -217,32 +242,37 @@ export function isProjectDiscoveryInput(userMessage: string): boolean {
   // Additional casual noise / meta / trivia patterns
   if (/\b(nothing|nan|bored|make me laugh|random|nice to meet you|tell me a joke)\b/i.test(lower)) return false;
 
-  // Standalone Greetings / Casual Check-ins
-  if (GREETING_PATTERNS.some((p) => p.test(clean))) return false;
-  if (ACEVA_FAQ_PATTERNS.some((p) => p.test(clean))) return false;
-  if (GENERAL_TECH_TRIVIA_PATTERNS.some((p) => p.test(clean))) return false;
-  if (OUT_OF_SCOPE_PATTERNS.some((p) => p.test(clean))) return false;
-
-  // Incoherent question text (e.g. "Who are you, you", "what is what")
-  const isIncoherentQuestion =
-    /^(who|what|why|how)\s+(are|is|do|did)\s+(you|it|that|this)\s*,?\s*(you|it|that|this)?$/i.test(clean);
-  if (isIncoherentQuestion) return false;
+  // Check stretched or standard Greetings / Casual Check-ins
+  if (isGreetingInput(clean)) return false;
+  if (ACEVA_FAQ_PATTERNS.some((p) => p.test(clean) || p.test(normalized))) return false;
+  if (GENERAL_TECH_TRIVIA_PATTERNS.some((p) => p.test(clean) || p.test(normalized))) return false;
+  if (OUT_OF_SCOPE_PATTERNS.some((p) => p.test(clean) || p.test(normalized))) return false;
 
   // Question format without explicit project intent -> INVALID
   const isQuestionFormat =
-    /^(who|what|why|how|when|where|which|can you|tell me|explain)\b/i.test(lower) || /\?$/.test(clean);
+    /^(who|what|why|how|when|where|which|can you|could you|tell me|explain)\b/i.test(lower) || /\?$/.test(clean);
   if (isQuestionFormat) return false;
 
   return true;
 }
 
 /**
- * Check if the input is a standalone greeting or casual check-in.
+ * Check if the input is a standalone greeting or casual check-in (including stretched/misspelled greetings).
  */
 export function isGreetingInput(userMessage: string): boolean {
   const clean = userMessage.trim();
   if (!clean) return false;
-  return GREETING_PATTERNS.some((pattern) => pattern.test(clean));
+
+  if (GREETING_PATTERNS.some((pattern) => pattern.test(clean))) {
+    return true;
+  }
+
+  const normalized = normalizeStretchedText(clean).replace(/[^\w\s]/g, "").trim();
+
+  // Match stretched/misspelled greetings: hiya, hy, hyy, hyyyy, heyy, heyyyy, helloo, haloo, halo, salam, salaam, salam alaikum, assalamu alaikum, aoa, etc.
+  const GREETING_WORDS = /^(hi|hii|hiya|hello|helo|heloo|helllo|hey|heyy|greetings|good morning|good afternoon|good evening|yo|sup|hola|hallo|halo|haloo|hy|hyy|hyyy|salam|salaam|salam\s+alaikum|salaam\s+alaikum|assalamu?\s*alaikum|assalam?\s*o?\s*alaikum|asalam\s*o?\s*alaikum|salam\s*o?\s*alaikum|aoa)(\s+pulse|\s+there|\s+bro|\s+friend|\s+team)?$/i;
+
+  return GREETING_WORDS.test(normalized) || GREETING_WORDS.test(clean.toLowerCase().replace(/[^\w\s]/g, "").trim());
 }
 
 /**
@@ -283,15 +313,15 @@ export function getCasualOrFAQResponse(userMessage: string): string | null {
   }
 
   // Greetings & Check-ins
-  if (/how\s+are\s+you|how\s+r\s+u|how\s+is\s+it\s+going|what'?s\s+up/i.test(clean)) {
+  if (/^(how\s+are\s+you|how\s+r\s+u|how\s+is\s+it\s+going|what'?s\s+up)[\s?!.]*$/i.test(clean)) {
     return "I'm doing great, thank you! I'm PULSE, ACEVA's AI System Architect. What software project or digital direction can I help map out for you today?";
   }
 
-  if (/^(hi|hello|hey|greetings|good morning|good afternoon|good evening|yo|sup|hola)/i.test(clean)) {
+  if (/^(hi|hello|hey|greetings|good morning|good afternoon|good evening|yo|sup|hola|hy|hallo|halo|salam|salaam|assalamu?\s*alaikum|aoa)(\s+pulse|\s+there|\s+bro|\s+friend|\s+team)?[\s!.]*$/i.test(clean)) {
     return "Hello! I'm PULSE, ACEVA's AI System Architect. Tell me what you'd like to build or improve, and I'll help map out your project direction.";
   }
 
-  if (/^(ok|okay|cool|nice|thanks|thank you|great|awesome|got it|understood)/i.test(clean)) {
+  if (/^(ok|okay|cool|nice|thanks|thank you|great|awesome|got it|understood)[\s!.]*$/i.test(clean)) {
     return "You're welcome! Whenever you're ready, tell me a bit about your project or business goals, and we will map out your system architecture.";
   }
 
@@ -315,6 +345,23 @@ export function isGibberishInput(userMessage: string): boolean {
   // Pulse ID reference code exception (e.g. PLS-260829-123)
   if (/PLS-\d{6}-\d{3}/i.test(clean)) return false;
 
+  // Pure symbol/punctuation noise (e.g. "!!! ???", "@#$%^&*", "...")
+  if (/^[\s!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]+$/.test(clean)) return true;
+
+  // Repeated single character noise (e.g. "00000000", "11111111", "aaaaa")
+  if (/^(.)\1{3,}$/.test(clean)) return true;
+
+  // Unformatted random 7+ digit sequence without currency formatting (e.g. "123456789")
+  if (/^\d{7,}$/.test(clean)) return true;
+
+  // Realistic monetary / numeric values exception (e.g. "$5,000", "5000", "$10k", "5k", "2500")
+  if (/^\$?\d{1,3}(,\d{3})*(\.\d{2})?\s*k?$/i.test(clean) || /^\d{1,6}\s*k?$/i.test(clean)) {
+    return false;
+  }
+
+  // Number-only or repetitive digit sequences (e.g. "123456789", "000000000")
+  if (/^\d+$/.test(clean.replace(/\s+/g, ""))) return true;
+
   // Very short non-alphanumeric noise (e.g. "?", "a", "1", "..")
   if (clean.length < 2) return true;
   if (!/[a-zA-Z]/.test(clean)) return true;
@@ -329,20 +376,21 @@ export function isGibberishInput(userMessage: string): boolean {
   // Check repeating single characters (e.g. "aaaaaaa", "zzzzzz")
   if (/^(.)\1{4,}$/i.test(clean)) return true;
 
-  // Keyboard smashes & random string patterns (e.g. "asdfghjkl", "qwertyuiop", "zxcvbnm", "xyz123abc", "hdgjsabdasvjvdahs", "qazxsw", "plmokn", "q1w2e3r4", "qweqwe", "asdasd", "qwepoiuy")
+  // Keyboard smashes & random string patterns
   if (
-    /asdf|ghjk|qwert|yuiop|zxcv|123abc|abc123|hdgjs|vjvd|sdah|fghj|qazx|qazw|plmo|q1w2|qweqwe|asdasd|qwepoi|xvbnm|mnbvc|lkjhg|zxcmnb/i.test(
+    /asdf|ghjk|qwert|yuiop|zxcv|123abc|abc123|hdgjs|vjvd|sdah|fghj|qazx|qazw|plmo|q1w2|qweqwe|asdasd|qwepoi|xvbnm|mnbvc|lkjhg|zxcmnb|jshdf|xczvbn|zzxxcc|asdkjh/i.test(
       lower
     ) &&
-    clean.length < 40
+    clean.length < 50
   ) {
     return true;
   }
 
-  // 5+ consecutive consonants in a single token (e.g. "hdgjsabdasvjvdahs")
+  // 5+ consecutive consonants in a clean single token for unpronounceable text
   const tokens = lower.split(/\s+/);
   for (const token of tokens) {
-    if (token.length > 5 && /[^aeiouy0-9]{5,}/.test(token)) {
+    const cleanToken = token.replace(/[^\w]/g, "");
+    if (cleanToken.length > 4 && /[^aeiouy0-9]{5,}/.test(cleanToken)) {
       return true;
     }
   }
@@ -363,15 +411,7 @@ export function getGibberishOrNonsenseResponse(): string {
  * (e.g. "I will discuss that with ACEVA's team directly", "Flexible budget", "3 locations", "Build a mobile app").
  */
 export function isExplicitProjectScopeInput(userMessage: string): boolean {
-  const clean = userMessage.trim();
-  if (!clean) return false;
-
-  // Non-project general queries (greetings, company FAQs, general tech trivia, gibberish) are NEVER valid project answers
-  if (isCasualOrFAQOrGeneralQuery(clean) || isGibberishInput(clean)) {
-    return false;
-  }
-
-  return true;
+  return isProjectDiscoveryInput(userMessage);
 }
 
 /**
@@ -386,13 +426,9 @@ export function isInvalidOrUnclearInput(
   if (!clean) return true;
 
   if (isGibberishInput(clean)) return true;
+  if (isIncoherentQuestion(clean)) return true;
 
-  // If the message contains explicit project discovery intent, it is NOT invalid or unclear
-  if (isProjectDiscoveryInput(clean)) {
-    return false;
-  }
-
-  // Out of scope pattern match
+  // Out of scope pattern match (general knowledge trivia, math, recipes, etc.)
   const isOOS = OUT_OF_SCOPE_PATTERNS.some((pattern) => pattern.test(clean));
   if (isOOS) return true;
 
