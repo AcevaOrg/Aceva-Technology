@@ -14,6 +14,7 @@ import {
 } from "@/lib/validateContact";
 
 import { isPathKey } from "@/lib/data/paths";
+import { CONTACT_EMAIL } from "@/lib/social";
 import {
   isApiErrorBody,
   shouldResetTurnstile,
@@ -174,7 +175,7 @@ export default function ContactForm() {
         // Use the canonical helpers — never expose raw API internals to the user.
         const errorMessage = resolveApiErrorMessage(
           data,
-          "Something went wrong. Please try again, or email us at acevatech.official@gmail.com.",
+          `Something went wrong. Please try again, or email us at ${CONTACT_EMAIL}.`,
         );
         setServerMessage(errorMessage);
 
@@ -195,7 +196,7 @@ export default function ContactForm() {
       setStatus("success");
     } catch {
       setStatus("error");
-      setServerMessage("We could not send that just now. Email us directly at acevatech.official@gmail.com.");
+      setServerMessage(`We could not send that just now. Email us directly at ${CONTACT_EMAIL}.`);
     }
   }
 
@@ -233,7 +234,7 @@ export default function ContactForm() {
         </span>
         <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 24, fontWeight: 600, letterSpacing: "-.02em", margin: "20px 0 0" }}>Received. A senior will read this.</p>
         <p style={{ fontSize: 15.5, lineHeight: 1.65, color: "var(--muted)", margin: "12px 0 0" }}>
-          We reply from acevatech.official@gmail.com with either a proposed next step or an honest reason we are not the right team. No drip sequence, no sales calls you did not ask for.
+          We reply from {CONTACT_EMAIL} with either a proposed next step or an honest reason we are not the right team. No drip sequence, no sales calls you did not ask for.
         </p>
         <div style={{ marginTop: 24, padding: 18, border: "1px solid var(--hairline)", borderRadius: 12 }}>
           <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10.5, letterSpacing: ".14em", color: "var(--muted)", margin: "0 0 12px" }}>WHAT HAPPENS NEXT</p>

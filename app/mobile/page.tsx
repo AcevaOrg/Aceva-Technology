@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
+import { CONTACT_EMAIL } from "@/lib/social";
 import Reveal from "@/components/ui/Reveal";
 import PhoneFrame from "@/components/ui/PhoneFrame";
 import { MailIcon, CloseIcon, CheckIcon } from "@/components/ui/icons";
@@ -207,7 +208,7 @@ export default function MobilePage() {
                     Start a Project
                   </span>
                   <span style={{ display: "block", marginTop: 9, border: "1px solid var(--hairline)", textAlign: "center", fontSize: 13, padding: 15, borderRadius: 11, color: "var(--ink)" }}>
-                    acevatech.official@gmail.com
+                    {CONTACT_EMAIL}
                   </span>
                 </div>
               </ScreenFill>

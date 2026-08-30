@@ -1,4 +1,5 @@
 import type { LegalDoc } from "@/lib/data/legal";
+import { CONTACT_EMAIL } from "@/lib/social";
 import Eyebrow from "@/components/ui/Eyebrow";
 import Callout from "@/components/ui/Callout";
 import Reveal from "@/components/ui/Reveal";
@@ -63,7 +64,7 @@ export default function LegalPage({ doc }: LegalPageProps) {
             borderTop: "1px solid var(--hairline)",
           }}
         >
-          LAST UPDATED — PLACEHOLDER · CONTACT ACEVATECH.OFFICIAL@GMAIL.COM
+          LAST UPDATED — PLACEHOLDER · CONTACT {CONTACT_EMAIL.toUpperCase()}
         </p>
       </div>
     </section>

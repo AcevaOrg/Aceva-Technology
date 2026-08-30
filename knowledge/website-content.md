@@ -49,4 +49,4 @@ ACEVA showcases concept demos and internal product frameworks (honestly labeled 
 ## Legal and Terms Principles
 - **Privacy**: Contact form collects name, work email, optional company, capability of interest, and project description for direct human review. Data is retained strictly for project evaluation.
 - **Intellectual Property Guarantee**: Clients maintain complete ownership of all delivered source code, repositories, cloud accounts, and data under agreed terms.
-- **Verified Contact Channel**: Official public contact channel is `acevatechnology@gmail.com`.
+- **Verified Contact Channel**: Official public contact channels are `acevatech.official@gmail.com` and `+92 305 555 2230`. See `contact.md` for the full verified list including social profiles.

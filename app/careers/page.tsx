@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
 import { ROUTES } from "@/lib/nav";
+import { CONTACT_EMAIL } from "@/lib/social";
 import Reveal from "@/components/ui/Reveal";
 import Card from "@/components/ui/Card";
 import Tag from "@/components/ui/Tag";
@@ -149,7 +150,7 @@ export default function CareersPage() {
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-start" }}>
                 <a
-                  href="mailto:acevatech.official@gmail.com"
+                  href={`mailto:${CONTACT_EMAIL}`}
                   className="ac-btn-primary"
                   style={{ padding: "15px 24px", borderRadius: 11, minHeight: 50 }}
                 >

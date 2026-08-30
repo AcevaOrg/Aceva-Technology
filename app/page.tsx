@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { pageMetadata } from "@/lib/seo";
 import { ROUTES } from "@/lib/nav";
+import { CONTACT_EMAIL } from "@/lib/social";
 import Reveal from "@/components/ui/Reveal";
 import Eyebrow from "@/components/ui/Eyebrow";
 import Card from "@/components/ui/Card";
@@ -282,14 +283,14 @@ export default function HomePage() {
             Tell us what is costing you the most time, money or customer trust.
           </Reveal>
           <Reveal style={{ fontSize: "clamp(16px,1.5vw,18.5px)", lineHeight: 1.6, color: "var(--muted)", margin: "24px 0 0", maxWidth: "52ch" }}>
-            A short qualification form, then a meeting. We reply from acevatech.official@gmail.com.
+            A short qualification form, then a meeting. We reply from {CONTACT_EMAIL}.
           </Reveal>
           <Reveal style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 34 }}>
             <Link href={ROUTES.contact} className="ac-btn-primary" style={{ minHeight: 52, padding: "16px 26px" }}>
               Start a Project
               <ArrowRightIcon width={15} height={15} strokeWidth={2.2} />
             </Link>
-            <a href="mailto:acevatech.official@gmail.com" className="ac-btn-ghost" style={{ minHeight: 52, padding: "16px 26px" }}>
+            <a href={`mailto:${CONTACT_EMAIL}`} className="ac-btn-ghost" style={{ minHeight: 52, padding: "16px 26px" }}>
               Email us directly
             </a>
           </Reveal>

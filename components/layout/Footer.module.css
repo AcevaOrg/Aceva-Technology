@@ -107,6 +107,10 @@
   min-width: 0;
 }
 
+.socialRow {
+  margin-top: 18px;
+}
+
 .navCard {
   display: flex;
   flex-direction: column;

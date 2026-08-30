@@ -1,0 +1,57 @@
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: 1px solid rgba(59, 124, 255, 0.3);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted);
+  text-decoration: none;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.link:hover {
+  color: var(--ice);
+  border-color: var(--electric);
+  background: rgba(59, 124, 255, 0.08);
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--electric);
+  outline-offset: 2px;
+}
+
+/* Compact variant for tighter contexts such as the contact page rows. */
+.sm .link {
+  width: 36px;
+  height: 36px;
+}
+
+@media (max-width: 560px) {
+  /* Meet the 44px minimum touch target on phones, matching how the footer
+     bumps its text links at the same breakpoint. */
+  .link,
+  .sm .link {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link {
+    transition: none;
+  }
+}

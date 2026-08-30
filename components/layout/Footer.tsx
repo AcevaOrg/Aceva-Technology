@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ROUTES, capabilityRoute } from "@/lib/nav";
+import { CONTACT_EMAIL, CONTACT_PHONE } from "@/lib/social";
 import { LogoMark } from "@/components/ui/icons";
+import SocialLinks from "@/components/ui/SocialLinks";
 import styles from "./Footer.module.css";
 
 const CAPABILITY_LINKS = [
@@ -91,10 +93,22 @@ export default function Footer() {
           <div className={styles.contactBlock}>
             <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 16px" }}>CONTACT</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 11, alignItems: "flex-start" }}>
-              <a href="mailto:acevatech.official@gmail.com" style={{ fontSize: 14, color: "var(--ink)" }}>
-                acevatech.official@gmail.com
+              <a href={`mailto:${CONTACT_EMAIL}`} style={{ fontSize: 14, color: "var(--ink)" }}>
+                {CONTACT_EMAIL}
+              </a>
+              <a href={`tel:${CONTACT_PHONE.e164}`} style={{ fontSize: 14, color: "var(--ink)" }}>
+                {CONTACT_PHONE.display}
+              </a>
+              <a
+                href={CONTACT_PHONE.whatsapp}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: 14, color: "var(--muted)" }}
+              >
+                Chat on WhatsApp
               </a>
             </div>
+            <SocialLinks className={styles.socialRow} />
           </div>
         </div>
 

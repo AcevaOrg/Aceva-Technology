@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { X_HANDLE } from "@/lib/social";
 
 export const SITE_NAME = "ACEVA Technology";
 
@@ -72,6 +73,8 @@ export function pageMetadata({
     },
     twitter: {
       card: "summary_large_image",
+      site: X_HANDLE,
+      creator: X_HANDLE,
       title: socialTitle,
       description,
       images: [ogImage.url],
