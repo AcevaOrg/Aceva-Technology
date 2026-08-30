@@ -84,6 +84,28 @@ export const POST = withRouteErrorHandling("chat", async (request, requestId) =>
       ? (reqBody.context as Record<string, unknown>)
       : undefined;
 
+    if (!message) {
+      logPulseDiagnostic(requestId, "api_empty_message");
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "'message' cannot be empty.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (message.length > 1000) {
+      logPulseDiagnostic(requestId, "api_message_too_long", { length: message.length });
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "'message' exceeds maximum length of 1000 characters.",
+        },
+        { status: 400 }
+      );
+    }
+
   // 3. Generate LLM response and evaluate scope
   const answer = await generatePulseCompletion(message, history, context, requestId);
   const isGreeting = isGreetingInput(message);
@@ -143,6 +165,36 @@ export const POST = withRouteErrorHandling("chat", async (request, requestId) =>
 
     // CORE RULE: Only explicit project scope responses increase progress (isValid: true)!
     const isValid = isProjectScope && !isCasual && !isGreeting && !isInvalid && answer !== GREETING_REJECTION && answer !== OUT_OF_SCOPE_REJECTION;
+
+    return NextResponse.json(
+      {
+        answer,
+        isValid,
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    logPulseDiagnostic(requestId, "api_route_exception", { error: String(error) });
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "An internal server error occurred. Please try again later.",
+      },
+      { status: 500 }
+    );
+  }
+}
+  // 3. Generate LLM response and evaluate scope
+  const answer = await generatePulseCompletion(message, history, context, requestId);
+  const isGreeting = isGreetingInput(message);
+  const isInvalid  = isInvalidOrUnclearInput(message, history, context);
+  const isValid    = !isGreeting && !isInvalid && answer !== GREETING_REJECTION && answer !== OUT_OF_SCOPE_REJECTION;
+
+  return NextResponse.json(
+    { answer, isValid },
+    { status: 200, headers: { "Cache-Control": "no-store" } },
+  );
+});
 
   return NextResponse.json(
     { answer, isValid },
