@@ -46,25 +46,27 @@ export function validateContact(f: ContactFormValues): ContactFieldErrors {
  * tells a screen-reader user nothing about what to fix.
  */
 export const FIELD_MESSAGES: Record<keyof ContactFieldErrors, string> = {
-  name: "Enter your name.",
-  email: "Enter a valid work email, like you@company.com.",
-  company: `Enter your company name, under ${CONTACT_LIMITS.company} characters.`,
-  budget: "Choose a budget range.",
-  details: `Describe the problem in at least ${CONTACT_LIMITS.detailsMin} characters.`,
+  name: "Please enter your full name.",
+  email: "Please enter a valid work email, like you@company.com.",
+  company: `Please enter your company name (under ${CONTACT_LIMITS.company} characters).`,
+  budget: "Please select a budget range to continue.",
+  details: `Please describe your problem in at least ${CONTACT_LIMITS.detailsMin} characters.`,
 };
 
 /** Order used to decide which invalid field receives focus after a failed submit. */
 export const FIELD_ORDER: (keyof ContactFieldErrors)[] = ["name", "email", "company", "budget", "details"];
 
 export function errorSummary(errors: ContactFieldErrors): string {
-  const parts: string[] = [];
-  if (errors.name) parts.push("your name");
-  if (errors.email) parts.push("a valid work email");
-  if (errors.company) parts.push("your company name");
-  if (errors.budget) parts.push("a budget range");
-  if (errors.details) parts.push(`a problem description between ${CONTACT_LIMITS.detailsMin} and ${CONTACT_LIMITS.detailsMax} characters`);
-  if (!parts.length) return "";
-  return "We still need " + parts.join(", ") + " before a senior can read this.";
+  const missing: string[] = [];
+  if (errors.name) missing.push("your name");
+  if (errors.email) missing.push("a valid work email");
+  if (errors.company) missing.push("your company name");
+  if (errors.budget) missing.push("a budget range");
+  if (errors.details) missing.push("a description of your problem");
+  if (!missing.length) return "";
+  if (missing.length === 1)
+    return `Please complete the following before submitting: ${missing[0]}.`;
+  return `Please complete the following before submitting: ${missing.slice(0, -1).join(", ")} and ${missing[missing.length - 1]}.`;
 }
 
 export const EMPTY_CONTACT_FORM: ContactFormValues = {

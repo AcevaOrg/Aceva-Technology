@@ -14,6 +14,11 @@ import {
 } from "@/lib/validateContact";
 
 import { isPathKey } from "@/lib/data/paths";
+import {
+  isApiErrorBody,
+  shouldResetTurnstile,
+  resolveApiErrorMessage,
+} from "@/lib/api/errorCodes";
 import { ContactFormSkeleton } from "@/components/ui/FormSkeleton";
 
 /** Field-level error text, linked to its input with aria-describedby. */
@@ -165,10 +170,23 @@ export default function ContactForm() {
       const data = await res.json();
       if (!res.ok || !data.ok) {
         setStatus("error");
-        setErrors(data.errors || {});
-        setServerMessage(data.message || "Something went wrong. Please try again.");
-        // Reset Turnstile on error so user can retry
-        if (siteKey && window.turnstile) {
+
+        // Use the canonical helpers — never expose raw API internals to the user.
+        const errorMessage = resolveApiErrorMessage(
+          data,
+          "Something went wrong. Please try again, or email us at acevatech.official@gmail.com.",
+        );
+        setServerMessage(errorMessage);
+
+        // Re-highlight fields only if the server returned a VALIDATION_FAILED
+        // with a field-error map (the field map is optional and may be omitted).
+        if (isApiErrorBody(data) && data.code === "VALIDATION_FAILED" && data.errors) {
+          setErrors(data.errors);
+        }
+
+        // Reset the Turnstile widget only on Turnstile-family errors so the user
+        // can complete a fresh check and re-submit without reloading the page.
+        if (siteKey && window.turnstile && shouldResetTurnstile(data)) {
           window.turnstile.reset(turnstileWidgetId.current);
           setTurnstileToken("");
         }
