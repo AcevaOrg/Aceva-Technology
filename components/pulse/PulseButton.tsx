@@ -51,6 +51,7 @@ export default function PulseButton({
     <button
       type="button"
       className={`${styles.pulseTrigger} ${isExpanded ? styles.expanded : ""} ${className}`.trim()}
+      data-expanded={isExpanded}
       onClick={onClick}
       aria-label="Open ACEVA Pulse"
     >

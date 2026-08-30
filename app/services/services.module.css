@@ -1,6 +1,65 @@
 .row {
-  transition: background 200ms ease;
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+  transition:
+    background 200ms ease,
+    transform 140ms ease;
 }
+
 .row:hover {
   background: #101014;
+}
+
+.row:focus-visible {
+  background: #101014;
+  outline: 2px solid var(--electric);
+  outline-offset: 5px;
+  border-radius: 10px;
+}
+
+.row:active {
+  background: rgba(30, 79, 217, 0.12);
+  transform: translateY(1px) scale(0.995);
+}
+
+.openCapability {
+  width: fit-content;
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 14px;
+  border: 1px solid rgba(59, 124, 255, 0.55);
+  border-radius: 9px;
+  background: rgba(30, 79, 217, 0.12);
+  color: var(--ice);
+  font-size: 14px;
+  font-weight: 600;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.row:hover .openCapability {
+  color: #fff;
+  border-color: var(--electric);
+  background: var(--royal);
+  box-shadow: 0 8px 24px rgba(30, 79, 217, 0.28);
+  transform: translateX(3px);
+}
+
+.row:focus-visible .openCapability {
+  color: #fff;
+  border-color: var(--electric);
+  background: var(--royal);
+  box-shadow: 0 0 0 3px rgba(59, 124, 255, 0.25);
+}
+
+.row:active .openCapability {
+  box-shadow: 0 2px 8px rgba(30, 79, 217, 0.22);
+  transform: translateX(2px) scale(0.97);
 }

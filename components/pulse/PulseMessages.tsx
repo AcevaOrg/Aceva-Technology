@@ -166,7 +166,7 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
         </h2>
 
         <p className={styles.directionCopy} style={{ marginBottom: "1.8rem" }}>
-          Map out custom software architecture, timeline, and system requirements in under 60 seconds with ACEVA's AI System Architect.
+          Hello! I&apos;m PULSE, ACEVA&apos;s AI assistant. Tell me what you&apos;d like to build or improve, and I&apos;ll help map out your project.
         </p>
 
         <div className={styles.intentGrid}>

@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ROUTES } from "@/lib/nav";
-import { ArrowRightIcon, ChevronDownIcon, CloseIcon, LogoMark } from "@/components/ui/icons";
+import { ArrowRightIcon, CloseIcon, LogoMark } from "@/components/ui/icons";
 import { PulseButton, usePulse } from "@/components/pulse";
 import styles from "./Header.module.css";
 
@@ -36,6 +36,17 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const moreWrapperRef = useRef<HTMLDivElement>(null);
+  const moreButtonRef = useRef<HTMLButtonElement>(null);
+  const burgerRef = useRef<HTMLButtonElement>(null);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
+  const mobileOverlayRef = useRef<HTMLDivElement>(null);
+
+  // Returns focus to the control that opened the menu, so keyboard users are not dumped
+  // at the top of the document.
+  const closeMenu = useCallback(() => {
+    setMenuOpen(false);
+    burgerRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     const onScroll = () => {
@@ -58,7 +69,62 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, [moreOpen]);
 
+  // While the full-screen menu is open it behaves as a modal dialog: the page behind must
+  // not scroll, focus starts inside it, Tab cycles within it, and Escape dismisses it.
   useEffect(() => {
+    if (!menuOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeBtnRef.current?.focus();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        closeMenu();
+        return;
+      }
+      if (e.key !== "Tab") return;
+
+      const root = mobileOverlayRef.current;
+      if (!root) return;
+      const focusable = Array.from(
+        root.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')
+      ).filter((el) => el.offsetParent !== null);
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [menuOpen, closeMenu]);
+
+  // Escape closes the "More" dropdown and hands focus back to its trigger.
+  useEffect(() => {
+    if (!moreOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMoreOpen(false);
+        moreButtonRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [moreOpen]);
+
+  useEffect(() => {
+    // Navigating away closes both without stealing focus from the incoming page.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMenuOpen(false);
     setMoreOpen(false);
@@ -124,6 +190,7 @@ export default function Header() {
             <PulseButton
               onClick={openPulse}
               expandedState={pulseState.stage !== "entry" && pulseState.stage !== "intent"}
+              className={styles.headerPulse}
             />
 
             {/* CTA Button */}
@@ -139,6 +206,7 @@ export default function Header() {
             {/* More dropdown trigger */}
             <div ref={moreWrapperRef} className={`${styles.moreWrapper} ${styles.desktopMore}`}>
               <button
+                ref={moreButtonRef}
                 type="button"
                 onClick={() => setMoreOpen((v) => !v)}
                 aria-label="More pages"
@@ -165,33 +233,42 @@ export default function Header() {
                 </div>
               )}
             </div>
-
-            {/* Mobile burger */}
-            <button
-              type="button"
-              onClick={() => setMenuOpen(true)}
-              data-burger
-              aria-label="Open menu"
-              className={styles.burger}
-            >
-              <span className={styles.menuIcon} aria-hidden="true">
-                <span className={styles.menuIconLine} />
-                <span className={styles.menuIconLine} />
-                <span className={styles.menuIconLine} />
-              </span>
-            </button>
           </div>
+
+          {/* Mobile burger */}
+          <button
+            ref={burgerRef}
+            type="button"
+            onClick={() => setMenuOpen(true)}
+            data-burger
+            aria-label="Open menu"
+            aria-expanded={menuOpen}
+            className={styles.burger}
+          >
+            <span className={styles.menuIcon} aria-hidden="true">
+              <span className={styles.menuIconLine} />
+              <span className={styles.menuIconLine} />
+              <span className={styles.menuIconLine} />
+            </span>
+          </button>
         </div>
       </header>
 
       {/* Mobile fullscreen menu */}
       {menuOpen && (
-        <div className={styles.mobileOverlay}>
+        <div
+          ref={mobileOverlayRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Site menu"
+          className={styles.mobileOverlay}
+        >
           <div className={styles.mobileHeader}>
             <span className={styles.mobileMenuLabel}>MENU</span>
             <button
+              ref={closeBtnRef}
               type="button"
-              onClick={() => setMenuOpen(false)}
+              onClick={closeMenu}
               aria-label="Close menu"
               className={styles.closeBtn}
             >

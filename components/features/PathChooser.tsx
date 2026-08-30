@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { PATHS, PATH_KEYS, type PathKey } from "@/lib/data/paths";
 import { ROUTES, capabilityRoute, contactRoute } from "@/lib/nav";
-import { CheckIcon, ArrowRightIcon } from "@/components/ui/icons";
+import { CheckIcon, ArrowRightIcon, CloseIcon } from "@/components/ui/icons";
 import Reveal from "@/components/ui/Reveal";
 
 const PATH_META: Record<PathKey, { badge: string; title: string; body: string }> = {
@@ -94,10 +94,15 @@ export default function PathChooser() {
             animation: "acFadeUp 460ms cubic-bezier(.16,1,.3,1) both",
           }}
         >
-          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12, justifyContent: "space-between", padding: "18px 26px", borderBottom: "1px solid var(--hairline)", background: "var(--elevated)", animation: "acMobileItem 420ms cubic-bezier(.16,1,.3,1) 70ms both" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, justifyContent: "space-between", padding: "14px 18px 14px 26px", borderBottom: "1px solid var(--hairline)", background: "var(--elevated)", animation: "acMobileItem 420ms cubic-bezier(.16,1,.3,1) 70ms both" }}>
             <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--ice)", margin: 0 }}>YOUR PATH — {path.label}</p>
-            <button type="button" onClick={() => setSelected(null)} style={{ background: "none", border: 0, color: "var(--muted)", fontSize: 13, padding: "6px 0" }}>
-              Reset
+            <button
+              type="button"
+              onClick={() => setSelected(null)}
+              aria-label="Close"
+              className="path-result-close"
+            >
+              <CloseIcon />
             </button>
           </div>
           <div style={{ padding: "clamp(26px,4vw,40px) clamp(20px,3vw,40px)", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: "clamp(26px,4vw,48px)" }}>

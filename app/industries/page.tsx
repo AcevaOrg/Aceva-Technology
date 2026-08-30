@@ -5,8 +5,10 @@ import Reveal from "@/components/ui/Reveal";
 import Card from "@/components/ui/Card";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Industries — ACEVA Technology",
-  description: "We sell by problem, not by industry — how ACEVA applies engineering capabilities across business sectors.",
+  title: "Industries We Serve",
+  description:
+    "We sell by problem, not by industry. The three problems we start from, and how we map them to your sector before writing a line of code.",
+  path: ROUTES.industries,
 });
 
 interface Path {
@@ -99,7 +101,7 @@ export default function IndustriesPage() {
                   <span style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10.5, letterSpacing: ".14em", color: "var(--electric)" }}>
                     {p.label}
                   </span>
-                  <span style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 20, fontWeight: 500, lineHeight: 1.28 }}>{p.title}</span>
+                  <h2 className="ac-heading-sm" style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 20, fontWeight: 500, lineHeight: 1.28 }}>{p.title}</h2>
                   <span style={{ fontSize: 14.5, lineHeight: 1.6, color: "var(--muted)" }}>{p.body}</span>
                 </Card>
               </Reveal>
