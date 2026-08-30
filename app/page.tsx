@@ -1,7 +1,8 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { CAPS } from "@/lib/data/caps";
-import { ROUTES, capabilityRoute } from "@/lib/nav";
+import { pageMetadata } from "@/lib/seo";
+import { ROUTES } from "@/lib/nav";
 import Reveal from "@/components/ui/Reveal";
 import Eyebrow from "@/components/ui/Eyebrow";
 import Card from "@/components/ui/Card";
@@ -10,47 +11,18 @@ import ArrowLink from "@/components/ui/ArrowLink";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import PathChooser from "@/components/features/PathChooser";
 import ProcessLoop from "@/components/ui/ProcessLoop";
+import ProofBoard from "@/components/ui/ProofBoard";
+import OfferTabs from "@/components/features/OfferTabs";
 
-const CAP_ICONS: Record<string, React.ReactNode> = {
-  digital: (
-    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#3B7CFF" strokeWidth="1.6" aria-hidden="true">
-      <rect x="2" y="3" width="20" height="14" rx="2" />
-      <path d="M8 21h8M12 17v4" />
-    </svg>
-  ),
-  software: (
-    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#3B7CFF" strokeWidth="1.6" aria-hidden="true">
-      <rect x="3" y="3" width="18" height="18" rx="2" />
-      <path d="M3 9h18M9 21V9" />
-    </svg>
-  ),
-  mobile: (
-    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#3B7CFF" strokeWidth="1.6" aria-hidden="true">
-      <rect x="6" y="2" width="12" height="20" rx="2.5" />
-      <path d="M11 18h2" />
-    </svg>
-  ),
-  intelligence: (
-    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#3B7CFF" strokeWidth="1.6" aria-hidden="true">
-      <path d="M12 3v3M12 18v3M3 12h3M18 12h3M6.3 6.3l2.1 2.1M15.6 15.6l2.1 2.1M17.7 6.3l-2.1 2.1M8.4 15.6l-2.1 2.1" />
-      <circle cx="12" cy="12" r="3.4" />
-    </svg>
-  ),
-  rescue: (
-    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#7FB2FF" strokeWidth="1.6" aria-hidden="true">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
-      <path d="M9.2 12l2 2 3.6-3.6" />
-    </svg>
-  ),
-};
-
-const CAP_HOME_BLURBS: Record<string, string> = {
-  digital: "Premium websites, e-commerce, portals and customer-facing platforms.",
-  software: "SaaS products, dashboards, marketplaces and internal business systems.",
-  mobile: "iOS, Android and cross-platform applications for customers and teams.",
-  intelligence: "AI assistants, workflow automation, integrations, knowledge systems and reporting.",
-  rescue: "Audit, stabilize, secure and modernize unfinished, outdated or AI-generated software.",
-};
+// Static homepage metadata is exported from this Server Component.
+// The brand already leads this title, so it bypasses the layout's "%s — ACEVA Technology" template.
+export const metadata: Metadata = pageMetadata({
+  title: "ACEVA Technology — Custom Software, Web & Mobile Engineering",
+  description:
+    "ACEVA Technology designs, builds and scales custom software, web and mobile products. AI-accelerated, senior-reviewed, production-ready.",
+  path: "/",
+  absoluteTitle: true,
+});
 
 const COMPETE_POINTS = [
   { n: "01", title: "Proof Sprint", body: "Before a large commitment, we solve or demonstrate one narrow part of the problem and hand over a roadmap." },
@@ -82,7 +54,7 @@ export default function HomePage() {
       {/* Hero */}
       <section className="hero" style={{ position: "relative", overflow: "hidden" }}>
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/Aceva.png" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--hero bg-pan-slow" priority />
+          <Image src="/images/used/Aceva.webp" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--hero bg-pan-slow" priority />
           <div className="hero-overlay" />
         </div>
         <div style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(110px,14vw,160px) clamp(20px,4vw,48px) clamp(48px,6vw,72px)", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
@@ -99,16 +71,13 @@ export default function HomePage() {
           <p style={{ fontSize: "clamp(16.5px,1.5vw,19.5px)", lineHeight: 1.62, color: "var(--muted)", maxWidth: "60ch", margin: "clamp(22px,3vw,30px) auto 0", animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 160ms both" }}>
             Aceva designs digital experiences, custom software, mobile products and intelligent systems — and rescues products that need a stronger path forward.
           </p>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 12, marginTop: "clamp(30px,4vw,42px)", animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 260ms both" }}>
-            <Link href={ROUTES.contact} className="ac-btn-primary" style={{ minHeight: 52, padding: "16px 26px" }}>
-              Start a Project
-              <ArrowRightIcon width={15} height={15} strokeWidth={2.2} />
-            </Link>
-            <a href="mailto:acevatech.official@gmail.com" className="ac-btn-ghost" style={{ minHeight: 52, padding: "16px 26px" }}>
+          <div style={{ display: "flex", flexDirection: "row", flexWrap: "nowrap", justifyContent: "center", gap: 16, marginTop: "clamp(30px,4vw,42px)", animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 260ms both", width: "100%", maxWidth: 560 }}>
+
+            <Link href={ROUTES.contact} className="ac-btn-futuristic" style={{ flex: 1, minHeight: 52, padding: "16px 12px", justifyContent: "center" }}>
               Contact Us
               <ArrowRightIcon width={15} height={15} />
-            </a>
-            <Link href={ROUTES.work} className="ac-btn-ghost" style={{ minHeight: 52, padding: "16px 26px" }}>
+            </Link>
+            <Link href={ROUTES.work} className="ac-btn-ghost" style={{ flex: 1, minHeight: 52, padding: "16px 12px", justifyContent: "center" }}>
               Explore Experiments
               <ArrowRightIcon width={15} height={15} />
             </Link>
@@ -141,58 +110,30 @@ export default function HomePage() {
 
       {/* Five capabilities */}
       <section className="capabilities">
-        <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/holographic.png" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--contain bg-pan" style={{ objectPosition: "center 20%" }} />
-          <div className="capabilities-overlay" />
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 15%, transparent 85%, #0A0A0C 100%)" }} />
+        <div className="offer-ambient" aria-hidden="true">
+          <span className="offer-ambient__orb offer-ambient__orb--primary" />
+          <span className="offer-ambient__orb offer-ambient__orb--secondary" />
+          <span className="offer-ambient__orbit offer-ambient__orbit--outer" />
+          <span className="offer-ambient__orbit offer-ambient__orbit--inner" />
+          <span className="offer-ambient__beam" />
+          <span className="offer-ambient__line offer-ambient__line--one" />
+          <span className="offer-ambient__line offer-ambient__line--two" />
         </div>
         <div style={{ position: "relative", zIndex: 1, maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,9vw,116px) clamp(20px,4vw,48px)" }}>
-          <Reveal>
-            <Eyebrow>02 — THE OFFER</Eyebrow>
-            <h2 style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: "clamp(28px,4vw,46px)", lineHeight: 1.08, letterSpacing: "-.025em", margin: 0, maxWidth: "22ch" }}>
-              Five capabilities. One accountable engineering partner.
-            </h2>
+          <Reveal className="offer-heading">
+            <div>
+              <Eyebrow>02 — THE OFFER</Eyebrow>
+              <h2 style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: "clamp(28px,4vw,46px)", lineHeight: 1.08, letterSpacing: "-.025em", margin: 0, maxWidth: "22ch" }}>
+                Five capabilities. One accountable engineering partner.
+              </h2>
+            </div>
+            <p className="offer-heading__intro">
+              From the first customer touchpoint to the systems behind it, we design, build and improve the technology your business depends on.
+            </p>
           </Reveal>
-          <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(290px,1fr))", gap: 14, marginTop: "clamp(30px,4vw,48px)" }}>
-            {CAPS.map((cap) => (
-              <Reveal key={cap.key}>
-                <Card variant="flagship" href={capabilityRoute(cap.key)} style={{ padding: 28, display: "flex", flexDirection: "column", gap: 12, minHeight: 230 }}>
-                  <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".16em", color: "var(--ice)" }}>
-                    {cap.key === "rescue" ? `${cap.num} · FLAGSHIP` : cap.num}
-                    {CAP_ICONS[cap.key]}
-                  </span>
-                  <span style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 22, fontWeight: 500, letterSpacing: "-.01em", marginTop: 6 }}>{cap.name}</span>
-                  <span style={{ fontSize: 14.5, lineHeight: 1.62, color: "#c3c8d4" }}>{CAP_HOME_BLURBS[cap.key]}</span>
-                  <span className="ac-link" style={{ marginTop: "auto", fontSize: 13.5 }}>
-                    Learn more
-                    <ArrowRightIcon />
-                  </span>
-                </Card>
-              </Reveal>
-            ))}
-            <Reveal>
-              <Card variant="flagship" href={ROUTES.services} style={{ padding: 28, display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 10, minHeight: 230 }}>
-                <span style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 19, fontWeight: 500, letterSpacing: "-.01em" }}>All capabilities in detail</span>
-                <span style={{ fontSize: 14, color: "#c3c8d4" }}>What each one includes, when to buy it, and what we will not promise.</span>
-              </Card>
-            </Reveal>
-          </div>
-        </div>
-      </section>
 
-      {/* Differentiator strip */}
-      <section>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(56px,7vw,88px) clamp(20px,4vw,48px)", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))", gap: 2 }}>
-          {[
-            { n: "01", text: "AI-accelerated. Senior-reviewed. Production-ready." },
-            { n: "02", text: "Your code. Your accounts. Your data." },
-            { n: "03", text: "New York market insight. Global engineering execution." },
-          ].map((item, i, arr) => (
-            <Reveal key={item.n} style={{ padding: "26px 28px", borderRight: i < arr.length - 1 ? "1px solid var(--hairline)" : "none" }}>
-              <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--electric)", margin: "0 0 12px" }}>{item.n}</p>
-              <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: "clamp(18px,1.9vw,22px)", fontWeight: 500, lineHeight: 1.34, letterSpacing: "-.01em", margin: 0 }}>{item.text}</p>
-            </Reveal>
-          ))}
+          <OfferTabs />
+
         </div>
       </section>
 
@@ -260,7 +201,7 @@ export default function HomePage() {
       {/* Proof, not portfolio */}
       <section className="experiments">
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-          <Image src="/images/used/twin-visions.jpg" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--proof bg-pan" />
+          <ProofBoard />
           <div className="experiments-overlay" />
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #0A0A0C 0%, transparent 20%, transparent 80%, #0A0A0C 100%)" }} />
         </div>

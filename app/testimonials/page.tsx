@@ -8,8 +8,9 @@ import Card from "@/components/ui/Card";
 import Tag from "@/components/ui/Tag";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Client Feedback — ACEVA Technology",
+  title: "Client Feedback",
   description: "Aceva has no testimonials yet, and will not write its own. Here is what we will publish, and when.",
+  path: ROUTES.testimonials,
   noIndex: true,
 });
 

@@ -1,18 +1,22 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
+import { ROUTES } from "@/lib/nav";
 import Reveal from "@/components/ui/Reveal";
 import Card from "@/components/ui/Card";
 import Tag from "@/components/ui/Tag";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Careers — ACEVA Technology",
-  description: "Five senior professionals and five juniors. Every junior has a named mentor and named senior review.",
+  title: "Careers at ACEVA Technology — Engineering Roles",
+  description:
+    "Every junior has a named mentor, and no junior change reaches production without a named senior review. How we hire, mentor and grow engineers.",
+  path: ROUTES.careers,
+  absoluteTitle: true,
 });
 
 const LANE_CARDS = [
   {
     title: "One clear lane each",
-    body: "Ten people are enough only if every person has one clear responsibility. You will know exactly what you own.",
+    body: "A small team is enough only if every person has one clear responsibility. You will know exactly what you own.",
   },
   {
     title: "Review as teaching",
@@ -24,10 +28,10 @@ const LANE_CARDS = [
   },
 ];
 
-const ROLE_SLOTS = [
-  { label: "ROLE SLOT 01", body: "Add a role here with its lane, its reviewer and its weekly availability." },
-  { label: "ROLE SLOT 02", body: "Junior openings state the mentor by name before they are published." },
-  { label: "ROLE SLOT 03", body: "No unpaid trials, no take-homes longer than an evening." },
+const HIRING_PRINCIPLES = [
+  { label: "WHEN A ROLE OPENS", body: "It is posted with its exact lane, its named reviewer and its weekly availability — never a vague title." },
+  { label: "JUNIOR OPENINGS", body: "The mentor is named before the role is published, so you know who reviews your work before you apply." },
+  { label: "THE APPLICATION ITSELF", body: "No unpaid trials, no take-home task longer than an evening. Real work gets a real conversation, not a free audition." },
 ];
 
 export default function CareersPage() {
@@ -71,8 +75,8 @@ export default function CareersPage() {
               animation: "acFadeUp 800ms cubic-bezier(.16,1,.3,1) 140ms both",
             }}
           >
-            Five senior professionals and five juniors. Every junior has a named mentor, and no junior change reaches
-            production without a named senior review. That is the whole culture.
+            Every junior has a named mentor, and no junior change reaches production without a named senior review.
+            That is the whole culture.
           </p>
         </div>
       </section>
@@ -99,7 +103,7 @@ export default function CareersPage() {
                   height: "100%",
                 }}
               >
-                <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 19, fontWeight: 500, margin: 0 }}>{card.title}</p>
+                <h2 className="ac-heading-sm" style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 19, fontWeight: 500, margin: 0 }}>{card.title}</h2>
                 <p style={{ fontSize: 14.5, lineHeight: 1.62, color: "var(--muted)", margin: "10px 0 0" }}>{card.body}</p>
               </Card>
             </Reveal>
@@ -125,7 +129,8 @@ export default function CareersPage() {
               }}
             >
               <div>
-                <p
+                <h2
+                  className="ac-heading-sm"
                   style={{
                     fontFamily: "var(--font-space-grotesk)",
                     fontSize: "clamp(20px,2.4vw,26px)",
@@ -136,7 +141,7 @@ export default function CareersPage() {
                   }}
                 >
                   No open roles right now.
-                </p>
+                </h2>
                 <p style={{ fontSize: 15.5, lineHeight: 1.62, color: "var(--muted)", margin: "12px 0 0", maxWidth: "44ch" }}>
                   Send your work anyway — we read everything and keep it on file for when a lane opens. Tell us what you
                   want to be reviewed on.
@@ -156,11 +161,14 @@ export default function CareersPage() {
               </div>
             </Card>
           </Reveal>
-          <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 12, marginTop: 14 }}>
-            {ROLE_SLOTS.map((slot) => (
+          <Reveal as="p" style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "36px 0 22px" }}>
+            HOW HIRING WORKS HERE
+          </Reveal>
+          <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 12 }}>
+            {HIRING_PRINCIPLES.map((slot) => (
               <Reveal key={slot.label}>
                 <Card variant="flagship" style={{ borderRadius: 14, padding: 22, height: "100%" }}>
-                  <Tag variant="dashed" style={{ marginBottom: 10 }}>
+                  <Tag variant="outline-ice" style={{ marginBottom: 10 }}>
                     {slot.label}
                   </Tag>
                   <p style={{ fontSize: 14.5, color: "var(--muted)", margin: 0 }}>{slot.body}</p>

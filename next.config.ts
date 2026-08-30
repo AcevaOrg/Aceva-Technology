@@ -3,12 +3,16 @@ import type { NextConfig } from "next";
 const isDevelopment = process.env.NODE_ENV === "development";
 const contentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""} https://challenges.cloudflare.com`,
+  // Turnstile's challenge compiles WebAssembly, which CSP blocks without an eval
+  // permission. 'wasm-unsafe-eval' allows only that, not JavaScript eval().
+  `script-src 'self' 'unsafe-inline' ${isDevelopment ? "'unsafe-eval'" : "'wasm-unsafe-eval'"} https://challenges.cloudflare.com`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self' data:",
   "connect-src 'self' https://challenges.cloudflare.com",
   "frame-src https://challenges.cloudflare.com",
+  // Turnstile spawns its challenge worker from a blob: URL.
+  "worker-src 'self' blob:",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

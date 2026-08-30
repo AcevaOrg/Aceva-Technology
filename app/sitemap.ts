@@ -1,8 +1,7 @@
 import type { MetadataRoute } from "next";
 import { ROUTES } from "@/lib/nav";
 import { CAPS } from "@/lib/data/caps";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://acevatech.com";
+import { NOINDEX_ROUTES, SITE_URL } from "@/lib/seo";
 
 const STATIC_ROUTES: Array<{ path: string; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"]; priority: number }> = [
   { path: ROUTES.home, changeFrequency: "weekly", priority: 1 },
@@ -25,7 +24,11 @@ const STATIC_ROUTES: Array<{ path: string; changeFrequency: MetadataRoute.Sitema
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
-  const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map(({ path, changeFrequency, priority }) => ({
+  // Filtering here — rather than curating the list by hand — makes it impossible to
+  // submit a URL that the page itself marks `noindex`.
+  const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.filter(
+    ({ path }) => !NOINDEX_ROUTES.has(path)
+  ).map(({ path, changeFrequency, priority }) => ({
     url: `${SITE_URL}${path}`,
     lastModified: now,
     changeFrequency,

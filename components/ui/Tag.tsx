@@ -18,6 +18,7 @@ export default function Tag({ children, variant = "chip", style }: TagProps) {
     return (
       <span
         style={{
+          display: "inline-flex",
           fontFamily: "var(--font-jetbrains-mono)",
           fontSize: "10px",
           letterSpacing: ".14em",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 import Skeleton, { SkeletonGrid, SkeletonText } from "@/components/ui/Skeleton";
 import CardSkeleton, { CapabilityCardSkeleton, ProofCardSkeleton, TeaserCardSkeleton, PathCardSkeleton } from "@/components/ui/CardSkeleton";
 
@@ -9,18 +10,9 @@ import CardSkeleton, { CapabilityCardSkeleton, ProofCardSkeleton, TeaserCardSkel
  * This is the App Router loading.tsx pattern
  */
 export default function Loading() {
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const reduceMotion = usePrefersReducedMotion();
   const [inView, setInView] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduceMotion(mediaQuery.matches);
-    const handler = (e: MediaQueryListEvent) => setReduceMotion(e.matches);
-    mediaQuery.addEventListener("change", handler);
-    return () => mediaQuery.removeEventListener("change", handler);
-  }, []);
 
   useEffect(() => {
     const el = containerRef.current;

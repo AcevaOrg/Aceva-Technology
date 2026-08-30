@@ -6,9 +6,11 @@ import Callout from "@/components/ui/Callout";
 import Button from "@/components/ui/Button";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Why Aceva — ACEVA Technology",
+  title: "Why ACEVA — How We Position, Sell and Deliver",
   description:
-    "We will not compete by saying more. We will compete by proving more — how Aceva positions, sells and delivers.",
+    "We will not compete by saying more — we compete by proving more. How Aceva is positioned, how we sell, and how we deliver software that survives handover.",
+  path: ROUTES.about,
+  absoluteTitle: true,
 });
 
 interface Fact {
@@ -115,7 +117,7 @@ export default function AboutPage() {
               <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10.5, letterSpacing: ".16em", color: "var(--electric)", margin: "0 0 14px" }}>
                 {f.kicker}
               </p>
-              <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 19, fontWeight: 500, lineHeight: 1.32, margin: 0 }}>{f.title}</p>
+              <h2 className="ac-heading-sm" style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 19, fontWeight: 500, lineHeight: 1.32, margin: 0 }}>{f.title}</h2>
               <p style={{ fontSize: 14.5, lineHeight: 1.6, color: "var(--muted)", margin: "10px 0 0" }}>{f.body}</p>
             </Reveal>
           ))}

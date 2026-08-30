@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { pageMetadata } from "@/lib/seo";
+import { pageMetadata, SITE_URL } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { CAPS, getCapability, getAdjacentCapabilities } from "@/lib/data/caps";
@@ -22,11 +22,13 @@ export async function generateMetadata({ params }: CapabilityPageProps): Promise
   const { capability } = await params;
   const cap = getCapability(capability);
   if (!cap) {
-    return { title: "Capability — ACEVA Technology" };
+    return { title: "Capability not found" };
   }
   return pageMetadata({
-    title: `${cap.name} — ACEVA Technology`,
-    description: cap.lead,
+    title: cap.seoTitle,
+    description: cap.seoDescription,
+    path: capabilityRoute(cap.key),
+    image: `/og/${cap.key}.jpg`,
   });
 }
 
@@ -37,9 +39,50 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
     notFound();
   }
   const { prev, next } = getAdjacentCapabilities(cap.key);
+  const canonical = `${SITE_URL}${capabilityRoute(cap.key)}`;
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        // Tells search engines what is actually being sold here, tied back to the
+        // Organization declared once in the root layout.
+        "@type": "Service",
+        "@id": `${canonical}#service`,
+        name: cap.name,
+        serviceType: cap.seoTitle,
+        description: cap.lead,
+        url: canonical,
+        provider: { "@id": `${SITE_URL}/#organization` },
+        areaServed: "Worldwide",
+        hasOfferCatalog: {
+          "@type": "OfferCatalog",
+          name: cap.name,
+          itemListElement: cap.includes.map((item) => ({
+            "@type": "Offer",
+            itemOffered: { "@type": "Service", name: item },
+          })),
+        },
+      },
+      {
+        // Lets Google show "Home › Services › <capability>" instead of a raw URL.
+        "@type": "BreadcrumbList",
+        "@id": `${canonical}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+          { "@type": "ListItem", position: 2, name: "Services", item: `${SITE_URL}${ROUTES.services}` },
+          { "@type": "ListItem", position: 3, name: cap.name },
+        ],
+      },
+    ],
+  };
 
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, "\\u003c") }}
+      />
       <section style={{ position: "relative", overflow: "hidden" }}>
         <div
           aria-hidden="true"
@@ -63,7 +106,7 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
             padding: "calc(var(--nav-offset) + clamp(12px,2vw,28px)) clamp(20px,4vw,48px) clamp(44px,6vw,72px)",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "var(--muted)" }}>
+          <nav aria-label="Breadcrumb" style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "var(--muted)" }}>
             <Link
               href={ROUTES.services}
               className={styles.crumbLink}
@@ -72,8 +115,8 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
               Capabilities
             </Link>
             <span aria-hidden="true">/</span>
-            <span style={{ color: "var(--ink)" }}>{cap.name}</span>
-          </div>
+            <span aria-current="page" style={{ color: "var(--ink)" }}>{cap.name}</span>
+          </nav>
           <p
             style={{
               fontFamily: "var(--font-jetbrains-mono)",
@@ -238,33 +281,76 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
             </Reveal>
             <Reveal>
               <Card style={{ padding: 26 }}>
-                <p
-                  style={{
-                    fontFamily: "var(--font-jetbrains-mono)",
-                    fontSize: 11,
-                    letterSpacing: ".18em",
-                    color: "var(--muted)",
-                    margin: "0 0 16px",
-                  }}
-                >
-                  ENGAGEMENT TYPES
-                </p>
-                <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 10 }}>
-                  <li style={{ fontSize: 15, lineHeight: 1.55, color: "var(--ink)", paddingLeft: 18, position: "relative" }}>
-                    <span aria-hidden="true" style={{ position: "absolute", left: 0, color: "var(--electric)" }}>·</span>
-                    Fixed scope — written scope, milestones and acceptance criteria.
-                  </li>
-                  <li style={{ fontSize: 15, lineHeight: 1.55, color: "var(--ink)", paddingLeft: 18, position: "relative" }}>
-                    <span aria-hidden="true" style={{ position: "absolute", left: 0, color: "var(--electric)" }}>·</span>
-                    Dedicated team — senior-reviewed capacity, weekly demos.
-                  </li>
-                  <li style={{ fontSize: 15, lineHeight: 1.55, color: "var(--ink)", paddingLeft: 18, position: "relative" }}>
-                    <span aria-hidden="true" style={{ position: "absolute", left: 0, color: "var(--electric)" }}>·</span>
-                    Sprint first — a narrow paid proof before a large commitment.
-                  </li>
-                </ul>
+                {cap.engagement ? (
+                  <>
+                    <p
+                      style={{
+                        fontFamily: "var(--font-jetbrains-mono)",
+                        fontSize: 11,
+                        letterSpacing: ".18em",
+                        color: "var(--muted)",
+                        margin: "0 0 16px",
+                      }}
+                    >
+                      {cap.engagement.title.toUpperCase()}
+                    </p>
+                    <ol style={{ margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 10, listStylePosition: "inside" }}>
+                      {cap.engagement.items.map((item, i) => (
+                        <li key={i} style={{ fontSize: 15, lineHeight: 1.55, color: "var(--ink)" }}>
+                          {item}
+                        </li>
+                      ))}
+                    </ol>
+                  </>
+                ) : (
+                  <>
+                    <p
+                      style={{
+                        fontFamily: "var(--font-jetbrains-mono)",
+                        fontSize: 11,
+                        letterSpacing: ".18em",
+                        color: "var(--muted)",
+                        margin: "0 0 16px",
+                      }}
+                    >
+                      ENGAGEMENT TYPES
+                    </p>
+                    <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+                      <li style={{ fontSize: 15, lineHeight: 1.55, color: "var(--ink)", paddingLeft: 18, position: "relative" }}>
+                        <span aria-hidden="true" style={{ position: "absolute", left: 0, color: "var(--electric)" }}>·</span>
+                        Fixed scope — written scope, milestones and acceptance criteria.
+                      </li>
+                      <li style={{ fontSize: 15, lineHeight: 1.55, color: "var(--ink)", paddingLeft: 18, position: "relative" }}>
+                        <span aria-hidden="true" style={{ position: "absolute", left: 0, color: "var(--electric)" }}>·</span>
+                        Dedicated team — senior-reviewed capacity, weekly demos.
+                      </li>
+                      <li style={{ fontSize: 15, lineHeight: 1.55, color: "var(--ink)", paddingLeft: 18, position: "relative" }}>
+                        <span aria-hidden="true" style={{ position: "absolute", left: 0, color: "var(--electric)" }}>·</span>
+                        Sprint first — a narrow paid proof before a large commitment.
+                      </li>
+                    </ul>
+                  </>
+                )}
               </Card>
             </Reveal>
+            {cap.closing && (
+              <Reveal>
+                <Card style={{ padding: 26, backgroundColor: "var(--card-alt)", border: "1px solid var(--royal)" }}>
+                  <p
+                    style={{
+                      fontFamily: "var(--font-jetbrains-mono)",
+                      fontSize: 11,
+                      letterSpacing: ".18em",
+                      color: "var(--electric)",
+                      margin: "0 0 14px",
+                    }}
+                  >
+                    CLOSING
+                  </p>
+                  <p style={{ fontSize: 16, lineHeight: 1.6, color: "var(--ink)", margin: 0, fontWeight: 500 }}>{cap.closing}</p>
+                </Card>
+              </Reveal>
+            )}
           </div>
         </div>
       </section>
@@ -281,64 +367,72 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
             gap: 14,
           }}
         >
-          <Card href={capabilityRoute(prev.key)} style={{ textAlign: "left", padding: 24, minHeight: 110 }}>
-            <span
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 9,
-                fontFamily: "var(--font-jetbrains-mono)",
-                fontSize: 11,
-                letterSpacing: ".16em",
-                color: "var(--muted)",
-              }}
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <path d="M19 12H5M11 18l-6-6 6-6" />
-              </svg>
-              PREVIOUS
-            </span>
-            <span
-              style={{
-                display: "block",
-                fontFamily: "var(--font-space-grotesk)",
-                fontSize: 19,
-                fontWeight: 500,
-                marginTop: 12,
-              }}
-            >
-              {prev.name}
-            </span>
-          </Card>
-          <Card href={capabilityRoute(next.key)} style={{ textAlign: "left", padding: 24, minHeight: 110 }}>
-            <span
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 9,
-                fontFamily: "var(--font-jetbrains-mono)",
-                fontSize: 11,
-                letterSpacing: ".16em",
-                color: "var(--muted)",
-              }}
-            >
-              NEXT
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <path d="M5 12h14M13 6l6 6-6 6" />
-              </svg>
-            </span>
-            <span
-              style={{
-                display: "block",
-                fontFamily: "var(--font-space-grotesk)",
-                fontSize: 19,
-                fontWeight: 500,
-                marginTop: 12,
-              }}
-            >
-              {next.name}
-            </span>
-          </Card>
+          {prev ? (
+            <Card href={capabilityRoute(prev.key)} style={{ textAlign: "left", padding: 24, minHeight: 110 }}>
+              <span
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 9,
+                  fontFamily: "var(--font-jetbrains-mono)",
+                  fontSize: 11,
+                  letterSpacing: ".16em",
+                  color: "var(--muted)",
+                }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <path d="M19 12H5M11 18l-6-6 6-6" />
+                </svg>
+                PREVIOUS
+              </span>
+              <span
+                style={{
+                  display: "block",
+                  fontFamily: "var(--font-space-grotesk)",
+                  fontSize: 19,
+                  fontWeight: 500,
+                  marginTop: 12,
+                }}
+              >
+                {prev.name}
+              </span>
+            </Card>
+          ) : (
+            <div aria-hidden="true" />
+          )}
+          {next ? (
+            <Card href={capabilityRoute(next.key)} style={{ textAlign: "left", padding: 24, minHeight: 110 }}>
+              <span
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 9,
+                  fontFamily: "var(--font-jetbrains-mono)",
+                  fontSize: 11,
+                  letterSpacing: ".16em",
+                  color: "var(--muted)",
+                }}
+              >
+                NEXT
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </span>
+              <span
+                style={{
+                  display: "block",
+                  fontFamily: "var(--font-space-grotesk)",
+                  fontSize: 19,
+                  fontWeight: 500,
+                  marginTop: 12,
+                }}
+              >
+                {next.name}
+              </span>
+            </Card>
+          ) : (
+            <div aria-hidden="true" />
+          )}
         </div>
       </section>
     </div>
