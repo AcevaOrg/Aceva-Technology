@@ -396,6 +396,6 @@ ACEVA offers flexible engagement models:
 1. Tell ACEVA what you are trying to build or improve.
 2. A senior team member will review your request.
 3. ACEVA will respond with an honest next step — or an honest no if it is not a good fit.
-4. Contact: acevatechnology@gmail.com
+4. Contact: acevatech.official@gmail.com, or call +92 305 555 2230
 
 If you have a business idea, a project that needs building, or a system that needs improvement — reach out to the ACEVA team. Every inquiry receives a personal, human response — not an automated sequence.

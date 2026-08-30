@@ -2,8 +2,10 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
 import { ROUTES } from "@/lib/nav";
+import { CONTACT_EMAIL, CONTACT_PHONE } from "@/lib/social";
 import Reveal from "@/components/ui/Reveal";
 import KeyValueRow from "@/components/ui/KeyValueRow";
+import SocialLinks from "@/components/ui/SocialLinks";
 import ContactForm from "@/components/features/ContactForm";
 
 export const metadata: Metadata = pageMetadata({
@@ -28,7 +30,19 @@ export default function ContactPage() {
             Answer that in a few lines. A senior reads it — not a form-filling assistant — and replies with either a next step or an honest no.
           </p>
           <div style={{ marginTop: 36, display: "flex", flexDirection: "column", borderTop: "1px solid var(--hairline)" }}>
-            <KeyValueRow first label="Email" value={<a href="mailto:acevatech.official@gmail.com">acevatech.official@gmail.com</a>} />
+            <KeyValueRow first label="Email" value={<a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>} />
+            <KeyValueRow
+              label="Phone"
+              value={
+                <span style={{ display: "flex", flexWrap: "wrap", gap: "4px 12px", alignItems: "center" }}>
+                  <a href={`tel:${CONTACT_PHONE.e164}`}>{CONTACT_PHONE.display}</a>
+                  <a href={CONTACT_PHONE.whatsapp} target="_blank" rel="noopener noreferrer" style={{ color: "var(--muted)", fontSize: 14 }}>
+                    Chat on WhatsApp
+                  </a>
+                </span>
+              }
+            />
+            <KeyValueRow label="Social" value={<SocialLinks size="sm" />} />
             <KeyValueRow label="Reply" value={<span style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "var(--muted)" }}>A HUMAN RESPONSE, NOT AN AUTOMATED SEQUENCE</span>} />
           </div>
         </Reveal>

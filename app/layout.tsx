@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Space_Grotesk, Instrument_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SITE_NAME, SITE_URL, TITLE_SUFFIX } from "@/lib/seo";
+import { CONTACT_EMAIL, CONTACT_PHONE, SOCIAL_LINKS, X_HANDLE } from "@/lib/social";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import MobileCtaBar from "@/components/layout/MobileCtaBar";
@@ -36,15 +37,10 @@ const siteUrl = SITE_URL;
 /**
  * Public profiles for this company. Google uses `sameAs` to confirm that these accounts
  * and this website are the same entity, which is the main input to a brand knowledge
- * panel. Add the LinkedIn company page and GitHub organisation URLs here.
+ * panel. Edit `lib/social.ts` to add one — the footer and contact page read the same
+ * list, so the markup and the visible links cannot drift apart.
  */
-const SOCIAL_PROFILES: string[] = [
-  // Public company page. Do NOT use the /admin/dashboard/ URL — that is the private
-  // management view, it is not crawlable, and Google cannot verify it as this entity.
-  "https://www.linkedin.com/company/143570032/",
-  "https://www.instagram.com/acevatechnology",
-  "https://www.facebook.com/share/1DJXzSK13W/",
-];
+const SOCIAL_PROFILES: string[] = SOCIAL_LINKS.map((social) => social.href);
 
 const ORG_DESCRIPTION =
   "A software engineering company that designs, builds, and scales custom digital products.";
@@ -66,12 +62,13 @@ const structuredData = {
         height: 512,
       },
       image: `${siteUrl}/opengraph-image.png`,
-      email: "acevatech.official@gmail.com",
+      email: CONTACT_EMAIL,
       description: ORG_DESCRIPTION,
       contactPoint: {
         "@type": "ContactPoint",
         contactType: "customer support",
-        email: "acevatech.official@gmail.com",
+        email: CONTACT_EMAIL,
+        telephone: CONTACT_PHONE.e164,
         url: `${siteUrl}/contact`,
         availableLanguage: ["English"],
       },
@@ -110,6 +107,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
+    site: X_HANDLE,
+    creator: X_HANDLE,
   },
   // Set NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION to the token Search Console gives you and
   // the verification tag is emitted automatically. Omitted entirely when unset.

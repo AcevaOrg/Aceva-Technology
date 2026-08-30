@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ROUTES } from "@/lib/nav";
+import { CONTACT_EMAIL } from "@/lib/social";
 import { ArrowRightIcon, CloseIcon, LogoMark } from "@/components/ui/icons";
 import { PulseButton, usePulse } from "@/components/pulse";
 import styles from "./Header.module.css";
@@ -322,11 +323,11 @@ export default function Header() {
                 Start a Project
               </Link>
               <a
-                href="mailto:acevatech.official@gmail.com"
+                href={`mailto:${CONTACT_EMAIL}`}
                 className={styles.mobileEmail}
                 style={{ animationDelay: `${760 + MORE_LINKS.length * 35}ms` }}
               >
-                acevatech.official@gmail.com
+                {CONTACT_EMAIL}
               </a>
             </div>
           </div>

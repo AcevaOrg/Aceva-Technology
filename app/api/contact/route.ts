@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { CONTACT_EMAIL } from "@/lib/social";
 import {
   withRouteErrorHandling,
   apiSuccess,
@@ -246,7 +247,7 @@ export const POST = withRouteErrorHandling("contact", async (request, requestId)
     throw new ApiError("SERVICE_UNAVAILABLE", {}, { reason: "resend-key-missing" });
   }
 
-  const toEmail = process.env.CONTACT_TO_EMAIL || "acevatech.official@gmail.com";
+  const toEmail = process.env.CONTACT_TO_EMAIL || CONTACT_EMAIL;
   const fromEmail = process.env.CONTACT_FROM_EMAIL || "Aceva Website <onboarding@resend.dev>";
 
   const resend = new Resend(apiKey);

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ROUTES } from "@/lib/nav";
+import { CONTACT_EMAIL } from "@/lib/social";
 import { MailIcon } from "@/components/ui/icons";
 
 export default function MobileCtaBar() {
@@ -21,7 +22,7 @@ export default function MobileCtaBar() {
       }}
     >
       <a
-        href="mailto:acevatech.official@gmail.com"
+        href={`mailto:${CONTACT_EMAIL}`}
         aria-label="Email Aceva"
         style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 52, minHeight: 52, border: "1px solid var(--hairline)", borderRadius: 11, color: "var(--ink)" }}
       >

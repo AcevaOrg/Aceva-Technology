@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { CONTACT_EMAIL } from "@/lib/social";
 import {
   withRouteErrorHandling,
   apiSuccess,
@@ -142,7 +143,7 @@ export const POST = withRouteErrorHandling("pulse-save-direction", async (reques
 
   // 8. Send email (non-blocking on failure — direction is already saved)
   const apiKey   = process.env.RESEND_API_KEY;
-  const toEmail  = process.env.CONTACT_TO_EMAIL  || "acevatechnology@gmail.com";
+  const toEmail  = process.env.CONTACT_TO_EMAIL  || CONTACT_EMAIL;
   const fromEmail = process.env.CONTACT_FROM_EMAIL || "ACEVA PULSE <onboarding@resend.dev>";
 
   if (apiKey) {
