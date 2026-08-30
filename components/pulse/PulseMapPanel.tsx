@@ -49,10 +49,114 @@ function getSystemTagsForIndustry(industry?: string): string[] {
   return ["Digital Foundation", "Connected Workflow", "Operational Control", "Decision Intelligence"];
 }
 
-function truncateMapValue(val?: string | string[]): string | undefined {
+function truncateMapValue(val?: string): string | undefined {
   if (!val) return undefined;
-  const str = Array.isArray(val) ? val.join(" / ") : val;
-  return str.length > 55 ? `${str.slice(0, 52)}...` : str;
+  return val.length > 55 ? `${val.slice(0, 52)}...` : val;
+}
+
+/**
+ * Helper to condense user input strings into clean, professional, concise Live Map stage titles.
+ * Rule: Extract -> Understand -> Condense -> Display. Never invent generic defaults.
+ */
+function condenseText(text: string, maxLength = 50): string {
+  if (!text) return "";
+  let clean = text
+    .trim()
+    .replace(/^(i want to|we want to|we need|i need|we are|it's for my|it's a|our|we currently|right now|we have)\s+/i, "")
+    .replace(/^(build|create|make|develop|start|improve|automate|sell|solve)\s+(a|an|the)?\s*/i, "")
+    .trim();
+
+  if (!clean) clean = text.trim();
+  clean = clean.charAt(0).toUpperCase() + clean.slice(1);
+  return clean.length > maxLength ? `${clean.slice(0, maxLength - 3)}...` : clean;
+}
+
+/**
+ * Evaluates the sequential stage value for the Live Project Map (01 -> 06).
+ * Enforces strict sequential progression (01 -> 02 -> 03 -> 04 -> 05 -> 06) and user-derived information only.
+ */
+export function getSequentialNodeValue(nodeIndex: number, state: PulseState): string | null {
+  const hasIntent = Boolean(state.context.intent);
+  const isDirectionActive = ["direction", "contact", "confirmation"].includes(state.stage);
+
+  // Filter out intent selection prompts from step answers
+  const validDiscoveryAnswers = state.answers.filter(
+    (ans) =>
+      !/^(i want to start something new|i want to improve what i have|i want to automate something|i want to sell something online|i want to solve a business problem|i'm not sure yet)/i.test(
+        ans.trim()
+      )
+  );
+
+  // Determine maximum unlocked sequential stages based on actual valid answers provided
+  const maxAllowedStageCount = isDirectionActive
+    ? 6
+    : Math.min(6, (hasIntent ? 1 : 0) + validDiscoveryAnswers.length);
+
+  // If nodeIndex is beyond current sequential unlocking, strictly return null (AWAITING CONTEXT)
+  if (nodeIndex >= maxAllowedStageCount) {
+    return null;
+  }
+
+  const ctx = state.context;
+  const answers = validDiscoveryAnswers;
+
+  switch (nodeIndex) {
+    case 0: // 01 / INTENT
+      return ctx.intent ? truncateMapValue(ctx.intent) || ctx.intent : null;
+
+    case 1: { // 02 / INDUSTRY
+      if (ctx.industry && ctx.industry !== "Business Services" && ctx.industry !== "General Business") {
+        if (ctx.industry.toLowerCase().includes("hospitality") || ctx.industry.toLowerCase().includes("restaurant")) {
+          return "Restaurant / Food Service";
+        }
+        return ctx.industry;
+      }
+      const ans0 = answers[0] || "";
+      if (/restaurant|food|cafe|dining|kitchen/i.test(ans0)) return "Restaurant / Food Service";
+      if (/clinic|health|medical|doctor/i.test(ans0)) return "Healthcare & Clinics";
+      if (/shop|store|e-?commerce|retail/i.test(ans0)) return "E-Commerce & Retail";
+      if (/property|real estate|tenant/i.test(ans0)) return "Real Estate & Property";
+      if (/logistics|fleet|delivery|transport/i.test(ans0)) return "Logistics & Transport";
+      return condenseText(ans0, 45) || null;
+    }
+
+    case 2: { // 03 / OPERATION
+      const ans1 = answers[1] || "";
+      if (/order|food|online/i.test(ans1)) return "Online Food Ordering";
+      if (ctx.scale && !ctx.scale.toLowerCase().includes("core platform")) return condenseText(ctx.scale, 45);
+      return condenseText(ans1, 45) || null;
+    }
+
+    case 3: { // 04 / CURRENT STATE
+      const ans2 = answers[2] || answers[1] || "";
+      if (/whatsapp/i.test(ans2)) return "Orders currently handled through WhatsApp";
+      if (ctx.current && !ctx.current.toLowerCase().includes("existing workflow")) return condenseText(ctx.current, 50);
+      return condenseText(ans2, 50) || null;
+    }
+
+    case 4: { // 05 / FRICTION DETECTED
+      const ans3 = answers[3] || answers[2] || "";
+      if (/difficult|track|keep track|manage/i.test(ans3)) return "Difficult to track and manage orders";
+      if (Array.isArray(ctx.friction) && ctx.friction.length > 0) {
+        const fStr = ctx.friction.join(" / ");
+        if (!fStr.toLowerCase().includes("manual handoffs")) return condenseText(fStr, 50);
+      }
+      return condenseText(ans3, 50) || null;
+    }
+
+    case 5: { // 06 / DESIRED OUTCOME
+      const ans4 = answers[4] || answers[3] || "";
+      if (/one system|managed|centralized|single platform/i.test(ans4)) return "Centralized order management";
+      if (Array.isArray(ctx.goals) && ctx.goals.length > 0) {
+        const gStr = ctx.goals.join(" / ");
+        if (!gStr.toLowerCase().includes("operational clarity")) return condenseText(gStr, 50);
+      }
+      return condenseText(ans4, 50) || null;
+    }
+
+    default:
+      return null;
+  }
 }
 
 export default function PulseMapPanel({ state, score }: PulseMapPanelProps) {
@@ -60,14 +164,24 @@ export default function PulseMapPanel({ state, score }: PulseMapPanelProps) {
   const ctx = state.context;
   const systemTags = getSystemTagsForIndustry(ctx.industry);
 
-  const nodeFields = [
-    { label: "INTENT", rawValue: ctx.intent, value: truncateMapValue(ctx.intent) },
-    { label: "INDUSTRY", rawValue: ctx.industry, value: truncateMapValue(ctx.industry) },
-    { label: "OPERATION", rawValue: ctx.scale || ctx.business, value: truncateMapValue(ctx.scale || ctx.business) },
-    { label: "CURRENT STATE", rawValue: ctx.current, value: truncateMapValue(ctx.current) },
-    { label: "FRICTION DETECTED", rawValue: ctx.friction, value: truncateMapValue(ctx.friction) },
-    { label: "DESIRED OUTCOME", rawValue: ctx.goals, value: truncateMapValue(ctx.goals) },
+  const nodeLabels = [
+    "INTENT",
+    "INDUSTRY",
+    "OPERATION",
+    "CURRENT STATE",
+    "FRICTION DETECTED",
+    "DESIRED OUTCOME",
   ];
+
+  const nodeFields = nodeLabels.map((label, index) => {
+    const rawValue = getSequentialNodeValue(index, state);
+    const displayValue = rawValue ? truncateMapValue(rawValue) : undefined;
+    return {
+      label,
+      rawValue,
+      value: displayValue,
+    };
+  });
 
   const activeNodesCount = nodeFields.filter((n) => n.value).length;
   const isDirectionActive = ["direction", "contact", "confirmation"].includes(state.stage);
@@ -100,7 +214,7 @@ export default function PulseMapPanel({ state, score }: PulseMapPanelProps) {
           {nodeFields.map((node, i) => (
             <div key={node.label} className={styles.mobileDrawerCard}>
               <span>0{i + 1} / {node.label}</span>
-              <strong>{node.value || "Awaiting context..."}</strong>
+              <strong>{node.value || "AWAITING CONTEXT"}</strong>
             </div>
           ))}
         </div>
@@ -122,7 +236,7 @@ export default function PulseMapPanel({ state, score }: PulseMapPanelProps) {
             title={typeof node.rawValue === "string" ? node.rawValue : undefined}
           >
             <span>0{i + 1} / {node.label}</span>
-            <strong>{node.value || "Awaiting context"}</strong>
+            <strong>{node.value || "AWAITING CONTEXT"}</strong>
           </div>
         ))}
 

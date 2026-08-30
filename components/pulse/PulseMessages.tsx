@@ -28,33 +28,33 @@ const INTENT_OPTIONS = [
 const WIZARD_STEPS: WizardStepSpec[] = [
   {
     label: "READING THE SYSTEM",
-    title: "Tell us about the business.",
-    helper: "What do you do, and who do you do it for?",
-    placeholder: "We run three neighborhood restaurants in New York…",
+    title: "Tell us about your business or project.",
+    helper: "What do you do, or what would you like to build, and who is it for?",
+    placeholder: "e.g. We run a neighborhood restaurant in New York and want a direct online ordering website...",
   },
   {
     label: "MAPPING FRICTION",
-    title: "Where does the system break down?",
-    helper: "Describe what feels slow, unclear, manual, or disconnected.",
-    placeholder: "Orders arrive through different channels and owners lack visibility…",
+    title: "Where do things feel slow or manual today?",
+    helper: "Describe what takes too much time, feels confusing, or needs fixing.",
+    placeholder: "e.g. Taking orders over WhatsApp is chaotic and hard to keep track of...",
   },
   {
     label: "BUILDING CONTEXT",
-    title: "What does the operation look like today?",
-    helper: "Locations, team, market, workflow—or anything that defines the scale.",
-    placeholder: "Three locations, 45 staff, one central management team…",
+    title: "What does your operation look like today?",
+    helper: "Share your team size, locations, daily customers, or general scale.",
+    placeholder: "e.g. 2 locations, 15 team members, around 300 orders per day...",
   },
   {
     label: "FORMING DIRECTION",
-    title: "What should be different when this works?",
-    helper: "Focus on the outcome, not the feature list.",
-    placeholder: "Fewer errors, faster service, and one view of performance…",
+    title: "What would success look like for you?",
+    helper: "Tell us what key results or main capabilities matter most to you.",
+    placeholder: "e.g. Customers can order online directly, and kitchen staff see orders on one simple screen...",
   },
   {
     label: "TIMELINE & BUDGET FIT",
-    title: "What is your target timeline and budget window?",
+    title: "What is your target launch timeline and budget window?",
     helper: "Specify your target launch timeframe and budget range (or if you prefer to discuss directly with ACEVA's team).",
-    placeholder: "Target launch in Q3, budget range to be discussed directly with the ACEVA team...",
+    placeholder: "e.g. Target launch in 4-6 weeks, budget range to be discussed directly with the ACEVA team...",
   },
 ];
 

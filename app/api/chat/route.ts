@@ -140,23 +140,23 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check direct casual/FAQ response first (greeting, company inquiry, casual chat, general tech trivia)
-    const casualResponse = getCasualOrFAQResponse(message);
-    if (casualResponse) {
+    // Check gibberish, nonsense, or random characters first
+    if (isGibberishInput(message)) {
       return NextResponse.json(
         {
-          answer: casualResponse,
+          answer: getGibberishOrNonsenseResponse(),
           isValid: false, // Does NOT increase progress percentage
         },
         { status: 200 }
       );
     }
 
-    // Check gibberish, nonsense, or random characters
-    if (isGibberishInput(message)) {
+    // Check direct casual/FAQ response (greeting, company inquiry, casual chat, general tech trivia)
+    const casualResponse = getCasualOrFAQResponse(message);
+    if (casualResponse) {
       return NextResponse.json(
         {
-          answer: getGibberishOrNonsenseResponse(),
+          answer: casualResponse,
           isValid: false, // Does NOT increase progress percentage
         },
         { status: 200 }
