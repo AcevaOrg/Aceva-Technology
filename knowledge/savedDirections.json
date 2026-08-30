@@ -21,7 +21,7 @@
       "Dispatch control tower",
       "Fleet tracking & visibility"
     ],
-    "createdAt": "2026-08-29T18:45:08.710Z"
+    "createdAt": "2026-08-30T04:01:13.307Z"
   },
   "PLS-260826-615": {
     "pulseId": "PLS-260826-615",
@@ -485,5 +485,283 @@
       "Performance Telemetry & Growth Analytics"
     ],
     "createdAt": "2026-08-29T18:38:34.631Z"
+  },
+  "PLS-260830-470": {
+    "pulseId": "PLS-260830-470",
+    "lead": {
+      "name": "ahmed",
+      "contact": "ahmed12@gmail.com",
+      "method": "Email"
+    },
+    "context": {
+      "intent": "Start something new",
+      "current": "Mobile app",
+      "friction": [
+        "Mobile app"
+      ],
+      "scale": "For my restuarant and I need all specified functionalities",
+      "goals": [
+        "Yes all features"
+      ],
+      "timeline": "Yes all features"
+    },
+    "answers": [
+      "I want to start something new.",
+      "mobile app",
+      "for my restuarant and I need all specified functionalities",
+      "yes all features"
+    ],
+    "recommendedModules": [
+      "Custom Start something new Core Platform",
+      "Role-Based User Management & Security Vault",
+      "Automated Customer & Team Workflow Engine",
+      "Real-Time Operational Command Dashboard",
+      "Performance Telemetry & Growth Analytics"
+    ],
+    "createdAt": "2026-08-30T01:27:10.535Z"
+  },
+  "PLS-260830-740": {
+    "pulseId": "PLS-260830-740",
+    "lead": {
+      "name": "khyber",
+      "contact": "naveedkhan6686@gmail.com",
+      "method": "Email"
+    },
+    "context": {
+      "intent": "Start something new",
+      "current": "I want an app for my dairy farm",
+      "friction": [
+        "I want an app for my dairy farm"
+      ],
+      "scale": "No i want this specifically for the milk, youghart, cheese, and other dairy prod",
+      "goals": [
+        "Yeah Actaully I want all of these specified features in the App"
+      ],
+      "timeline": "Yeah Actaully I want all of these specified features in the App"
+    },
+    "answers": [
+      "I want to start something new.",
+      "i want an app for my dairy farm.",
+      "No i want this specifically for the milk, youghart, cheese, and other dairy products only delivery. The buying and selling of cattle. The Farmers who want to sell the grass and other things.",
+      "Yeah Actaully I want all of these specified features in the App"
+    ],
+    "recommendedModules": [
+      "Mobile Shopping Application (iOS & Android) — Mobile product catalog, cart engine, biometric checkout, and push notification marketing.",
+      "Multi-Warehouse Inventory & SKU Sync Engine — Real-time inventory tracking, low-stock alerts, multi-warehouse sync, and supplier management.",
+      "Payment Gateway & Financial Settlement Engine — Integrated payment gateways (Stripe/PayPal), multi-currency support, and refund processing.",
+      "Order Fulfillment & Shipping Logistics Tracker — Carrier API integration (FedEx/UPS/DHL), shipping label generation, and live package tracking.",
+      "Merchant Admin & Funnel Analytics Dashboard — Product management console, customer order management, conversion funnels, and revenue metrics."
+    ],
+    "createdAt": "2026-08-30T02:23:11.581Z"
+  },
+  "PLS-260830-304": {
+    "pulseId": "PLS-260830-304",
+    "lead": {
+      "name": "zeeshan",
+      "contact": "ztalpur@gmail.com",
+      "method": "Email"
+    },
+    "context": {
+      "intent": "Start something new",
+      "current": "I want a website for my restuarant which has 2 branches",
+      "friction": [
+        "I want a website for my restuarant which has 2 branches"
+      ],
+      "scale": "All these mentioned features including digital menu opening with qr",
+      "goals": [
+        "Operational clarity",
+        "Measurable growth"
+      ],
+      "timeline": "Yes"
+    },
+    "answers": [
+      "I want to start something new.",
+      "I want a website for my restuarant which has 2 branches",
+      "all these mentioned features including digital menu opening with qr",
+      "yes"
+    ],
+    "recommendedModules": [
+      "Core Web Application Interface & User Portal — Responsive web frontend, intuitive user interface, interactive workflow forms, and customer portal.",
+      "Application API & Business Logic Server — RESTful/GraphQL backend services, business rules engine, micro-service architecture, and data persistence.",
+      "Identity & Access Control (RBAC) Vault — User authentication (JWT/OAuth2), profile management, multi-tier staff permissions, and role access control.",
+      "Notification & Automated Communication Engine — Transactional email dispatcher, SMS alert integration, and event-driven messaging service.",
+      "Operational Admin Console & Reporting Dashboard — Multi-tenant admin management panel, system metrics monitoring, and operational BI reporting."
+    ],
+    "createdAt": "2026-08-30T02:38:30.405Z"
+  },
+  "PLS-260830-710": {
+    "pulseId": "PLS-260830-710",
+    "lead": {
+      "name": "ali",
+      "contact": "khan@gmail.com",
+      "method": "Email"
+    },
+    "context": {
+      "intent": "Start something new",
+      "current": "Website for my college",
+      "friction": [
+        "Website for my college"
+      ],
+      "scale": "Course listings, event calendars, student portals and such others",
+      "goals": [
+        "Anyone"
+      ],
+      "timeline": "Anyone"
+    },
+    "answers": [
+      "I want to start something new.",
+      "website for my college",
+      "course listings, event calendars, student portals and such others",
+      "anyone"
+    ],
+    "recommendedModules": [
+      "Core Web Application Interface & User Portal — Responsive web frontend, intuitive user interface, interactive workflow forms, and customer portal.",
+      "Application API & Business Logic Server — RESTful/GraphQL backend services, business rules engine, micro-service architecture, and data persistence.",
+      "Identity & Access Control (RBAC) Vault — User authentication (JWT/OAuth2), profile management, multi-tier staff permissions, and role access control.",
+      "Notification & Automated Communication Engine — Transactional email dispatcher, SMS alert integration, and event-driven messaging service.",
+      "Operational Admin Console & Reporting Dashboard — Multi-tenant admin management panel, system metrics monitoring, and operational BI reporting."
+    ],
+    "createdAt": "2026-08-30T02:50:28.354Z"
+  },
+  "PLS-260830-841": {
+    "pulseId": "PLS-260830-841",
+    "lead": {
+      "name": "Ahmed Mustafa",
+      "contact": "bhurgrimustaf203@gmail.com",
+      "method": "Email"
+    },
+    "context": {
+      "intent": "Start something new",
+      "current": "It is a website for my Schools",
+      "friction": [
+        "It is a website for my Schools"
+      ],
+      "scale": "Student enrollment, course listings, event calendars, and such others things",
+      "goals": [
+        "The Number of Students we have is 2000 but users can exceed that",
+        "My School is at Karachi"
+      ],
+      "timeline": "I want this website in 3 weeks"
+    },
+    "answers": [
+      "I want to start something new.",
+      "It is a website for my Schools.",
+      "student enrollment, course listings, event calendars, and such others things.",
+      "The Number of Students we have is 2000 but users can exceed that. My School is at Karachi.",
+      "I want this website in 3 weeks."
+    ],
+    "recommendedModules": [
+      "Core Web Application Interface & User Portal — Responsive web frontend, intuitive user interface, interactive workflow forms, and customer portal.",
+      "Application API & Business Logic Server — RESTful/GraphQL backend services, business rules engine, micro-service architecture, and data persistence.",
+      "Identity & Access Control (RBAC) Vault — User authentication (JWT/OAuth2), profile management, multi-tier staff permissions, and role access control.",
+      "Notification & Automated Communication Engine — Transactional email dispatcher, SMS alert integration, and event-driven messaging service.",
+      "Operational Admin Console & Reporting Dashboard — Multi-tenant admin management panel, system metrics monitoring, and operational BI reporting."
+    ],
+    "createdAt": "2026-08-30T02:58:19.450Z"
+  },
+  "PLS-260830-649": {
+    "pulseId": "PLS-260830-649",
+    "lead": {
+      "name": "Naveed Ahmed",
+      "contact": "naveedbhrgriwala@gmail.com",
+      "method": "Email"
+    },
+    "context": {
+      "intent": "Start something new",
+      "current": "A website for hoste",
+      "friction": [
+        "A website for hoste"
+      ],
+      "scale": "Hostel",
+      "goals": [
+        "All of them"
+      ],
+      "timeline": "USers are 400-1000 users"
+    },
+    "answers": [
+      "I want to start something new.",
+      "a website for hoste;",
+      "hostel",
+      "all of them",
+      "USers are 400-1000 users."
+    ],
+    "recommendedModules": [
+      "Core Web Application Interface & User Portal — Responsive web frontend, intuitive user interface, interactive workflow forms, and customer portal.",
+      "Application API & Business Logic Server — RESTful/GraphQL backend services, business rules engine, micro-service architecture, and data persistence.",
+      "Identity & Access Control (RBAC) Vault — User authentication (JWT/OAuth2), profile management, multi-tier staff permissions, and role access control.",
+      "Notification & Automated Communication Engine — Transactional email dispatcher, SMS alert integration, and event-driven messaging service.",
+      "Operational Admin Console & Reporting Dashboard — Multi-tenant admin management panel, system metrics monitoring, and operational BI reporting."
+    ],
+    "createdAt": "2026-08-30T03:20:45.270Z"
+  },
+  "PLS-260830-536": {
+    "pulseId": "PLS-260830-536",
+    "lead": {
+      "name": "Naveed Ahmed",
+      "contact": "naveebhurgriwala@gmail.com",
+      "method": "Email"
+    },
+    "context": {
+      "intent": "Start something new",
+      "current": "Website for my Cafe",
+      "friction": [
+        "Website for my Cafe"
+      ],
+      "scale": "Menu display, online ordering, reservation capabilities and other",
+      "goals": [
+        "All of them"
+      ],
+      "timeline": "In 3 weeks"
+    },
+    "answers": [
+      "I want to start something new.",
+      "I want a website for my Cafe",
+      "menu display, online ordering, reservation capabilities and other",
+      "all of them",
+      "i want that in 3 weeks"
+    ],
+    "recommendedModules": [
+      "Digital Ordering & Menu Catalog Engine — Responsive web menu catalog, cart management, dietary tags, and direct online ordering.",
+      "Kitchen Display System (KDS) & Order Pipeline — Real-time kitchen order queue, ticket status state machine, and prep timer controls.",
+      "Order Tracking & Automated Customer Notifications — Real-time order progress tracking, SMS/push status alerts, and delivery ETA updates.",
+      "Customer Account & Loyalty Management — User authentication (OAuth/JWT), order history, saved addresses, and loyalty rewards.",
+      "Multi-Branch Admin & Inventory Dashboard — Multi-location management console, item availability toggles, sales reporting, and revenue analytics."
+    ],
+    "createdAt": "2026-08-30T03:26:37.109Z"
+  },
+  "PLS-260830-251": {
+    "pulseId": "PLS-260830-251",
+    "lead": {
+      "name": "Naveed Ahmed",
+      "contact": "naveedburgriwala@gmail.com",
+      "method": "Email"
+    },
+    "context": {
+      "intent": "Start something new",
+      "current": "A website for real state",
+      "friction": [
+        "A website for real state"
+      ],
+      "scale": "Ll features that you said",
+      "goals": [
+        "Udience of Karachi"
+      ],
+      "timeline": "No futher they will be told"
+    },
+    "answers": [
+      "I want to start something new.",
+      "a website for real state",
+      "I want all features that you said",
+      "I want audience of Karachi",
+      "No futher they will be told"
+    ],
+    "recommendedModules": [
+      "Core Web Application Interface & User Portal — Responsive web frontend, intuitive user interface, interactive workflow forms, and customer portal.",
+      "Application API & Business Logic Server — RESTful/GraphQL backend services, business rules engine, micro-service architecture, and data persistence.",
+      "Identity & Access Control (RBAC) Vault — User authentication (JWT/OAuth2), profile management, multi-tier staff permissions, and role access control.",
+      "Notification & Automated Communication Engine — Transactional email dispatcher, SMS alert integration, and event-driven messaging service.",
+      "Operational Admin Console & Reporting Dashboard — Multi-tenant admin management panel, system metrics monitoring, and operational BI reporting."
+    ],
+    "createdAt": "2026-08-30T04:05:25.628Z"
   }
 }

@@ -3,7 +3,12 @@ import { generatePulseCompletion } from "@/lib/pulse/llm";
 import { logPulseDiagnostic } from "@/lib/pulse/errors";
 import {
   isGreetingInput,
+  isCasualOrFAQOrGeneralQuery,
+  getCasualOrFAQResponse,
+  isGibberishInput,
+  getGibberishOrNonsenseResponse,
   isInvalidOrUnclearInput,
+  isExplicitProjectScopeInput,
   GREETING_REJECTION,
   OUT_OF_SCOPE_REJECTION,
 } from "@/lib/pulse/scope";
@@ -135,11 +140,38 @@ export async function POST(request: Request) {
       );
     }
 
+    // Check direct casual/FAQ response first (greeting, company inquiry, casual chat, general tech trivia)
+    const casualResponse = getCasualOrFAQResponse(message);
+    if (casualResponse) {
+      return NextResponse.json(
+        {
+          answer: casualResponse,
+          isValid: false, // Does NOT increase progress percentage
+        },
+        { status: 200 }
+      );
+    }
+
+    // Check gibberish, nonsense, or random characters
+    if (isGibberishInput(message)) {
+      return NextResponse.json(
+        {
+          answer: getGibberishOrNonsenseResponse(),
+          isValid: false, // Does NOT increase progress percentage
+        },
+        { status: 200 }
+      );
+    }
+
     // 3. Process LLM Response via Primary LLM Provider Orchestration
     const answer = await generatePulseCompletion(message, history, context, requestId);
     const isGreeting = isGreetingInput(message);
+    const isCasual = isCasualOrFAQOrGeneralQuery(message);
     const isInvalid = isInvalidOrUnclearInput(message, history, context);
-    const isValid = !isGreeting && !isInvalid && answer !== GREETING_REJECTION && answer !== OUT_OF_SCOPE_REJECTION;
+    const isProjectScope = isExplicitProjectScopeInput(message);
+
+    // CORE RULE: Only explicit project scope responses increase progress (isValid: true)!
+    const isValid = isProjectScope && !isCasual && !isGreeting && !isInvalid && answer !== GREETING_REJECTION && answer !== OUT_OF_SCOPE_REJECTION;
 
     return NextResponse.json(
       {

@@ -9,30 +9,64 @@ interface PulseMapPanelProps {
   score: number;
 }
 
-const DEFAULT_SYSTEM_TAGS: Record<string, string[]> = {
-  Hospitality: ["Digital ordering", "Kitchen workflow", "Owner command center", "Revenue intelligence"],
-  "Beauty & Wellness": ["Client booking", "Service scheduling", "Team operations", "Retention system"],
-  Commerce: ["Conversion experience", "Product system", "Fulfillment flow", "Commerce intelligence"],
-  Construction: ["Project intake", "Field reporting", "Team coordination", "Job intelligence"],
-  "Professional Services": ["Qualified intake", "Matter workflow", "Client portal", "Practice intelligence"],
-  Logistics: ["Dispatch control", "Fleet visibility", "Handoff tracking", "Operations intelligence"],
-  Technology: ["Product strategy", "Core experience", "Operational tooling", "Growth systems"],
-  Default: ["Digital foundation", "Connected workflow", "Operational control", "Decision intelligence"],
-};
+function getSystemTagsForIndustry(industry?: string): string[] {
+  const lower = (industry || "").toLowerCase();
+
+  if (lower.includes("restaurant") || lower.includes("hospitality") || lower.includes("food")) {
+    return ["Digital Ordering", "Kitchen Workflow", "Owner Command Center", "Revenue Intelligence"];
+  }
+  if (lower.includes("health") || lower.includes("clinic") || lower.includes("medical")) {
+    return ["Patient Portal", "Telehealth Booking", "Health Records Vault", "Clinic Analytics"];
+  }
+  if (lower.includes("commerce") || lower.includes("retail") || lower.includes("shop") || lower.includes("store")) {
+    return ["Conversion Storefront", "SKU Inventory Sync", "Fulfillment Engine", "E-Commerce Analytics"];
+  }
+  if (lower.includes("property") || lower.includes("real estate")) {
+    return ["Property Listing Portal", "Tenant Workflow", "Automated Rent Gateway", "Portfolio Analytics"];
+  }
+  if (lower.includes("logistics") || lower.includes("transport") || lower.includes("fleet")) {
+    return ["Dispatch Control Tower", "Driver Mobile App", "GPS Fleet Telemetry", "Logistics Analytics"];
+  }
+  if (lower.includes("construction") || lower.includes("contractor") || lower.includes("builder")) {
+    return ["Project Intake", "Field Reporting App", "Job Coordination", "Milestone Control"];
+  }
+  if (lower.includes("refactoring") || lower.includes("software") || lower.includes("tech") || lower.includes("java")) {
+    return ["Codebase Audit", "Migration Pipeline", "API Contract Harness", "Performance Telemetry"];
+  }
+  if (lower.includes("education") || lower.includes("school") || lower.includes("course")) {
+    return ["Student Portal", "Course Engine", "Tuition Gateway", "Academic Analytics"];
+  }
+  if (lower.includes("beauty") || lower.includes("wellness") || lower.includes("salon")) {
+    return ["Client Self-Booking", "Stylist Scheduler", "Automated SMS Alerts", "Salon Analytics"];
+  }
+  if (lower.includes("fitness") || lower.includes("gym")) {
+    return ["Member Check-In App", "Trainer Scheduler", "Subscription Billing", "Gym Analytics"];
+  }
+  if (lower.includes("finance") || lower.includes("fintech") || lower.includes("loan")) {
+    return ["KYC Onboarding", "Digital Wallet Vault", "Payment Gateway", "Risk Audit Dashboard"];
+  }
+
+  return ["Digital Foundation", "Connected Workflow", "Operational Control", "Decision Intelligence"];
+}
+
+function truncateMapValue(val?: string | string[]): string | undefined {
+  if (!val) return undefined;
+  const str = Array.isArray(val) ? val.join(" / ") : val;
+  return str.length > 55 ? `${str.slice(0, 52)}...` : str;
+}
 
 export default function PulseMapPanel({ state, score }: PulseMapPanelProps) {
   const [mobileExpanded, setMobileExpanded] = useState(false);
   const ctx = state.context;
-  const industry = ctx.industry || "Default";
-  const systemTags = DEFAULT_SYSTEM_TAGS[industry] || DEFAULT_SYSTEM_TAGS.Default;
+  const systemTags = getSystemTagsForIndustry(ctx.industry);
 
   const nodeFields = [
-    { label: "INTENT", value: ctx.intent },
-    { label: "INDUSTRY", value: ctx.industry },
-    { label: "OPERATION", value: ctx.scale || ctx.business },
-    { label: "CURRENT STATE", value: ctx.current },
-    { label: "FRICTION DETECTED", value: ctx.friction?.join(" / ") },
-    { label: "DESIRED OUTCOME", value: ctx.goals?.join(" / ") },
+    { label: "INTENT", rawValue: ctx.intent, value: truncateMapValue(ctx.intent) },
+    { label: "INDUSTRY", rawValue: ctx.industry, value: truncateMapValue(ctx.industry) },
+    { label: "OPERATION", rawValue: ctx.scale || ctx.business, value: truncateMapValue(ctx.scale || ctx.business) },
+    { label: "CURRENT STATE", rawValue: ctx.current, value: truncateMapValue(ctx.current) },
+    { label: "FRICTION DETECTED", rawValue: ctx.friction, value: truncateMapValue(ctx.friction) },
+    { label: "DESIRED OUTCOME", rawValue: ctx.goals, value: truncateMapValue(ctx.goals) },
   ];
 
   const activeNodesCount = nodeFields.filter((n) => n.value).length;
@@ -43,6 +77,12 @@ export default function PulseMapPanel({ state, score }: PulseMapPanelProps) {
       <div
         className={styles.mapTop}
         onClick={() => setMobileExpanded((prev) => !prev)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setMobileExpanded((prev) => !prev);
+          }
+        }}
         style={{ cursor: "pointer" }}
         role="button"
         tabIndex={0}
@@ -79,6 +119,7 @@ export default function PulseMapPanel({ state, score }: PulseMapPanelProps) {
           <div
             key={node.label}
             className={`${styles.mapNode} ${styles[`n${i}`]} ${node.value ? styles.active : ""}`}
+            title={typeof node.rawValue === "string" ? node.rawValue : undefined}
           >
             <span>0{i + 1} / {node.label}</span>
             <strong>{node.value || "Awaiting context"}</strong>

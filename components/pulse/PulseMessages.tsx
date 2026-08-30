@@ -8,7 +8,8 @@ import PulseInput from "./PulseInput";
 
 import PulseFormattedText from "./PulseFormattedText";
 import { downloadPulseBlueprintDocx } from "@/lib/pulse/docxGenerator";
-import { getRecommendedModules } from "@/lib/pulse/modules";
+import { getRecommendedModules, getConciseUIModules, formatEnrichedProjectContext } from "@/lib/pulse/modules";
+import { cleanUserMappedValue } from "@/lib/pulse/format";
 
 interface PulseMessagesProps {
   state: PulseState;
@@ -50,10 +51,10 @@ const WIZARD_STEPS: WizardStepSpec[] = [
     placeholder: "Fewer errors, faster service, and one view of performance…",
   },
   {
-    label: "SYSTEM FIT",
-    title: "When should the new direction begin?",
-    helper: "A general window is enough. No delivery promise is being made.",
-    placeholder: "We want to start planning this quarter…",
+    label: "TIMELINE & BUDGET FIT",
+    title: "What is your target timeline and budget window?",
+    helper: "Specify your target launch timeframe and budget range (or if you prefer to discuss directly with ACEVA's team).",
+    placeholder: "Target launch in Q3, budget range to be discussed directly with the ACEVA team...",
   },
 ];
 
@@ -81,13 +82,15 @@ const INDUSTRY_RULES = [
 ];
 
 function extractPhrases(text: string, fallback: string[]) {
-  const parts = text.split(/,| and |\.|;/).map((p) => p.trim()).filter((p) => p.length > 3).slice(0, 3);
-  return parts.length ? parts.map((p) => p.charAt(0).toUpperCase() + p.slice(1)) : fallback;
+  const cleanText = cleanUserMappedValue(text);
+  const parts = cleanText.split(/,| and |\.|;/).map((p) => p.trim()).filter((p) => p.length > 3).slice(0, 3);
+  return parts.length ? parts.map((p) => cleanUserMappedValue(p)) : fallback;
 }
 
 function inferContextFromText(text: string, stepIndex: number) {
+  const cleanText = cleanUserMappedValue(text);
   const match = INDUSTRY_RULES.find((r) => r.test.test(text));
-  const isTimelineText = /week|month|day|quarter|asap|urgent|year|time|soon/i.test(text);
+  const isTimelineText = /week|month|day|quarter|asap|urgent|year|time|soon|as soon as possible|decide|team|contact/i.test(text);
 
   const contextUpdate: Record<string, unknown> = {};
 
@@ -100,22 +103,22 @@ function inferContextFromText(text: string, stepIndex: number) {
 
   if (stepIndex === 0 && !contextUpdate.industry) {
     contextUpdate.industry = "Business Services";
-    contextUpdate.business = text.slice(0, 62);
+    contextUpdate.business = cleanText.slice(0, 80);
   }
   if (stepIndex === 1) {
-    contextUpdate.current = text.slice(0, 84);
+    contextUpdate.current = cleanText.slice(0, 100);
     contextUpdate.friction = extractPhrases(text, ["Manual handoffs", "Limited visibility"]);
   }
   if (stepIndex === 2) {
-    contextUpdate.scale = text.slice(0, 62);
-    if (/new york|nyc/i.test(text)) contextUpdate.market = "New York";
+    contextUpdate.scale = cleanText.slice(0, 80);
+    if (/new york|nyc/i.test(cleanText)) contextUpdate.market = "New York";
   }
   if (stepIndex === 3) {
     contextUpdate.goals = extractPhrases(text, ["Operational clarity", "Measurable growth"]);
   }
 
   if (isTimelineText || stepIndex >= 3) {
-    contextUpdate.timeline = text.trim().slice(0, 100);
+    contextUpdate.timeline = cleanText.slice(0, 120);
   }
 
   return contextUpdate;
@@ -347,14 +350,13 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
 
   // Stage 3: Generated Direction Overview
   if (state.stage === "direction") {
-    const title = `${state.context.industry || "BUSINESS"} ${
-      state.context.intent === "Automate something" ? "OPERATING SYSTEM" : "DIGITAL SYSTEM"
-    }`;
-    const modules = getRecommendedModules(state.context.industry, state.context);
+    const enriched = formatEnrichedProjectContext(state.context, state.answers);
+    const title = `${enriched.industryFocus.toUpperCase()}`;
+    const modules = getConciseUIModules(state.context.industry, state.context, state.answers);
 
     return (
       <div className={styles.direction}>
-        <p className={styles.stepLabel}>PULSE / YOUR DIRECTION</p>
+        <p className={styles.stepLabel}>PULSE / SYSTEM ARCHITECTURE BLUEPRINT</p>
         <h2>{title}</h2>
         <p className={styles.directionCopy}>
           A connected system designed around the operation Pulse has mapped—not a generic list of features.
@@ -362,10 +364,11 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
 
         <ol>
           {modules.map((mod, idx) => (
-            <li key={mod}>
+            <li key={mod} style={{ marginBottom: "1rem" }}>
               <span>0{idx + 1}</span>
-              {mod}
-              <b>—</b>
+              <div style={{ display: "inline-block", width: "calc(100% - 3rem)", verticalAlign: "top" }}>
+                <PulseFormattedText content={mod} />
+              </div>
             </li>
           ))}
         </ol>
@@ -378,12 +381,12 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
             <i />
             <i className={styles.off} />
           </div>
-          <b>STRUCTURED / CUSTOM</b>
+          <b>STRUCTURED / CUSTOM ARCHITECTURE</b>
         </div>
 
         <div className={styles.recommend}>
-          <span>RECOMMENDED ARCHITECTURE</span>
-          <strong>ACEVA Custom Digital System</strong>
+          <span>RECOMMENDED SERVICE</span>
+          <strong>ACEVA Digital Product Engineering</strong>
         </div>
 
         <button
@@ -422,7 +425,7 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
               },
               context: state.context,
               answers: state.answers,
-              recommendedModules: getRecommendedModules(state.context.industry, state.context),
+              recommendedModules: getRecommendedModules(state.context.industry, state.context, state.answers),
             }),
           });
 
@@ -555,7 +558,7 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
               DOWNLOAD WORD BLUEPRINT (.DOCX) 📄
             </button>
             <button type="button" className={styles.primaryCta} onClick={handleOk}>
-              OK <b>↗</b>
+              RETURN TO CHAT <b>↗</b>
             </button>
           </div>
         </div>

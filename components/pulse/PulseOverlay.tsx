@@ -61,14 +61,15 @@ export default function PulseOverlay() {
 
   if (!state.open) return null;
 
-  // Calculate score percentage (0-100%) matching step and stage progression
-  // Starts at 0% initially, then increases gradually based on answered responses
+  // Calculate score percentage (0-100%) matching valid answered responses:
+  // 0 answers = 0%, 1 answer = 20%, 2 = 40%, 3 = 60%, 4 = 80%, 5 = 100%
+  const validAnswersCount = state.answers.length;
   const score =
-    state.stage === "intent" && state.step === 0
+    state.stage === "intent" || validAnswersCount === 0
       ? 0
       : ["direction", "contact", "confirmation"].includes(state.stage)
       ? 100
-      : Math.min(95, Math.round((state.step / 5) * 100));
+      : Math.min(95, Math.round((validAnswersCount / 5) * 100));
 
   return (
     <div
