@@ -71,16 +71,13 @@ export default function HomePage() {
           <p style={{ fontSize: "clamp(16.5px,1.5vw,19.5px)", lineHeight: 1.62, color: "var(--muted)", maxWidth: "60ch", margin: "clamp(22px,3vw,30px) auto 0", animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 160ms both" }}>
             Aceva designs digital experiences, custom software, mobile products and intelligent systems — and rescues products that need a stronger path forward.
           </p>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 12, marginTop: "clamp(30px,4vw,42px)", animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 260ms both" }}>
-            <Link href={ROUTES.contact} className="ac-btn-primary" style={{ minHeight: 52, padding: "16px 26px" }}>
-              Start a Project
-              <ArrowRightIcon width={15} height={15} strokeWidth={2.2} />
-            </Link>
-            <Link href={ROUTES.contact} className="ac-btn-ghost" style={{ minHeight: 52, padding: "16px 26px" }}>
+          <div style={{ display: "flex", flexDirection: "row", flexWrap: "nowrap", justifyContent: "center", gap: 16, marginTop: "clamp(30px,4vw,42px)", animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 260ms both", width: "100%", maxWidth: 560 }}>
+
+            <Link href={ROUTES.contact} className="ac-btn-futuristic" style={{ flex: 1, minHeight: 52, padding: "16px 12px", justifyContent: "center" }}>
               Contact Us
               <ArrowRightIcon width={15} height={15} />
             </Link>
-            <Link href={ROUTES.work} className="ac-btn-ghost" style={{ minHeight: 52, padding: "16px 26px" }}>
+            <Link href={ROUTES.work} className="ac-btn-ghost" style={{ flex: 1, minHeight: 52, padding: "16px 12px", justifyContent: "center" }}>
               Explore Experiments
               <ArrowRightIcon width={15} height={15} />
             </Link>
