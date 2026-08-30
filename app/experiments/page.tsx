@@ -74,6 +74,29 @@ const SEVERITY_BORDER: Record<Severity, string> = {
   MEDIUM: "var(--hairline)",
 };
 
+function BackHomeLink() {
+  return (
+    <Link
+      href={ROUTES.home}
+      className={styles.backHomeBtn}
+      style={{
+        marginTop: 26,
+        display: "inline-block",
+        background: "none",
+        border: "1px solid var(--hairline)",
+        color: "var(--ink)",
+        fontSize: 15,
+        fontWeight: 500,
+        padding: "14px 22px",
+        borderRadius: 11,
+        minHeight: 48,
+      }}
+    >
+      Back to the homepage
+    </Link>
+  );
+}
+
 function SitePanel() {
   return (
     <section>
@@ -111,24 +134,7 @@ function SitePanel() {
               <KeyValueRow label="Accessibility target" value="WCAG AA, keyboard complete" />
               <KeyValueRow label="Lead flow" value="Qualification form → meeting" />
             </div>
-            <Link
-              href={ROUTES.home}
-              className={styles.backHomeBtn}
-              style={{
-                marginTop: 26,
-                display: "inline-block",
-                background: "none",
-                border: "1px solid var(--hairline)",
-                color: "var(--ink)",
-                fontSize: 15,
-                fontWeight: 500,
-                padding: "14px 22px",
-                borderRadius: 11,
-                minHeight: 48,
-              }}
-            >
-              Back to the homepage
-            </Link>
+            <BackHomeLink />
           </div>
           <div
             style={{
@@ -486,6 +492,7 @@ function DashPanel() {
           What this demonstrates: role-based permissions that visibly lock actions, a task queue built around
           ownership rather than status alone, and reporting a manager can read in one glance.
         </Reveal>
+        <BackHomeLink />
       </div>
     </section>
   );
@@ -640,6 +647,7 @@ function MobPanel() {
             </span>
           </PhoneFrame>
         </div>
+        <BackHomeLink />
       </div>
     </section>
   );
@@ -673,6 +681,7 @@ function AutoPanel() {
           What this demonstrates: automation that stops at the decision, an audit trail by default, and a refusal to
           call a chatbot an agent. AI proposes; a named person approves.
         </Reveal>
+        <BackHomeLink />
       </div>
     </section>
   );
@@ -832,6 +841,7 @@ function RescuePanel() {
             We do not quote a rescue before senior review, and we do not promise every product can be repaired.
           </p>
         </Reveal>
+        <BackHomeLink />
       </div>
     </section>
   );

@@ -106,7 +106,6 @@ export default function ServicesPage() {
                 style={{
                   width: "100%",
                   textAlign: "left",
-                  background: "none",
                   border: 0,
                   borderBottom: "1px solid var(--hairline)",
                   padding: "clamp(28px,4vw,44px) 0",
@@ -174,13 +173,9 @@ export default function ServicesPage() {
                     ))}
                   </span>
                   <span
+                    className={styles.openCapability}
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 9,
                       marginTop: 20,
-                      fontSize: 14,
-                      color: "var(--ice)",
                     }}
                   >
                     Open capability
