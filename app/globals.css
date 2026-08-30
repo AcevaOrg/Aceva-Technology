@@ -1997,3 +1997,50 @@ html {
   .pf-artifact { animation: none; opacity: 0.5; }
   .pf-tag { animation: none; opacity: 0.6; }
 }
+
+.ac-btn-futuristic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(30, 79, 217, 0.4), rgba(106, 79, 224, 0.4));
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 100px;
+  color: #fff;
+  font-family: var(--font-space-grotesk);
+  font-weight: 500;
+  text-decoration: none;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 0 20px rgba(106, 79, 224, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.ac-btn-futuristic::before {
+  content: "";
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.ac-btn-futuristic:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(106, 79, 224, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.ac-btn-futuristic:hover::before {
+  left: 100%;
+}
+
+.ac-btn-futuristic svg {
+  transition: transform 0.3s ease;
+}
+
+.ac-btn-futuristic:hover svg {
+  transform: translateX(4px);
+}
