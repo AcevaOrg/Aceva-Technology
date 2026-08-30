@@ -86,8 +86,8 @@ export function validateAnswerAgainstQuestion(
       const isTimelineOnly = /^(as soon as possible|asap|urgent|immediately|next month|next week|\d+\s*(weeks?|months?|days?))[\s!.]*$/i.test(lower);
       if (isTimelineOnly) return { isValid: false };
 
-      // Reject pure industry text (e.g., "restaurant", "healthcare")
-      const isIndustryOnly = /^(restaurant|cafe|hotel|clinic|school|gym|salon|real estate|ecommerce|shop|logistics|dairy)[\s!.]*$/i.test(lower);
+      // Reject pure industry text (e.g., "restaurant", "healthcare", "education", "finance")
+      const isIndustryOnly = /^(restaurant|cafe|hotel|clinic|healthcare|education|school|gym|salon|real estate|ecommerce|shop|logistics|dairy|finance|fintech|legal|travel|manufacturing)[\s!.]*$/i.test(lower);
       if (isIndustryOnly) return { isValid: false };
 
       // Reject standalone project statements that do not answer budget (e.g., "I need a mobile app for my restaurant.")
@@ -118,7 +118,7 @@ export function validateAnswerAgainstQuestion(
       if (isBudgetOnly) return { isValid: false };
 
       // Reject pure industry text
-      const isIndustryOnly = /^(restaurant|cafe|hotel|clinic|school|gym|salon|real estate|ecommerce|shop|logistics)[\s!.]*$/i.test(lower);
+      const isIndustryOnly = /^(restaurant|cafe|hotel|clinic|healthcare|education|school|gym|salon|real estate|ecommerce|shop|logistics|dairy|finance|fintech|legal|travel|manufacturing)[\s!.]*$/i.test(lower);
       if (isIndustryOnly) return { isValid: false };
 
       // Valid Timeline Acceptance:
@@ -136,7 +136,7 @@ export function validateAnswerAgainstQuestion(
       if (isMonetaryOrTimeline) return { isValid: false };
 
       // Reject standalone industry text when platform is specifically asked (e.g. "Restaurant")
-      const isPureIndustry = /^(restaurant|cafe|hotel|clinic|school|gym|salon|real estate|ecommerce|shop|logistics)[\s!.]*$/i.test(lower);
+      const isPureIndustry = /^(restaurant|cafe|hotel|clinic|healthcare|education|school|gym|salon|real estate|ecommerce|shop|logistics|dairy|finance|fintech|legal|travel|manufacturing)[\s!.]*$/i.test(lower);
       if (isPureIndustry) return { isValid: false };
 
       // Valid Platform Acceptance:
