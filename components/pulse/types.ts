@@ -10,6 +10,7 @@ export interface PulseContextData {
   friction?: string[];
   goals?: string[];
   timeline?: string;
+  budget?: string;
 }
 
 export interface PulseLead {

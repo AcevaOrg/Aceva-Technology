@@ -23,10 +23,10 @@ describe("PULSE LLM Provider", () => {
 
   it("returns OpenAI answer on success", async () => {
     mockOpenAiCreate.mockResolvedValueOnce({
-      choices: [{ message: { content: "ACEVA is a software company." } }],
+      choices: [{ message: { content: "ACEVA builds custom software." } }],
     });
-    const result = await generatePulseCompletion("What is ACEVA?");
-    expect(result).toBe("ACEVA is a software company.");
+    const result = await generatePulseCompletion("What software capabilities does ACEVA offer for custom app development?");
+    expect(result).toBe("ACEVA builds custom software.");
     expect(mockOpenAiCreate).toHaveBeenCalledOnce();
   });
 
@@ -56,7 +56,7 @@ describe("PULSE LLM Provider", () => {
       { role: "assistant" as const, content: "We can build that for you." },
     ];
 
-    const result = await generatePulseCompletion("How long will it take?", history);
+    const result = await generatePulseCompletion("How long will it take to build this software?", history);
     expect(result).toBe("It will take 4 weeks.");
     expect(mockOpenAiCreate).toHaveBeenCalledOnce();
 
@@ -68,7 +68,7 @@ describe("PULSE LLM Provider", () => {
     const err = new Error("rate limit");
     (err as unknown as { status: number }).status = 429;
     mockOpenAiCreate.mockRejectedValueOnce(err);
-    const result = await generatePulseCompletion("What is ACEVA?");
+    const result = await generatePulseCompletion("How do you build custom mobile apps?");
     expect(result).toBe("I'm having trouble responding right now. Please try again in a moment.");
   });
 
@@ -81,7 +81,7 @@ describe("PULSE LLM Provider", () => {
   it("returns unavailable when API key is missing", async () => {
     vi.stubEnv("OPENAI_API_KEY", "");
     clearEnvCache();
-    const result = await generatePulseCompletion("What is ACEVA?");
+    const result = await generatePulseCompletion("How do you build custom mobile apps?");
     expect(result).toBe("PULSE is currently unavailable. Please try again later.");
     expect(mockOpenAiCreate).not.toHaveBeenCalled();
   });

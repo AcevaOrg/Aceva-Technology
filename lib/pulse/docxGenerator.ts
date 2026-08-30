@@ -12,7 +12,7 @@ import {
   AlignmentType,
 } from "docx";
 import { PulseState } from "@/components/pulse/types";
-import { getRecommendedModules } from "./modules";
+import { getRecommendedModules, formatEnrichedProjectContext } from "./modules";
 
 export async function downloadPulseBlueprintDocx(state: PulseState, pulseId: string) {
   const dateStr = new Date().toLocaleDateString("en-US", {
@@ -25,14 +25,47 @@ export async function downloadPulseBlueprintDocx(state: PulseState, pulseId: str
   const leadContact = state.lead?.contact || "Not specified";
   const leadMethod = state.lead?.method || "Email";
 
-  const intent = state.context.intent || "Custom Solution";
-  const industry = state.context.industry || "General Business";
-  const timeline = state.context.timeline || state.answers[4] || state.answers[3] || "Not specified";
-  const scale = state.context.scale || "Not specified";
-  const goals = state.context.goals?.join(", ") || "None specified";
-  const friction = state.context.friction?.join(", ") || "None specified";
+  const enriched = formatEnrichedProjectContext(state.context, state.answers);
+  const intent = enriched.primaryIntent;
+  const industry = enriched.industryFocus;
+  const timeline = enriched.targetTimeline;
+  const budget = enriched.budgetAllocation;
+  const scale = enriched.projectScale;
+  const goals = enriched.primaryGoals;
 
-  const modules = getRecommendedModules(state.context.industry, state.context);
+  const modules = getRecommendedModules(state.context.industry, state.context, state.answers);
+
+  // Extract paired Q&A history (Pulse question above user answer)
+  const qaPairs: { question: string; answer: string }[] = [];
+  let currentPulseQuestion = "";
+
+  for (const msg of state.messages) {
+    if (msg.sender === "pulse") {
+      if (msg.id === "msg-welcome" || msg.text.includes("ACEVA's AI assistant")) continue;
+      currentPulseQuestion = msg.text;
+    } else if (msg.sender === "user") {
+      const q = currentPulseQuestion || `Discovery Question ${qaPairs.length + 1}`;
+      qaPairs.push({ question: q, answer: msg.text });
+      currentPulseQuestion = "";
+    }
+  }
+
+  // Fallback to state.answers if message array pairing was empty
+  if (qaPairs.length === 0 && state.answers.length > 0) {
+    const defaultQuestions = [
+      "Tell us about the business and who you serve.",
+      "Where does the current system break down or feel manual?",
+      "What does the operation look like today (locations, team, scale)?",
+      "What core features and outcomes should be different when this works?",
+      "What is your target timeline and expected budget range?",
+    ];
+    state.answers.forEach((ans, i) => {
+      qaPairs.push({
+        question: defaultQuestions[i] || `Discovery Question ${i + 1}`,
+        answer: ans,
+      });
+    });
+  }
 
   const doc = new Document({
     sections: [
@@ -207,18 +240,6 @@ export async function downloadPulseBlueprintDocx(state: PulseState, pulseId: str
                 children: [
                   new TableCell({
                     width: { size: 30, type: WidthType.PERCENTAGE },
-                    children: [new Paragraph({ children: [new TextRun({ text: "Target Timeline:", bold: true })] })],
-                  }),
-                  new TableCell({
-                    width: { size: 70, type: WidthType.PERCENTAGE },
-                    children: [new Paragraph({ text: timeline })],
-                  }),
-                ],
-              }),
-              new TableRow({
-                children: [
-                  new TableCell({
-                    width: { size: 30, type: WidthType.PERCENTAGE },
                     children: [new Paragraph({ children: [new TextRun({ text: "Project Scale:", bold: true })] })],
                   }),
                   new TableCell({
@@ -231,11 +252,11 @@ export async function downloadPulseBlueprintDocx(state: PulseState, pulseId: str
                 children: [
                   new TableCell({
                     width: { size: 30, type: WidthType.PERCENTAGE },
-                    children: [new Paragraph({ children: [new TextRun({ text: "Primary Goals:", bold: true })] })],
+                    children: [new Paragraph({ children: [new TextRun({ text: "Target Timeline:", bold: true })] })],
                   }),
                   new TableCell({
                     width: { size: 70, type: WidthType.PERCENTAGE },
-                    children: [new Paragraph({ text: goals })],
+                    children: [new Paragraph({ text: timeline })],
                   }),
                 ],
               }),
@@ -243,11 +264,23 @@ export async function downloadPulseBlueprintDocx(state: PulseState, pulseId: str
                 children: [
                   new TableCell({
                     width: { size: 30, type: WidthType.PERCENTAGE },
-                    children: [new Paragraph({ children: [new TextRun({ text: "Friction Points:", bold: true })] })],
+                    children: [new Paragraph({ children: [new TextRun({ text: "Budget Allocation:", bold: true })] })],
                   }),
                   new TableCell({
                     width: { size: 70, type: WidthType.PERCENTAGE },
-                    children: [new Paragraph({ text: friction })],
+                    children: [new Paragraph({ text: budget })],
+                  }),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({
+                    width: { size: 30, type: WidthType.PERCENTAGE },
+                    children: [new Paragraph({ children: [new TextRun({ text: "Primary Goals (Features):", bold: true })] })],
+                  }),
+                  new TableCell({
+                    width: { size: 70, type: WidthType.PERCENTAGE },
+                    children: [new Paragraph({ text: goals })],
                   }),
                 ],
               }),
@@ -278,7 +311,7 @@ export async function downloadPulseBlueprintDocx(state: PulseState, pulseId: str
 
           new Paragraph({ text: "", spacing: { after: 300 } }),
 
-          // Section 4: Discovery Q&A History
+          // Section 4: Discovery Q&A History (Pulse Question directly above User Response)
           new Paragraph({
             children: [
               new TextRun({ text: "4. DISCOVERY Q&A HISTORY", bold: true, size: 24, color: "0F172A" }),
@@ -286,20 +319,54 @@ export async function downloadPulseBlueprintDocx(state: PulseState, pulseId: str
             spacing: { before: 240, after: 120 },
           }),
 
-          ...(state.answers.length > 0
-            ? state.answers.map(
-                (ans, i) =>
-                  new Paragraph({
-                    children: [
-                      new TextRun({ text: `Q${i + 1}: `, bold: true, color: "475569" }),
-                      new TextRun({ text: `"${ans}"` }),
-                    ],
-                    spacing: { after: 100 },
-                  })
-              )
+          ...(qaPairs.length > 0
+            ? qaPairs.flatMap((pair, idx) => [
+                new Paragraph({
+                  children: [
+                    new TextRun({ text: `Question ${idx + 1}: `, bold: true, color: "1E4FD9" }),
+                    new TextRun({ text: pair.question, bold: true, color: "0F172A" }),
+                  ],
+                  spacing: { before: 140, after: 40 },
+                }),
+                new Paragraph({
+                  children: [
+                    new TextRun({ text: `User Response: `, bold: true, color: "475569" }),
+                    new TextRun({ text: `"${pair.answer}"`, italics: true, color: "334155" }),
+                  ],
+                  spacing: { after: 120 },
+                }),
+              ])
             : [new Paragraph({ text: "No custom Q&A recorded." })]),
 
-          new Paragraph({ text: "", spacing: { after: 400 } }),
+          new Paragraph({ text: "", spacing: { after: 300 } }),
+
+          // Section 5: Assumptions & Unknowns
+          new Paragraph({
+            text: "5. ASSUMPTIONS & UNKNOWNS",
+            heading: HeadingLevel.HEADING_2,
+            spacing: { before: 300, after: 120 },
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({ text: "• Payment Provider: ", bold: true }),
+              new TextRun({ text: "Not specified (to be selected during technical discovery review)" }),
+            ],
+            spacing: { after: 60 },
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({ text: "• Hosting & Infrastructure: ", bold: true }),
+              new TextRun({ text: "Not specified (to be assigned during deployment mapping)" }),
+            ],
+            spacing: { after: 60 },
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({ text: "• Third-Party Integrations: ", bold: true }),
+              new TextRun({ text: "Not specified (to be identified upon API contract audit)" }),
+            ],
+            spacing: { after: 300 },
+          }),
 
           // Footer Notice
           new Paragraph({

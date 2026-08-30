@@ -8,7 +8,8 @@ import PulseInput from "./PulseInput";
 
 import PulseFormattedText from "./PulseFormattedText";
 import { downloadPulseBlueprintDocx } from "@/lib/pulse/docxGenerator";
-import { getRecommendedModules } from "@/lib/pulse/modules";
+import { getRecommendedModules, getConciseUIModules, formatEnrichedProjectContext } from "@/lib/pulse/modules";
+import { cleanUserMappedValue } from "@/lib/pulse/format";
 
 interface PulseMessagesProps {
   state: PulseState;
@@ -27,33 +28,33 @@ const INTENT_OPTIONS = [
 const WIZARD_STEPS: WizardStepSpec[] = [
   {
     label: "READING THE SYSTEM",
-    title: "Tell us about the business.",
-    helper: "What do you do, and who do you do it for?",
-    placeholder: "We run three neighborhood restaurants in New York…",
+    title: "Tell us about your business or project.",
+    helper: "What do you do, or what would you like to build, and who is it for?",
+    placeholder: "e.g. We run a neighborhood restaurant in New York and want a direct online ordering website...",
   },
   {
     label: "MAPPING FRICTION",
-    title: "Where does the system break down?",
-    helper: "Describe what feels slow, unclear, manual, or disconnected.",
-    placeholder: "Orders arrive through different channels and owners lack visibility…",
+    title: "Where do things feel slow or manual today?",
+    helper: "Describe what takes too much time, feels confusing, or needs fixing.",
+    placeholder: "e.g. Taking orders over WhatsApp is chaotic and hard to keep track of...",
   },
   {
     label: "BUILDING CONTEXT",
-    title: "What does the operation look like today?",
-    helper: "Locations, team, market, workflow—or anything that defines the scale.",
-    placeholder: "Three locations, 45 staff, one central management team…",
+    title: "What does your operation look like today?",
+    helper: "Share your team size, locations, daily customers, or general scale.",
+    placeholder: "e.g. 2 locations, 15 team members, around 300 orders per day...",
   },
   {
     label: "FORMING DIRECTION",
-    title: "What should be different when this works?",
-    helper: "Focus on the outcome, not the feature list.",
-    placeholder: "Fewer errors, faster service, and one view of performance…",
+    title: "What would success look like for you?",
+    helper: "Tell us what key results or main capabilities matter most to you.",
+    placeholder: "e.g. Customers can order online directly, and kitchen staff see orders on one simple screen...",
   },
   {
-    label: "SYSTEM FIT",
-    title: "When should the new direction begin?",
-    helper: "A general window is enough. No delivery promise is being made.",
-    placeholder: "We want to start planning this quarter…",
+    label: "TIMELINE & BUDGET FIT",
+    title: "What is your target launch timeline and budget window?",
+    helper: "Specify your target launch timeframe and budget range (or if you prefer to discuss directly with ACEVA's team).",
+    placeholder: "e.g. Target launch in 4-6 weeks, budget range to be discussed directly with the ACEVA team...",
   },
 ];
 
@@ -81,13 +82,15 @@ const INDUSTRY_RULES = [
 ];
 
 function extractPhrases(text: string, fallback: string[]) {
-  const parts = text.split(/,| and |\.|;/).map((p) => p.trim()).filter((p) => p.length > 3).slice(0, 3);
-  return parts.length ? parts.map((p) => p.charAt(0).toUpperCase() + p.slice(1)) : fallback;
+  const cleanText = cleanUserMappedValue(text);
+  const parts = cleanText.split(/,| and |\.|;/).map((p) => p.trim()).filter((p) => p.length > 3).slice(0, 3);
+  return parts.length ? parts.map((p) => cleanUserMappedValue(p)) : fallback;
 }
 
 function inferContextFromText(text: string, stepIndex: number) {
+  const cleanText = cleanUserMappedValue(text);
   const match = INDUSTRY_RULES.find((r) => r.test.test(text));
-  const isTimelineText = /week|month|day|quarter|asap|urgent|year|time|soon/i.test(text);
+  const isTimelineText = /week|month|day|quarter|asap|urgent|year|time|soon|as soon as possible|decide|team|contact/i.test(text);
 
   const contextUpdate: Record<string, unknown> = {};
 
@@ -100,22 +103,22 @@ function inferContextFromText(text: string, stepIndex: number) {
 
   if (stepIndex === 0 && !contextUpdate.industry) {
     contextUpdate.industry = "Business Services";
-    contextUpdate.business = text.slice(0, 62);
+    contextUpdate.business = cleanText.slice(0, 80);
   }
   if (stepIndex === 1) {
-    contextUpdate.current = text.slice(0, 84);
+    contextUpdate.current = cleanText.slice(0, 100);
     contextUpdate.friction = extractPhrases(text, ["Manual handoffs", "Limited visibility"]);
   }
   if (stepIndex === 2) {
-    contextUpdate.scale = text.slice(0, 62);
-    if (/new york|nyc/i.test(text)) contextUpdate.market = "New York";
+    contextUpdate.scale = cleanText.slice(0, 80);
+    if (/new york|nyc/i.test(cleanText)) contextUpdate.market = "New York";
   }
   if (stepIndex === 3) {
     contextUpdate.goals = extractPhrases(text, ["Operational clarity", "Measurable growth"]);
   }
 
   if (isTimelineText || stepIndex >= 3) {
-    contextUpdate.timeline = text.trim().slice(0, 100);
+    contextUpdate.timeline = cleanText.slice(0, 120);
   }
 
   return contextUpdate;
@@ -347,14 +350,13 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
 
   // Stage 3: Generated Direction Overview
   if (state.stage === "direction") {
-    const title = `${state.context.industry || "BUSINESS"} ${
-      state.context.intent === "Automate something" ? "OPERATING SYSTEM" : "DIGITAL SYSTEM"
-    }`;
-    const modules = getRecommendedModules(state.context.industry, state.context);
+    const enriched = formatEnrichedProjectContext(state.context, state.answers);
+    const title = `${enriched.industryFocus.toUpperCase()}`;
+    const modules = getConciseUIModules(state.context.industry, state.context, state.answers);
 
     return (
       <div className={styles.direction}>
-        <p className={styles.stepLabel}>PULSE / YOUR DIRECTION</p>
+        <p className={styles.stepLabel}>PULSE / SYSTEM ARCHITECTURE BLUEPRINT</p>
         <h2>{title}</h2>
         <p className={styles.directionCopy}>
           A connected system designed around the operation Pulse has mapped—not a generic list of features.
@@ -362,10 +364,11 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
 
         <ol>
           {modules.map((mod, idx) => (
-            <li key={mod}>
+            <li key={mod} style={{ marginBottom: "1rem" }}>
               <span>0{idx + 1}</span>
-              {mod}
-              <b>—</b>
+              <div style={{ display: "inline-block", width: "calc(100% - 3rem)", verticalAlign: "top" }}>
+                <PulseFormattedText content={mod} />
+              </div>
             </li>
           ))}
         </ol>
@@ -378,12 +381,12 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
             <i />
             <i className={styles.off} />
           </div>
-          <b>STRUCTURED / CUSTOM</b>
+          <b>STRUCTURED / CUSTOM ARCHITECTURE</b>
         </div>
 
         <div className={styles.recommend}>
-          <span>RECOMMENDED ARCHITECTURE</span>
-          <strong>ACEVA Custom Digital System</strong>
+          <span>RECOMMENDED SERVICE</span>
+          <strong>ACEVA Digital Product Engineering</strong>
         </div>
 
         <button
@@ -422,7 +425,7 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
               },
               context: state.context,
               answers: state.answers,
-              recommendedModules: getRecommendedModules(state.context.industry, state.context),
+              recommendedModules: getRecommendedModules(state.context.industry, state.context, state.answers),
             }),
           });
 
@@ -555,7 +558,7 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
               DOWNLOAD WORD BLUEPRINT (.DOCX) 📄
             </button>
             <button type="button" className={styles.primaryCta} onClick={handleOk}>
-              OK <b>↗</b>
+              RETURN TO CHAT <b>↗</b>
             </button>
           </div>
         </div>

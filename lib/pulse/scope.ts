@@ -8,10 +8,22 @@ export const GREETING_REJECTION =
 export const OUT_OF_SCOPE_REJECTION =
   "Please enter a clear, relevant question about your project or ACEVA's software development services.";
 
-// Standalone greeting patterns
+// Standalone greeting & casual conversational patterns (should NOT increase question/progress percentage)
 const GREETING_PATTERNS = [
   /^(hi|hello|hey|greetings|good morning|good afternoon|good evening|yo|sup|hola)(\s+pulse)?[\s!.]*$/i,
-  /^(hey|hello|hi)\s+there[\s!.]*$/i,
+  /^(hey|hello|hi)\s+(there|\d+)[\s!.]*$/i,
+  /^how\s+(are|r)\s+(you|u)(\s+doing)?[\s?!.]*$/i,
+  /^how\s+is\s+it\s+going[\s?!.]*$/i,
+  /^what('?s|\s+is)\s+up[\s?!.]*$/i,
+  /^what\s+is\s+aceva(\s+technologies)?[\s?!.]*$/i,
+  /^what\s+does\s+aceva(\s+technologies)?\s+do[\s?!.]*$/i,
+  /^(who|what)\s+are\s+you[\s?!.]*$/i,
+  /^tell\s+me\s+about\s+aceva[\s?!.]*$/i,
+  /^where\s+are\s+you\s+located[\s?!.]*$/i,
+  /^(ok|okay|cool|nice|thanks|thank you|great|awesome|got it|understood)[\s!.]*$/i,
+  /^(good to see you|nice to meet you|hope you'?re doing well|let'?s talk|listen to this|can we talk|can we chat|are you there|are you available|are you okay|what can you do|i'?m bored|make me laugh|tell me something|guess what|nothing|random)[\s!.]*$/i,
+  /^(blah\s+){1,}blah[\s!.]*$/i,
+  /^(test\s+){1,}test[\s!.]*$/i,
 ];
 
 // Explicit ACEVA domain keywords & intent indicators
@@ -124,24 +136,242 @@ const OUT_OF_SCOPE_PATTERNS = [
   /\b(recipe|ingredients|cook|bake|kitchen|tea|coffee|cake|pizza)\s+(for|how|to)?\b/i,
   /\b(planet|planets|solar system|galaxy|universe|space|star|stars|astronomy|physics|biology|chemistry|moon|everest|ocean|trench|photosynthesis|airplane|airplanes)\b/i,
 
+  // Development, origins, history topics ("How did X develop?", "Where did X originate?")
+  /\bhow\s+did\s+.*?\s+(develop|originate|start|begin|become)\b/i,
+  /\bwhere\s+did\s+.*?\s+(originate|start|begin)\b/i,
+
   // General Questions & Trivia
   /\bwhat\s+is\s+the\s+(distance|height|speed|population|currency|boiling point|chemical formula|capital|rule|offside)\b/i,
   /\bhow\s+(many|much|far|deep|tall|high)\s+(continents|planets|ocean|mountains|distance|people)\b/i,
   /\bhow\s+do\s+i\s+(train|clean|make|cook|bake|fix a flat|fly)\b/i,
 
-  // Homework & Math
-  /\b(solve|calculate|compute)\s+(this|the)?\s*(math|equation|integral|derivative|algebra|calculus|problem)\b/i,
+  // Homework & Math Tasks & Unit Conversions
+  /\b(solve|calculate|compute|convert)\s+(this|the)?\s*(math|equation|integral|derivative|algebra|calculus|problem|square root|cube root|kilograms|meters|miles)?\b/i,
   /\bwhat\s+is\s+\d+\s*[\+\-\*\/\s\w]*\d+/i,
+  /\bsolve\s+[x-z0-9\+\-\*\/\=\s]+/i,
   /\bpythagorean\s+theorem\b/i,
 ];
 
+// Company & FAQ Questions about ACEVA (MUST NOT advance project progress)
+const ACEVA_FAQ_PATTERNS = [
+  /what('?s|\s+is)\s+aceva(\s+technologies)?/i,
+  /what\s+does\s+aceva(\s+technologies)?\s+(do|build|offer|provide)/i,
+  /who\s+(is|are)\s+(aceva|you)/i,
+  /tell\s+me\s+about\s+aceva/i,
+  /where\s+are\s+you\s+(located|based)/i,
+  /what\s+(services|capabilities)\s+do\s+(you|aceva)\s+(offer|provide)/i,
+  /how\s+(does|is|do|can|did)\s+aceva\b/i,
+  /how\s+aceva\s+(works?|operates?|functions?|builds?)/i,
+  /how\s+much\s+does\s+aceva\s+cost/i,
+  /\baceva'?s?\s*(internal|mechanism|workers?|staff|leads?|founders?|ceo|process|operation)/i,
+  /\bwho\s+(works?\s+at|leads?)\s+aceva\b/i,
+  /\b(how|what|who|why|where)\b.*?\baceva\b/i,
+];
+
+// General Tech History, Trivia, Comparison, Meta, or Educational Questions (MUST NOT advance project progress)
+const GENERAL_TECH_TRIVIA_PATTERNS = [
+  /\b(java\s*\d*|python|c\+\+|c#|rust|go|php|ruby|swift|kotlin|sql|html|css|bash|react|angular|vue|node|perl|pascal|cobol)\s+(is|vs|versus|better|faster|older|newer|worse|compared|famous|popular)\b/i,
+  /\bwhat\s+(is|does|did)\s+(java|python|c\+\+|c#|rust|go|php|ruby|swift|kotlin|react|node|javascript|typescript|perl|pascal|cobol|an? operating system|a database|a server|an api|a compiler)\s*(do|mean|used)?/i,
+  /\b(explain|difference|comparison)\s+(between|of)?\s+(java|python|react|node|sql|ruby|php|c\+\+|rust|operating systems|databases)/i,
+  /\bwhy\s+(was|is|did|were)\s+(ruby|python|java|php|javascript|c\+\+|perl|pascal|cobol|scala|haskell|rust|go|swift|kotlin)\b/i,
+  /\bwhy\s+(was|is)\s+.*?\s+(famous|popular|used|created)\b/i,
+  /\b(famous|popular)\s+in\s+the\s+(\d{4}s|\d{2}s)\b/i,
+  /\bwhich\s+(operating system|database|social media|programming language|language|framework|cloud provider)\s+is\s+(better|best)\b/i,
+  /\bwhy\s+do\s+you\s+(need|ask)\b/i,
+  /\bwhy\s+do\s+(websites|apps|systems)\s+(need|use)\b/i,
+  /\bhow\s+does\s+this\s+system\s+work\b/i,
+  /\bwho\s+is\s+(shiva|john|alex|michael|david|sarah|emily)\b/i,
+  /\btell\s+me\s+about\s+(shiva|john|alex|michael|david)\b/i,
+];
+
 /**
- * Check if the input is a standalone greeting.
+ * Evaluates whether a user message provides meaningful, context-relevant project discovery information.
+ * Uses semantic intent analysis rather than static word blacklists.
+ */
+export function isProjectDiscoveryInput(userMessage: string): boolean {
+  const clean = userMessage.trim();
+  if (!clean) return false;
+
+  // 1. Gibberish or keyboard smash check -> INVALID
+  if (isGibberishInput(clean)) return false;
+
+  const lower = clean.toLowerCase();
+
+  // Explicit non-discovery meta/question checks FIRST (e.g. "Why do you need this information?", "Why do websites need servers?")
+  if (/\bwhy\s+do\s+you\s+(need|ask)\b/i.test(lower)) return false;
+  if (/\bwhy\s+do\s+(websites|apps|systems)\s+(need|use)\b/i.test(lower)) return false;
+
+  // Check for explicit project discovery intent (including mixed intent statements)
+  const hasExplicitProjectIntent =
+    /\b(build|we need|i need|need (an?|to|a)|we want|i want|want (an?|to|a)|create (an?|a)|develop (an?|a)|refactor|migrate|redesign|modernize|start a (new )?project|budget|timeline|asap|flexible|discuss (with|\w+)|booking system|ordering system|admin dashboard|e-commerce|web app|mobile app|java to kotlin|target users|target audience|business owners|customer accounts|staff accounts|platform to work|both web and mobile)\b/i.test(
+      lower
+    ) ||
+    (/\b(app|website|platform|portal|dashboard|software|system)\b/i.test(lower) &&
+      /\b(restaurant|food|dairy|farm|clinic|telehealth|real estate|logistics|fleet|delivery|inventory|checkout|booking|cart|store|shop)\b/i.test(lower));
+
+  // If the message contains explicit project intent (even if mixed with trivia or greetings), it is valid/partial valid!
+  if (hasExplicitProjectIntent) {
+    return true;
+  }
+
+  // Additional casual noise / meta / trivia patterns
+  if (/\b(nothing|nan|bored|make me laugh|random|nice to meet you|tell me a joke)\b/i.test(lower)) return false;
+
+  // Standalone Greetings / Casual Check-ins
+  if (GREETING_PATTERNS.some((p) => p.test(clean))) return false;
+  if (ACEVA_FAQ_PATTERNS.some((p) => p.test(clean))) return false;
+  if (GENERAL_TECH_TRIVIA_PATTERNS.some((p) => p.test(clean))) return false;
+  if (OUT_OF_SCOPE_PATTERNS.some((p) => p.test(clean))) return false;
+
+  // Incoherent question text (e.g. "Who are you, you", "what is what")
+  const isIncoherentQuestion =
+    /^(who|what|why|how)\s+(are|is|do|did)\s+(you|it|that|this)\s*,?\s*(you|it|that|this)?$/i.test(clean);
+  if (isIncoherentQuestion) return false;
+
+  // Question format without explicit project intent -> INVALID
+  const isQuestionFormat =
+    /^(who|what|why|how|when|where|which|can you|tell me|explain)\b/i.test(lower) || /\?$/.test(clean);
+  if (isQuestionFormat) return false;
+
+  return true;
+}
+
+/**
+ * Check if the input is a standalone greeting or casual check-in.
  */
 export function isGreetingInput(userMessage: string): boolean {
   const clean = userMessage.trim();
   if (!clean) return false;
   return GREETING_PATTERNS.some((pattern) => pattern.test(clean));
+}
+
+/**
+ * Check if the message is casual conversation, greeting, company FAQ, or general tech trivia.
+ */
+export function isCasualOrFAQOrGeneralQuery(userMessage: string): boolean {
+  return !isProjectDiscoveryInput(userMessage);
+}
+
+/**
+ * Legacy compatibility alias for casual input check.
+ */
+export function isCasualOrNonProgressInput(userMessage: string): boolean {
+  return isCasualOrFAQOrGeneralQuery(userMessage);
+}
+
+/**
+ * Generate natural, concise conversational, FAQ, or tech trivia responses without advancing project progress.
+ */
+export function getCasualOrFAQResponse(userMessage: string): string | null {
+  const clean = userMessage.trim().toLowerCase();
+
+  // If the message contains explicit project discovery intent (e.g. mixed intent statement), return null to process discovery completion
+  if (isProjectDiscoveryInput(userMessage)) {
+    return null;
+  }
+
+  // Questions about unrelated individuals (e.g. Shiva)
+  if (/\b(shiva|who\s+is\s+shiva|tell\s+me\s+about\s+shiva)\b/i.test(clean)) {
+    return "I am PULSE, ACEVA's AI System Architect focused on software architecture discovery. For team or individual inquiries, please feel free to reach out to our team directly. What software product or project are you looking to build?";
+  }
+
+  const isAnswerPref = /\b(discuss|flexible|direct|team|deal|negotiate|asap|tbd)\b/i.test(clean);
+
+  // Company FAQ & ACEVA WH Questions
+  if (!isAnswerPref && (ACEVA_FAQ_PATTERNS.some((p) => p.test(clean)) || /\baceva\b/i.test(clean))) {
+    return "ACEVA Technologies is a digital engineering agency that designs and builds custom web platforms, mobile apps, and automated software systems for modern businesses. What software product or project are you looking to build?";
+  }
+
+  // Greetings & Check-ins
+  if (/how\s+are\s+you|how\s+r\s+u|how\s+is\s+it\s+going|what'?s\s+up/i.test(clean)) {
+    return "I'm doing great, thank you! I'm PULSE, ACEVA's AI System Architect. What software project or digital direction can I help map out for you today?";
+  }
+
+  if (/^(hi|hello|hey|greetings|good morning|good afternoon|good evening|yo|sup|hola)/i.test(clean)) {
+    return "Hello! I'm PULSE, ACEVA's AI System Architect. Tell me what you'd like to build or improve, and I'll help map out your project direction.";
+  }
+
+  if (/^(ok|okay|cool|nice|thanks|thank you|great|awesome|got it|understood)/i.test(clean)) {
+    return "You're welcome! Whenever you're ready, tell me a bit about your project or business goals, and we will map out your system architecture.";
+  }
+
+  // General Tech History, Science, Geography, History, Stock Market & General Knowledge Questions
+  if (GENERAL_TECH_TRIVIA_PATTERNS.some((p) => p.test(clean)) || OUT_OF_SCOPE_PATTERNS.some((p) => p.test(clean))) {
+    return "That's an interesting question! However, PULSE is specifically designed to help map out your software project, refactoring needs, or application requirements with ACEVA. Tell me what software product or digital system you'd like to build!";
+  }
+
+  // Fallback for any non-discovery query
+  return "I'm here to help map out your software project direction with ACEVA. Please tell me a bit about what software product, web platform, or mobile app you would like to build!";
+}
+
+/**
+ * Check if the input is gibberish, nonsense, keyboard mash, or random characters.
+ * Examples: "hdgjsabdasvjvdahs", "asdfghjkl", "xyz123abc", "123456", "aaaaa"
+ */
+export function isGibberishInput(userMessage: string): boolean {
+  const clean = userMessage.trim();
+  if (!clean) return true;
+
+  // Pulse ID reference code exception (e.g. PLS-260829-123)
+  if (/PLS-\d{6}-\d{3}/i.test(clean)) return false;
+
+  // Very short non-alphanumeric noise (e.g. "?", "a", "1", "..")
+  if (clean.length < 2) return true;
+  if (!/[a-zA-Z]/.test(clean)) return true;
+
+  const lower = clean.toLowerCase();
+
+  // Single word with no vowels (e.g. "hdgjsabdasvjvdahs", "bcdfghjkl", "xyz123abc")
+  if (!/\s/.test(clean) && clean.length > 4 && !/[aeiouy]/.test(lower)) {
+    return true;
+  }
+
+  // Check repeating single characters (e.g. "aaaaaaa", "zzzzzz")
+  if (/^(.)\1{4,}$/i.test(clean)) return true;
+
+  // Keyboard smashes & random string patterns (e.g. "asdfghjkl", "qwertyuiop", "zxcvbnm", "xyz123abc", "hdgjsabdasvjvdahs", "qazxsw", "plmokn", "q1w2e3r4", "qweqwe", "asdasd", "qwepoiuy")
+  if (
+    /asdf|ghjk|qwert|yuiop|zxcv|123abc|abc123|hdgjs|vjvd|sdah|fghj|qazx|qazw|plmo|q1w2|qweqwe|asdasd|qwepoi|xvbnm|mnbvc|lkjhg|zxcmnb/i.test(
+      lower
+    ) &&
+    clean.length < 40
+  ) {
+    return true;
+  }
+
+  // 5+ consecutive consonants in a single token (e.g. "hdgjsabdasvjvdahs")
+  const tokens = lower.split(/\s+/);
+  for (const token of tokens) {
+    if (token.length > 5 && /[^aeiouy0-9]{5,}/.test(token)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Natural response for gibberish or nonsense input without advancing progress.
+ */
+export function getGibberishOrNonsenseResponse(): string {
+  return "I didn't quite catch that. Please enter a clear project description or specific question about your software requirements so I can help map out your project direction.";
+}
+
+/**
+ * Check if the input contains valid project discovery answer or scope information.
+ * Returns true for any non-casual, non-FAQ, non-gibberish user answer provided during discovery
+ * (e.g. "I will discuss that with ACEVA's team directly", "Flexible budget", "3 locations", "Build a mobile app").
+ */
+export function isExplicitProjectScopeInput(userMessage: string): boolean {
+  const clean = userMessage.trim();
+  if (!clean) return false;
+
+  // Non-project general queries (greetings, company FAQs, general tech trivia, gibberish) are NEVER valid project answers
+  if (isCasualOrFAQOrGeneralQuery(clean) || isGibberishInput(clean)) {
+    return false;
+  }
+
+  return true;
 }
 
 /**
@@ -155,16 +385,12 @@ export function isInvalidOrUnclearInput(
   const clean = userMessage.trim();
   if (!clean) return true;
 
-  // Pulse ID reference code (e.g. PLS-260829-123)
-  if (/PLS-\d{6}-\d{3}/i.test(clean)) return false;
+  if (isGibberishInput(clean)) return true;
 
-  // Very short non-alphanumeric noise (e.g. "?", "a", "1", "..")
-  if (clean.length < 2) return true;
-  if (!/[a-zA-Z0-9]/.test(clean)) return true;
-
-  // Check repeating characters / keyboard smashes (e.g. "aaaaaaa", "asdfghjkl", "qwertyuiop")
-  if (/^(.)\1{4,}$/i.test(clean)) return true;
-  if (/^(asdfghjkl|qwertyuiop|zxcvbnm){1,}/i.test(clean.toLowerCase()) && clean.length > 5) return true;
+  // If the message contains explicit project discovery intent, it is NOT invalid or unclear
+  if (isProjectDiscoveryInput(clean)) {
+    return false;
+  }
 
   // Out of scope pattern match
   const isOOS = OUT_OF_SCOPE_PATTERNS.some((pattern) => pattern.test(clean));
@@ -229,3 +455,5 @@ export async function isQuestionInScope(
 
   return false;
 }
+
+export { cleanUserMappedValue } from "./format";

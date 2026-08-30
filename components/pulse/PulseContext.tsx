@@ -64,6 +64,31 @@ export function pulseReducer(state: PulseState, action: PulseAction): PulseState
     }
 
     case "RECORD_VALID_ANSWER": {
+      const cleanVal = action.value.trim().toLowerCase();
+      // Ignore initial intent selection prompts from being counted as step answers
+      if (
+        /^(i want to start something new|i want to improve what i have|i want to automate something|i want to sell something online|i want to solve a business problem|i'm not sure yet)/i.test(
+          cleanVal
+        )
+      ) {
+        return {
+          ...state,
+          context: { ...state.context, ...action.inferred },
+        };
+      }
+
+      const normNew = action.value.trim().toLowerCase().replace(/^(as i said|like i said|as mentioned|again|to repeat)\s*,?\s*/i, "");
+      const isDuplicate = state.answers.some(
+        (prev) => prev.trim().toLowerCase() === normNew || prev.trim().toLowerCase().includes(normNew)
+      );
+
+      if (isDuplicate) {
+        return {
+          ...state,
+          context: { ...state.context, ...action.inferred },
+        };
+      }
+
       return {
         ...state,
         answers: [...state.answers, action.value],
@@ -238,10 +263,12 @@ export function PulseProvider({ children }: { children: React.ReactNode }) {
             value: text,
             inferred: inferredContext,
           });
-          if (state.step + 1 >= 5) {
+          const newTotalAnswers = state.answers.length + 1;
+          // Require 5 valid answers to complete 5-step discovery and proceed to direction page
+          if (newTotalAnswers >= 5) {
             setTimeout(() => {
               dispatch({ type: "COMPLETE" });
-            }, 1200);
+            }, 1000);
           }
         }
       } else {
