@@ -1094,6 +1094,133 @@ html {
   min-height: 100vh;
 }
 
+.hero-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: clamp(110px, 14vw, 160px) clamp(20px, 4vw, 48px) clamp(48px, 6vw, 72px);
+  text-align: center;
+}
+
+.hero-kicker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 0 clamp(24px, 4vw, 38px);
+  color: var(--ice);
+  font: 11.5px/1.4 var(--font-jetbrains-mono);
+  letter-spacing: 0.2em;
+}
+
+.hero-heading {
+  max-width: 800px;
+  margin: 0 auto;
+  font: 600 clamp(38px, 6.6vw, 72px)/1.04 var(--font-space-grotesk);
+  letter-spacing: -0.03em;
+}
+
+.hero-summary {
+  max-width: 60ch;
+  margin: clamp(22px, 3vw, 30px) auto 0;
+  color: var(--muted);
+  font-size: clamp(16.5px, 1.5vw, 19.5px);
+  line-height: 1.62;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  width: min(100%, 560px);
+  margin-top: clamp(30px, 4vw, 42px);
+}
+
+.hero-actions > a {
+  flex: 1 1 220px;
+  justify-content: center;
+}
+
+.hero-note {
+  max-width: 68ch;
+  margin: clamp(28px, 4vw, 40px) 0 0;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .hero {
+    min-height: auto;
+  }
+
+  .hero-content {
+    max-width: 760px;
+    min-height: min(100svh, 900px);
+    justify-content: center;
+    padding: 132px 44px 72px;
+  }
+
+  .hero-kicker {
+    margin-bottom: 28px;
+  }
+
+  .hero-heading {
+    max-width: 680px;
+    font-size: clamp(50px, 6.4vw, 62px);
+    line-height: 1.06;
+  }
+
+  .hero-summary {
+    max-width: 52ch;
+    margin-top: 24px;
+    font-size: 17px;
+  }
+
+  .hero-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: min(100%, 520px);
+    margin-top: 34px;
+  }
+
+  .hero-actions > a {
+    justify-content: center;
+  }
+
+  .hero-note {
+    max-width: 54ch;
+    margin-top: 30px;
+  }
+}
+
+@media (max-width: 767px) {
+  .hero-content {
+    padding: 116px 20px 56px;
+  }
+
+  .hero-kicker {
+    gap: 8px;
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+  }
+
+  .hero-actions {
+    width: min(100%, 360px);
+  }
+
+  .hero-actions > a {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+}
+
 .hero-overlay {
   position: absolute;
   inset: 0;

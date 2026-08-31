@@ -62,32 +62,31 @@ export default function HomePage() {
           <Image src="/images/used/Aceva.webp" alt="" fill sizes="100vw" className="ac-section-image ac-section-image--hero bg-pan-slow" priority />
           <div className="hero-overlay" />
         </div>
-        <div style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(110px,14vw,160px) clamp(20px,4vw,48px) clamp(48px,6vw,72px)", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
-          <p style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, fontFamily: "var(--font-jetbrains-mono)", fontSize: 11.5, letterSpacing: ".2em", color: "var(--ice)", margin: "0 0 clamp(24px,4vw,38px)", animation: "acTrackIn 900ms cubic-bezier(.16,1,.3,1) both" }}>
+        <div className="hero-content">
+          <p className="hero-kicker" style={{ animation: "acTrackIn 900ms cubic-bezier(.16,1,.3,1) both" }}>
             <span style={{ width: 22, height: 1, background: "var(--electric)" }} />
             ACEVA HOLDINGS / SOFTWARE DIVISION
             <span aria-hidden="true" style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--success)", boxShadow: "0 0 8px rgba(47,190,122,.5)", animation: "acPulseDot 2.8s ease-in-out infinite" }} />
           </p>
-          <h1 style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: "clamp(38px,6.6vw,72px)", lineHeight: 1.04, letterSpacing: "-.03em", margin: "0 auto", maxWidth: 800, animation: "acMaskUp 900ms cubic-bezier(.16,1,.3,1) 80ms both" }}>
+          <h1 className="hero-heading" style={{ animation: "acMaskUp 900ms cubic-bezier(.16,1,.3,1) 80ms both" }}>
             <span className="ac-text-shimmer">
               Build what your business <span className="hero-title-accent">needs next.</span>
             </span>
           </h1>
-          <p style={{ fontSize: "clamp(16.5px,1.5vw,19.5px)", lineHeight: 1.62, color: "var(--muted)", maxWidth: "60ch", margin: "clamp(22px,3vw,30px) auto 0", animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 160ms both" }}>
+          <p className="hero-summary" style={{ animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 160ms both" }}>
             Aceva designs digital experiences, custom software, mobile products and intelligent systems — and rescues products that need a stronger path forward.
           </p>
-          <div style={{ display: "flex", flexDirection: "row", flexWrap: "nowrap", justifyContent: "center", gap: 16, marginTop: "clamp(30px,4vw,42px)", animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 260ms both", width: "100%", maxWidth: 560 }}>
-
-            <Link href={ROUTES.contact} className="ac-btn-futuristic" style={{ flex: 1, minHeight: 52, padding: "16px 12px", justifyContent: "center" }}>
+          <div className="hero-actions" style={{ animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 260ms both" }}>
+            <Link href={ROUTES.contact} className="ac-btn-futuristic" style={{ minHeight: 52, padding: "16px 12px" }}>
               Contact Us
               <ArrowRightIcon width={15} height={15} />
             </Link>
-            <Link href={ROUTES.work} className="ac-btn-ghost" style={{ flex: 1, minHeight: 52, padding: "16px 12px", justifyContent: "center" }}>
+            <Link href={ROUTES.work} className="ac-btn-ghost" style={{ minHeight: 52, padding: "16px 12px" }}>
               Explore Experiments
               <ArrowRightIcon width={15} height={15} />
             </Link>
           </div>
-          <p style={{ fontSize: 13.5, color: "var(--muted)", margin: "clamp(28px,4vw,40px) 0 0", animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 360ms both" }}>
+          <p className="hero-note" style={{ animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 360ms both" }}>
             For buyers with a clear idea or problem — or visitors who want to see how Aceva thinks and builds.
           </p>
           <p className="ac-scroll-cue" aria-hidden="true" style={{ margin: "clamp(32px,5vw,64px) auto 0" }}>
