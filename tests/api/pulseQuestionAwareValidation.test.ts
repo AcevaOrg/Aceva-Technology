@@ -86,6 +86,34 @@ describe("Pulse — Question-Aware Answer Validation Suite (Test Scenarios A - L
     });
   });
 
+  describe("TEST M: Budget asked + Textual Monetary ('Around five thousand dollars.')", () => {
+    it("accepts valid textual monetary budget answer", () => {
+      const res = validateAnswerAgainstQuestion("Around five thousand dollars.", "budget");
+      expect(res.isValid).toBe(true);
+    });
+  });
+
+  describe("TEST N: Timeline asked + Monetary ('$5,000')", () => {
+    it("rejects monetary answer when timeline question is active", () => {
+      const res = validateAnswerAgainstQuestion("$5,000", "timeline");
+      expect(res.isValid).toBe(false);
+    });
+  });
+
+  describe("TEST O: Industry asked + Monetary ('$5,000')", () => {
+    it("rejects monetary answer when industry question is active", () => {
+      const res = validateAnswerAgainstQuestion("$5,000", "industry");
+      expect(res.isValid).toBe(false);
+    });
+  });
+
+  describe("TEST P: Platform asked + Mobile Application ('Mobile application')", () => {
+    it("accepts mobile application answer when platform question is active", () => {
+      const res = validateAnswerAgainstQuestion("Mobile application", "platform");
+      expect(res.isValid).toBe(true);
+    });
+  });
+
   describe("Question Target Detection", () => {
     it("detects budget question from assistant history", () => {
       const history = [

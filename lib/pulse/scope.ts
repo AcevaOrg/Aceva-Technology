@@ -300,9 +300,18 @@ export function getCasualOrFAQResponse(userMessage: string): string | null {
     return null;
   }
 
+  // Identity & Persona Questions (who are you, what is your name, who am I talking to, are you pulse, etc.)
+  if (
+    /\b(who\s+are\s+you|what\s+is\s+your\s+name|who\s+am\s+i\s+talking\s+to|are\s+you\s+pulse|what\s+should\s+i\s+call\s+you|tell\s+me\s+about\s+yourself|are\s+you\s+an?\s+ai\s+assistant)\b/i.test(
+      clean
+    )
+  ) {
+    return "I am Aceva Pulse, an AI-powered project discovery assistant.";
+  }
+
   // Questions about unrelated individuals (e.g. Shiva)
   if (/\b(shiva|who\s+is\s+shiva|tell\s+me\s+about\s+shiva)\b/i.test(clean)) {
-    return "I am PULSE, ACEVA's AI System Architect focused on software architecture discovery. For team or individual inquiries, please feel free to reach out to our team directly. What software product or project are you looking to build?";
+    return "I am Aceva Pulse, ACEVA's AI System Architect focused on software architecture discovery. For team or individual inquiries, please feel free to reach out to our team directly. What software product or project are you looking to build?";
   }
 
   const isAnswerPref = /\b(discuss|flexible|direct|team|deal|negotiate|asap|tbd)\b/i.test(clean);
@@ -314,11 +323,11 @@ export function getCasualOrFAQResponse(userMessage: string): string | null {
 
   // Greetings & Check-ins
   if (/^(how\s+are\s+you|how\s+r\s+u|how\s+is\s+it\s+going|what'?s\s+up)[\s?!.]*$/i.test(clean)) {
-    return "I'm doing great, thank you! I'm PULSE, ACEVA's AI System Architect. What software project or digital direction can I help map out for you today?";
+    return "I'm doing great, thank you! I'm Aceva Pulse, ACEVA's AI System Architect. What software project or digital direction can I help map out for you today?";
   }
 
   if (/^(hi|hello|hey|greetings|good morning|good afternoon|good evening|yo|sup|hola|hy|hallo|halo|salam|salaam|assalamu?\s*alaikum|aoa)(\s+pulse|\s+there|\s+bro|\s+friend|\s+team)?[\s!.]*$/i.test(clean)) {
-    return "Hello! I'm PULSE, ACEVA's AI System Architect. Tell me what you'd like to build or improve, and I'll help map out your project direction.";
+    return "Hello! I'm Aceva Pulse, ACEVA's AI System Architect. Tell me what you'd like to build or improve, and I'll help map out your project direction.";
   }
 
   if (/^(ok|okay|cool|nice|thanks|thank you|great|awesome|got it|understood)[\s!.]*$/i.test(clean)) {

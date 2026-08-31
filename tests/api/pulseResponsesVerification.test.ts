@@ -112,4 +112,24 @@ describe("Pulse Response Quality, Tone, & Accuracy Verification Suite", () => {
     const data = await response.json();
     expect(data.isValid).toBe(true);
   });
+
+  it("9. Assistant Identity & Persona Queries: Identifies strictly as 'Aceva Pulse' and NOT 'Pulse Ai Assistant' (isValid: false)", async () => {
+    const identityQueries = [
+      "Who are you?",
+      "What is your name?",
+      "Who am I talking to?",
+      "Are you Pulse?",
+      "What should I call you?",
+      "Tell me about yourself.",
+      "Are you an AI assistant?",
+    ];
+    for (const msg of identityQueries) {
+      const response = await POST(createChatRequest({ message: msg }));
+      expect(response.status).toBe(200);
+      const data = await response.json();
+      expect(data.isValid).toBe(false);
+      expect(data.answer).toContain("Aceva Pulse");
+      expect(data.answer).not.toMatch(/Pulse Ai Assistant|Pulse AI Assistant|Pulse Ai|Pulse AI/i);
+    }
+  });
 });

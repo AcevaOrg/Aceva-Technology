@@ -99,8 +99,8 @@ export function validateAnswerAgainstQuestion(
       }
 
       // Valid Budget Acceptance:
-      // Monetary numbers ($5,000, 5000, 5k, 10k-20k, $5k-$10k)
-      const hasMonetary = /\$?\d{1,3}(,\d{3})*(\.\d{2})?\s*k?\b|\b\d+\s*k\b/i.test(lower);
+      // Monetary numbers ($5,000, 5000, 5k, 10k-20k, $5k-$10k, five thousand dollars)
+      const hasMonetary = /\$?\d{1,3}(,\d{3})*(\.\d{2})?\s*k?\b|\b\d+\s*k\b|\b(dollars?|usd|thousand|hundred|million)\b/i.test(lower);
       // Valid Uncertainty / Team Discussion / Flexible / TBD
       const hasValidUncertainty = /\b(not sure|haven'?t decided|not decided|tbd|to be decided|team|discuss|discuss with|flexible|open|deal|negotiate|window|undecided)\b/i.test(lower);
 
@@ -113,8 +113,8 @@ export function validateAnswerAgainstQuestion(
 
     case "timeline": {
       // Rejections for timeline question:
-      // Reject pure monetary budget text (e.g., "$5,000", "5000", "$10k")
-      const isBudgetOnly = /^(\$?\d{1,3}(,\d{3})*\s*k?|\$\d+|\d+\s*k)[\s!.]*$/i.test(lower);
+      // Reject pure monetary budget text (e.g., "$5,000", "5000", "$10k", "five thousand dollars")
+      const isBudgetOnly = /^(\$?\d{1,3}(,\d{3})*\s*k?|\$\d+|\d+\s*k|five thousand dollars)[\s!.]*$/i.test(lower);
       if (isBudgetOnly) return { isValid: false };
 
       // Reject pure industry text
@@ -132,7 +132,7 @@ export function validateAnswerAgainstQuestion(
 
     case "platform": {
       // Rejections for platform question:
-      const isMonetaryOrTimeline = /^(\$?\d+|\d+\s*k|asap|as soon as possible|\d+\s*(weeks|months))[\s!.]*$/i.test(lower);
+      const isMonetaryOrTimeline = /^(\$?\d{1,3}(,\d{3})*|\$\d+|\d+\s*k|asap|as soon as possible|\d+\s*(weeks|months))[\s!.]*$/i.test(lower);
       if (isMonetaryOrTimeline) return { isValid: false };
 
       // Reject standalone industry text when platform is specifically asked (e.g. "Restaurant")
@@ -140,7 +140,7 @@ export function validateAnswerAgainstQuestion(
       if (isPureIndustry) return { isValid: false };
 
       // Valid Platform Acceptance:
-      const hasPlatformKey = /\b(website|web|web app|mobile|mobile app|app|ios|android|desktop|saas|both|platform|deciding|not sure|team)\b/i.test(lower);
+      const hasPlatformKey = /\b(website|web|web app|mobile|mobile app|mobile application|app|ios|android|desktop|saas|both|platform|deciding|not sure|team)\b/i.test(lower);
       if (hasPlatformKey) {
         return { isValid: true };
       }
@@ -150,7 +150,7 @@ export function validateAnswerAgainstQuestion(
 
     case "industry": {
       // Rejections for industry question:
-      const isMonetaryOrTimeline = /^(\$?\d+|\d+\s*k|asap|as soon as possible|\d+\s*(weeks|months))[\s!.]*$/i.test(lower);
+      const isMonetaryOrTimeline = /^(\$?\d{1,3}(,\d{3})*|\$\d+|\d+\s*k|asap|as soon as possible|\d+\s*(weeks|months))[\s!.]*$/i.test(lower);
       if (isMonetaryOrTimeline) return { isValid: false };
 
       // Valid Industry Acceptance:

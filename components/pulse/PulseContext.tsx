@@ -6,7 +6,7 @@ import { PulseAction, PulseState } from "./types";
 const STORAGE_KEY = "aceva-pulse-v2";
 
 export const INITIAL_PULSE_GREETING =
-  "Hello! I'm PULSE, ACEVA's AI assistant. Tell me what you'd like to build or improve, and I'll help map out your project.";
+  "Hello! I'm Aceva Pulse, ACEVA's AI assistant. Tell me what you'd like to build or improve, and I'll help map out your project.";
 
 const initialGreetingMessage = {
   id: "msg-welcome",
@@ -67,7 +67,8 @@ export function pulseReducer(state: PulseState, action: PulseAction): PulseState
       const cleanVal = action.value.trim().toLowerCase();
       // Ignore initial intent selection prompts from being counted as step answers
       if (
-        /^(i want to start something new|i want to improve what i have|i want to automate something|i want to sell something online|i want to solve a business problem|i'm not sure yet)/i.test(
+        state.stage === "intent" ||
+        /^(i want to start something new|i want to improve what i have|i want to automate something|i want to sell something online|i want to solve a business problem)$/i.test(
           cleanVal
         )
       ) {
