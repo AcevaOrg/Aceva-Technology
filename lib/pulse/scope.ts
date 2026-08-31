@@ -8,9 +8,9 @@ export const GREETING_REJECTION =
 export const OUT_OF_SCOPE_REJECTION =
   "Please enter a clear, relevant question about your project or ACEVA's software development services.";
 
-// Helper function to normalize stretched characters (e.g. "hyyyyyyyyyyyyyyyy" -> "hy", "heyyyyyyyy" -> "hey", "salaaaam" -> "salam")
+// Helper function to normalize stretched characters (e.g. "heelooo" -> "helo", "hyyyyyyyyyyyyyyyy" -> "hy", "heyyyyyyyy" -> "hey", "salaaaam" -> "salam")
 function normalizeStretchedText(text: string): string {
-  return text.toLowerCase().replace(/(.)\1{2,}/g, "$1");
+  return text.toLowerCase().replace(/(.)\1+/g, "$1");
 }
 
 // Helper to detect incoherent / meaningless WH-questions consisting entirely of WH-words, auxiliaries, and pronouns
@@ -31,7 +31,7 @@ export function isIncoherentQuestion(cleanMessage: string): boolean {
 
 // Standalone greeting & casual conversational patterns (should NOT increase question/progress percentage)
 const GREETING_PATTERNS = [
-  /^(hi|hii|hiii|hello|helo|heloo|hey|heyy|heyyy|greetings|good morning|good afternoon|good evening|yo|sup|hola|hallo|halo|hy|hyy|hyyy|salam|salaam|assalamu?\s*alaikum|assalam?\s*o?\s*alaikum|asalam\s*o?\s*alaikum|aoa)[\s!.]*$/i,
+  /^(hi|hii|hiii|hello|helo|heelo|heloo|heeloo|heelooo|hey|heyy|heyyy|greetings|good morning|good afternoon|good evening|yo|sup|hola|hallo|halo|hy|hyy|hyyy|salam|salaam|assalamu?\s*alaikum|assalam?\s*o?\s*alaikum|asalam\s*o?\s*alaikum|aoa)[\s!.]*$/i,
   /^(hey|hello|hi|hy)\s+(there|\d+|bro|friend|team)[\s!.]*$/i,
   /^how\s+(are|r)\s+(you|u)(\s+doing)?[\s?!.]*$/i,
   /^how\s+is\s+it\s+going[\s?!.]*$/i,
@@ -240,7 +240,7 @@ export function isProjectDiscoveryInput(userMessage: string): boolean {
   }
 
   // Additional casual noise / meta / trivia patterns
-  if (/\b(nothing|nan|bored|make me laugh|random|nice to meet you|tell me a joke)\b/i.test(lower)) return false;
+  if (/\b(nothing|nothin|nan|bored|make me laugh|random|nice to meet you|tell me a joke|testing?|whatever|anything|something)\b/i.test(lower)) return false;
 
   // Check stretched or standard Greetings / Casual Check-ins
   if (isGreetingInput(clean)) return false;
@@ -253,6 +253,16 @@ export function isProjectDiscoveryInput(userMessage: string): boolean {
     /^(who|what|why|how|when|where|which|can you|could you|tell me|explain)\b/i.test(lower) || /\?$/.test(clean);
   if (isQuestionFormat) return false;
 
+  // Single non-domain token check: a single word that is NOT a recognized industry, platform, timeline, or monetary value -> INVALID
+  const cleanTokens = lower.replace(/[^\w\s$]/g, "").split(/\s+/).filter(Boolean);
+  if (cleanTokens.length === 1 && !hasExplicitProjectIntent) {
+    const singleToken = cleanTokens[0];
+    const isValidSingleTokenDomain = /^(restaurant|cafe|hotel|clinic|healthcare|education|school|gym|salon|realestate|ecommerce|logistics|dairy|finance|fintech|legal|travel|manufacturing|website|app|web|mobile|saas|portal|dashboard|software|system|rebuild|migrate|refactor|\$?\d+k?|asap|urgent|tbd)$/i.test(singleToken);
+    if (!isValidSingleTokenDomain) {
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -263,16 +273,30 @@ export function isGreetingInput(userMessage: string): boolean {
   const clean = userMessage.trim();
   if (!clean) return false;
 
-  if (GREETING_PATTERNS.some((pattern) => pattern.test(clean))) {
+  const lower = clean.toLowerCase();
+  const normalized = normalizeStretchedText(clean).replace(/[^\w\s]/g, "").trim();
+
+  if (GREETING_PATTERNS.some((pattern) => pattern.test(clean) || pattern.test(normalized))) {
     return true;
   }
 
-  const normalized = normalizeStretchedText(clean).replace(/[^\w\s]/g, "").trim();
+  // Match stretched/misspelled greetings: hiya, hy, hyy, hyyyy, heyy, heyyyy, helloo, heelo, heelooo, haloo, halo, salam, salaam, salam alaikum, assalamu alaikum, aoa, etc.
+  const GREETING_STEMS = /^(hi|hii|hie|hiya|hello|helo|heelo|heloo|heeloo|heelooo|helllo|hey|heyy|heyyy|greetings|good morning|good afternoon|good evening|good day|good night|yo|sup|supp|hola|hallo|halo|haloo|haalo|hy|hyy|hyyy|salam|salaam|slm|slms|salam\s+alaikum|salaam\s+alaikum|assalamu?\s*alaikum|assalam?\s*o?\s*alaikum|asalam\s*o?\s*alaikum|salam\s*o?\s*alaikum|aoa)(\s+pulse|\s+aceva|\s+there|\s+bro|\s+friend|\s+team|\s+buddy)?$/i;
 
-  // Match stretched/misspelled greetings: hiya, hy, hyy, hyyyy, heyy, heyyyy, helloo, haloo, halo, salam, salaam, salam alaikum, assalamu alaikum, aoa, etc.
-  const GREETING_WORDS = /^(hi|hii|hiya|hello|helo|heloo|helllo|hey|heyy|greetings|good morning|good afternoon|good evening|yo|sup|hola|hallo|halo|haloo|hy|hyy|hyyy|salam|salaam|salam\s+alaikum|salaam\s+alaikum|assalamu?\s*alaikum|assalam?\s*o?\s*alaikum|asalam\s*o?\s*alaikum|salam\s*o?\s*alaikum|aoa)(\s+pulse|\s+there|\s+bro|\s+friend|\s+team)?$/i;
+  if (GREETING_STEMS.test(clean) || GREETING_STEMS.test(lower) || GREETING_STEMS.test(normalized)) {
+    return true;
+  }
 
-  return GREETING_WORDS.test(normalized) || GREETING_WORDS.test(clean.toLowerCase().replace(/[^\w\s]/g, "").trim());
+  // Single word check against common greeting stems after collapsing repeats
+  const cleanNoPunct = lower.replace(/[^\w\s]/g, "").trim();
+  if (!/\s/.test(cleanNoPunct)) {
+    const collapsed = cleanNoPunct.replace(/(.)\1+/g, "$1");
+    if (/^(hi|helo|hello|hey|hy|hie|hola|halo|hallo|yo|sup|salam|salamo|salaam|aoa)$/i.test(collapsed)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 /**
@@ -387,7 +411,7 @@ export function isGibberishInput(userMessage: string): boolean {
 
   // Keyboard smashes & random string patterns
   if (
-    /asdf|ghjk|qwert|yuiop|zxcv|123abc|abc123|hdgjs|vjvd|sdah|fghj|qazx|qazw|plmo|q1w2|qweqwe|asdasd|qwepoi|xvbnm|mnbvc|lkjhg|zxcmnb|jshdf|xczvbn|zzxxcc|asdkjh/i.test(
+    /asdf|ghjk|qwert|yuiop|zxcv|123abc|abc123|abcxyz|xyz123|hdgjs|vjvd|sdah|fghj|qazx|qazw|plmo|q1w2|qweqwe|asdasd|qwepoi|xvbnm|mnbvc|lkjhg|zxcmnb|jshdf|xczvbn|zzxxcc|asdkjh/i.test(
       lower
     ) &&
     clean.length < 50
@@ -486,7 +510,16 @@ export async function isQuestionInScope(
     (projectContext && Object.keys(projectContext).length > 0)
   );
   if (isOngoingConversation) {
-    return true;
+    if (isGibberishInput(clean) || isIncoherentQuestion(clean) || isGreetingInput(clean)) {
+      return false;
+    }
+    if (GENERAL_TECH_TRIVIA_PATTERNS.some((p) => p.test(clean))) {
+      return false;
+    }
+    if (ACEVA_FAQ_PATTERNS.some((p) => p.test(clean))) {
+      return true;
+    }
+    return isProjectDiscoveryInput(clean);
   }
 
   // 5. Vector Knowledge Similarity Check
