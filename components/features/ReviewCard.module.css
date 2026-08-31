@@ -1,0 +1,18 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: clamp(24px, 3vw, 32px);
+  border: 1px solid rgba(127, 178, 255, 0.16);
+  border-radius: 14px;
+  background: radial-gradient(circle at 100% 0, rgba(59, 124, 255, 0.13), transparent 38%), rgba(15, 18, 26, 0.78);
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.2);
+}
+.topline { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.service { margin: 0; color: var(--ice); font: 500 10px/1.4 var(--font-jetbrains-mono); letter-spacing: 0.12em; text-transform: uppercase; }
+.stars { display: inline-flex; gap: 3px; color: #ffd166; font-size: 17px; line-height: 1; letter-spacing: 0.02em; }
+.emptyStar { color: #4b4f5b; }
+.quote { flex: 1; margin: 24px 0 28px; color: #e2e5ec; font-size: 15.5px; line-height: 1.72; }
+.author { padding-top: 18px; border-top: 1px solid var(--hairline); }
+.name { margin: 0; font: 500 17px/1.35 var(--font-space-grotesk); }
+.business { margin: 5px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }

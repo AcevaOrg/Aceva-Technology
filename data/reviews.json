@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Michael Turner",
+    "business": "Turner & Blake Realty (USA)",
+    "service": "Web Development",
+    "rating": 5,
+    "description": "Aceva Technology rebuilt our real estate website from the ground up. The site loads fast, looks professional, and our lead volume has noticeably improved since launch. Communication across time zones was smooth too."
+  },
+  {
+    "name": "Emily Whitfield",
+    "business": "Whitfield Consulting Group (UK)",
+    "service": "Custom Software Development",
+    "rating": 5,
+    "description": "We needed a bespoke CRM tailored to our workflow, and the Aceva team delivered exactly that. Clear milestones, regular updates, and they were patient with our revisions. Would work with them again."
+  },
+  {
+    "name": "Abdullah Al-Harbi",
+    "business": "Al-Harbi Trading Est. (Saudi Arabia)",
+    "service": "Mobile App Development",
+    "rating": 4,
+    "description": "Aceva developed our inventory management app for both Android and iOS. The app works reliably and the team was flexible with our requirements. A few features took longer than expected, but the quality was worth the wait."
+  },
+  {
+    "name": "Elif Yildiz",
+    "business": "Yildiz Tekstil (Turkey)",
+    "service": "UI/UX Design",
+    "rating": 5,
+    "description": "The redesign of our online store made a real difference in how customers browse and check out. Aceva's design team understood our brand quickly and delivered a clean, modern interface."
+  },
+  {
+    "name": "James Caldwell",
+    "business": "Caldwell Logistics Ltd. (UK)",
+    "service": "IT Consulting",
+    "rating": 4,
+    "description": "Good strategic advice on modernizing our internal systems. The consultants were knowledgeable and responsive, though the initial assessment phase ran a bit longer than planned."
+  }
+]
