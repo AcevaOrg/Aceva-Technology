@@ -14,6 +14,8 @@ import PathChooser from "@/components/features/PathChooser";
 import ProcessLoop from "@/components/ui/ProcessLoop";
 import ProofBoard from "@/components/ui/ProofBoard";
 import OfferTabs from "@/components/features/OfferTabs";
+import ReviewCard, { type Review } from "@/components/features/ReviewCard";
+import reviewsData from "@/data/reviews.json";
 
 // Static homepage metadata is exported from this Server Component.
 // The brand already leads this title, so it bypasses the layout's "%s — ACEVA Technology" template.
@@ -48,6 +50,8 @@ const PROOF_CARDS = [
   { badge: "CONCEPT DEMO", title: "Automation with approval", body: "Request, lookup, proposed action, human approval, system update.", variant: "flagship" as const, ice: true },
   { badge: "SAMPLE REPORT", title: "Rescue Report", body: "Findings, severity, what to keep, what to replace, and a 30/60/90-day plan.", variant: "flagship" as const, ice: true },
 ];
+
+const FEATURED_REVIEWS = (reviewsData as Review[]).slice(0, 3);
 
 export default function HomePage() {
   return (
@@ -235,19 +239,34 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Featured demo reviews */}
+      <section>
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,9vw,116px) clamp(20px,4vw,48px)" }}>
+          <Reveal style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-end", justifyContent: "space-between", gap: 22 }}>
+            <div>
+              <Eyebrow>06 — CLIENT REVIEWS</Eyebrow>
+              <h2 style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 600, fontSize: "clamp(28px,3.6vw,42px)", lineHeight: 1.1, letterSpacing: "-.025em", margin: 0, maxWidth: "22ch" }}>
+                Perspectives from across our services.
+              </h2>
+            </div>
+            <Link href={ROUTES.testimonials} className="ac-btn-ghost" style={{ minHeight: 48, padding: "13px 20px" }}>
+              View all reviews
+              <ArrowRightIcon />
+            </Link>
+          </Reveal>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,320px),1fr))", gap: 16, marginTop: "clamp(30px,4vw,48px)" }}>
+            {FEATURED_REVIEWS.map((review, index) => (
+              <Reveal key={`${review.name}-${review.business}`} delay={index * 70}>
+                <ReviewCard review={review} />
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Teaser row */}
       <section>
         <div className="ac-card-grid" style={{ maxWidth: 1280, margin: "0 auto", padding: "clamp(64px,9vw,116px) clamp(20px,4vw,48px)", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 14 }}>
-          <Reveal>
-            <Card variant="flagship" className="home-teaser-card" style={{ padding: 30, height: "100%" }}>
-              <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 16px" }}>CLIENT FEEDBACK</p>
-              <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 21, fontWeight: 500, lineHeight: 1.34, letterSpacing: "-.01em", margin: 0 }}>Coming soon.</p>
-              <p style={{ fontSize: 14.5, lineHeight: 1.6, color: "var(--muted)", margin: "12px 0 0" }}>We publish quotes only after real engagements close. Nothing here is invented.</p>
-              <ArrowLink href={ROUTES.testimonials} style={{ marginTop: 22, fontSize: 14 }}>
-                Our policy on proof
-              </ArrowLink>
-            </Card>
-          </Reveal>
           <Reveal>
             <Card variant="flagship" className="home-teaser-card" style={{ padding: 30, height: "100%" }}>
               <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 16px" }}>CAREERS</p>
