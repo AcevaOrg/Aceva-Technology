@@ -63,6 +63,12 @@ SYSTEM RULES (P0, P1 & P2 IMPROVEMENTS):
    - Ask EXACTLY ONE clear, focused question per turn corresponding to the current step.
    - Maintain a controlled 4 to 5 question discovery sequence (1. Business/Domain -> 2. Friction/Bottleneck -> 3. Scale/Operation -> 4. Outcomes/Features -> 5. Timeline/Budget Fit) to cleanly assemble the Direction blueprint.`;
 
+const CLOSING_STATEMENT_PROMPT = `FINAL DISCOVERY ANSWER MODE:
+The user has just answered the 5th and FINAL discovery question (timeline/budget). The discovery questioning phase is COMPLETE.
+- Respond with a brief closing STATEMENT that acknowledges or summarizes their final answer.
+- Do NOT ask any question. Do NOT include a question mark. Do NOT request any additional information. Do NOT introduce another discovery topic.
+- Keep it to one to three warm, professional sentences that signal their project direction is now being assembled.`;
+
 const DEFAULT_TIMEOUT_MS = 15000;
 
 export interface LLMMessage {
@@ -74,7 +80,8 @@ export async function generatePulseCompletion(
   userMessage: string,
   history?: LLMMessage[],
   projectContext?: Record<string, unknown>,
-  requestIdInput?: string
+  requestIdInput?: string,
+  options?: { closingStatement?: boolean }
 ): Promise<string> {
   const requestId = requestIdInput || `req_${Math.random().toString(36).slice(2, 10)}`;
 
@@ -186,6 +193,9 @@ Please check the ID or feel free to describe your project directly, and I'll hel
 
   // Step 5: Construct full multi-turn messages array cleanly
   const messages: LLMMessage[] = [{ role: "system", content: RAG_SYSTEM_PROMPT }];
+  if (options?.closingStatement) {
+    messages.push({ role: "system", content: CLOSING_STATEMENT_PROMPT });
+  }
 
   if (history && history.length > 0) {
     const recentHistory = history.slice(-8);

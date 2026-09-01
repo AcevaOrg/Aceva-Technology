@@ -142,6 +142,15 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
     }
   }, [state.messages, state.loading]);
 
+  // After the final discovery answer, Pulse's closing response stays in the
+  // chat for a short pause before the direction stage takes over.
+  useEffect(() => {
+    if (state.stage === "discovery" && state.step >= 5 && !state.loading) {
+      const timer = setTimeout(() => dispatch({ type: "COMPLETE" }), 4500);
+      return () => clearTimeout(timer);
+    }
+  }, [state.stage, state.step, state.loading, dispatch]);
+
   // Stage 1: Intent Selection
   if (state.stage === "intent") {
     const INTENT_DETAILS = [
@@ -257,22 +266,38 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
   if (state.stage === "discovery") {
     if (state.step >= 5) {
       return (
-        <div className={styles.forming}>
+        <div className={styles.promptBlock}>
           <p className={styles.stepLabel}>06 / SYNTHESIS</p>
-          <h2>
-            DIRECTION<br />
-            <i>READY.</i>
-          </h2>
-          <p>
-            Pulse has mapped enough context to form an initial project direction. This is a working system brief—not a final scope, price, or delivery promise.
-          </p>
-          <button
-            type="button"
-            className={styles.primaryCta}
-            onClick={() => dispatch({ type: "COMPLETE" })}
-          >
-            REVEAL YOUR DIRECTION <b>↗</b>
-          </button>
+
+          {state.messages.length > 0 && (
+            <div ref={chatListRef} className={styles.chatList}>
+              {state.messages.map((m) => (
+                <div
+                  key={m.id}
+                  className={`${styles.chatBubble} ${
+                    m.sender === "user" ? styles.userBubble : styles.pulseBubble
+                  }`}
+                >
+                  <PulseFormattedText content={m.text} />
+                </div>
+              ))}
+              {state.loading && (
+                <div className={`${styles.chatBubble} ${styles.pulseBubble}`}>
+                  <div className={styles.loadingDots}>
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {!state.loading && (
+            <p className={styles.promptHelper} style={{ marginTop: "1.2rem" }}>
+              Preparing your recommended architecture…
+            </p>
+          )}
         </div>
       );
     }

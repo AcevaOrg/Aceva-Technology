@@ -78,6 +78,9 @@ export default function HomePage() {
           </p>
           <div className="hero-actions" style={{ animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 260ms both" }}>
             <Link href={ROUTES.contact} className="ac-btn-futuristic" style={{ minHeight: 52, padding: "16px 12px" }}>
+          <div style={{ display: "flex", flexDirection: "row", flexWrap: "nowrap", justifyContent: "center", gap: 16, marginTop: "clamp(30px,4vw,42px)", animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 260ms both", width: "100%", maxWidth: 560 }}>
+
+            <Link href={ROUTES.contact} className="ac-btn-primary" style={{ flex: 1, minHeight: 52, padding: "16px 12px", justifyContent: "center" }}>
               Contact Us
               <ArrowRightIcon width={15} height={15} />
             </Link>

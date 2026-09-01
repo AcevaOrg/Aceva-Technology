@@ -6,7 +6,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ROUTES } from "@/lib/nav";
 import { CONTACT_EMAIL } from "@/lib/social";
 import { ArrowRightIcon, CloseIcon, LogoMark } from "@/components/ui/icons";
-import { PulseButton, usePulse } from "@/components/pulse";
 import styles from "./Header.module.css";
 
 const DESKTOP_LINKS: { href: string; label: string; match: (p: string) => boolean }[] = [
@@ -31,7 +30,6 @@ const MORE_ROUTES = MORE_LINKS.map((l) => l.href);
 
 export default function Header() {
   const pathname = usePathname();
-  const { openPulse, state: pulseState } = usePulse();
   const [menuOpen, setMenuOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -186,14 +184,8 @@ export default function Header() {
 
           </nav>
 
-          {/* Mobile Right Action Group (PULSE AI + Burger) */}
+          {/* Mobile Right Action Group */}
           <div className={styles.mobileActionsGroup}>
-            <PulseButton
-              onClick={openPulse}
-              expandedState={pulseState.stage !== "entry" && pulseState.stage !== "intent"}
-              className={styles.headerPulse}
-            />
-
             {/* CTA Button */}
             <Link
               href={ROUTES.contact}

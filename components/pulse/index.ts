@@ -1,4 +1,5 @@
 export { default as PulseButton } from "./PulseButton";
+export { default as FloatingPulseButton } from "./FloatingPulseButton";
 export { default as PulseHeader } from "./PulseHeader";
 export { default as PulseFooter } from "./PulseFooter";
 export { default as PulseMapPanel } from "./PulseMapPanel";

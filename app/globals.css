@@ -1836,6 +1836,10 @@ html {
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.32);
 }
 
+.hero .ac-btn-primary {
+  border-radius: 999px;
+}
+
 .hero [style*="var(--muted)"],
 .capabilities [style*="var(--muted)"],
 .process [style*="var(--muted)"],

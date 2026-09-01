@@ -32,6 +32,24 @@ import {
 
 const MAX_MESSAGE_CHARS = 1_000;
 
+const CLOSING_STATEMENT_FALLBACK =
+  "Noted — that completes the discovery phase. Pulse now has the full picture of your project and is assembling your recommended direction.";
+
+/**
+ * The response that ends discovery must be a statement: drop any sentence that
+ * asks a question, falling back to a fixed closing line if nothing remains.
+ */
+function enforceClosingStatement(answer: string): string {
+  if (!answer.includes("?")) return answer;
+  const kept = answer
+    .split(/(?<=[.!?])\s+/)
+    .filter((sentence) => !sentence.trim().endsWith("?"))
+    .join(" ")
+    .replace(/\?/g, ".")
+    .trim();
+  return kept.length >= 20 ? kept : CLOSING_STATEMENT_FALLBACK;
+}
+
 export const POST = withRouteErrorHandling("chat", async (request, requestId) => {
   // 1. Rate limiting
   const ip = getClientIp(request);
@@ -107,17 +125,24 @@ export const POST = withRouteErrorHandling("chat", async (request, requestId) =>
     );
   }
 
-  // 3. Process LLM Response via Primary LLM Provider Orchestration
-  const answer = await generatePulseCompletion(message, history, context, requestId);
-
-  // 4. Validate answer against the CURRENT discovery question independently of LLM response
+  // 3. Validate answer against the CURRENT discovery question independently of LLM response
   const targetField = detectActiveQuestionTarget(history, context);
   const answerValidation = validateAnswerAgainstQuestion(message, targetField);
+  // The timeline/budget question is the 5th and final discovery step; a valid
+  // answer to it ends questioning, so Pulse must close with a statement.
+  const isFinalDiscoveryAnswer =
+    answerValidation.isValid && (targetField === "timeline" || targetField === "budget");
+
+  // 4. Process LLM Response via Primary LLM Provider Orchestration
+  const answer = await generatePulseCompletion(message, history, context, requestId, {
+    closingStatement: isFinalDiscoveryAnswer,
+  });
+
   const isValid = answerValidation.isValid && answer !== GREETING_REJECTION && answer !== OUT_OF_SCOPE_REJECTION;
 
   return NextResponse.json(
     {
-      answer,
+      answer: isFinalDiscoveryAnswer && isValid ? enforceClosingStatement(answer) : answer,
       isValid,
     },
     { status: 200 }
