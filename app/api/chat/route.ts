@@ -9,9 +9,14 @@ import {
   getGibberishOrNonsenseResponse,
   isInvalidOrUnclearInput,
   isExplicitProjectScopeInput,
+  isProjectDiscoveryInput,
   GREETING_REJECTION,
   OUT_OF_SCOPE_REJECTION,
 } from "@/lib/pulse/scope";
+import {
+  detectActiveQuestionTarget,
+  validateAnswerAgainstQuestion,
+} from "@/lib/pulse/answerValidator";
 import {
   withRouteErrorHandling,
   ApiError,
@@ -44,36 +49,31 @@ export const POST = withRouteErrorHandling("chat", async (request, requestId) =>
     body = await request.json();
   } catch {
     logPulseDiagnostic(requestId, "api_invalid_json");
-    throw new ApiError("INVALID_JSON", {}, { reason: "parse-failed" });
+    return NextResponse.json({ ok: false, error: "Invalid JSON request body." }, { status: 400 });
   }
 
   if (!body || typeof body !== "object" || Array.isArray(body)) {
-    throw new ApiError("INVALID_JSON", {}, { reason: "not-an-object" });
+    return NextResponse.json({ ok: false, error: "Invalid JSON request body." }, { status: 400 });
   }
 
   const reqBody = body as Record<string, unknown>;
 
   if (!("message" in reqBody) || typeof reqBody.message !== "string") {
     logPulseDiagnostic(requestId, "api_invalid_payload");
-    throw new ApiError("VALIDATION_FAILED", {
-      message: "Please check your details — some required fields are missing or incorrect.",
-    });
+    return NextResponse.json({ ok: false, error: "Missing or invalid 'message' field in payload." }, { status: 400 });
   }
 
-  const message = readString(reqBody.message, MAX_MESSAGE_CHARS);
+  const rawMessage = reqBody.message;
+  const message = typeof rawMessage === "string" ? rawMessage.trim() : "";
 
   if (!message) {
     logPulseDiagnostic(requestId, "api_empty_message");
-    throw new ApiError("VALIDATION_FAILED", {
-      message: "Please check your details — some required fields are missing or incorrect.",
-    });
+    return NextResponse.json({ ok: false, error: "'message' cannot be empty." }, { status: 400 });
   }
 
   if (message.length > MAX_MESSAGE_CHARS) {
     logPulseDiagnostic(requestId, "api_message_too_long", { length: message.length });
-    throw new ApiError("PAYLOAD_TOO_LARGE", {
-      message: "Your message is too long. Please shorten it and try again.",
-    });
+    return NextResponse.json({ ok: false, error: "'message' exceeds maximum length of 1000 characters." }, { status: 400 });
   }
 
   const history = Array.isArray(reqBody.history)
@@ -84,68 +84,44 @@ export const POST = withRouteErrorHandling("chat", async (request, requestId) =>
       ? (reqBody.context as Record<string, unknown>)
       : undefined;
 
-    if (!message) {
-      logPulseDiagnostic(requestId, "api_empty_message");
-      return NextResponse.json(
-        {
-          ok: false,
-          error: "'message' cannot be empty.",
-        },
-        { status: 400 }
-      );
-    }
-
-    if (message.length > 1000) {
-      logPulseDiagnostic(requestId, "api_message_too_long", { length: message.length });
-      return NextResponse.json(
-        {
-          ok: false,
-          error: "'message' exceeds maximum length of 1000 characters.",
-        },
-        { status: 400 }
-      );
-    }
-
-    // Check gibberish, nonsense, or random characters first
-    if (isGibberishInput(message)) {
-      return NextResponse.json(
-        {
-          answer: getGibberishOrNonsenseResponse(),
-          isValid: false, // Does NOT increase progress percentage
-        },
-        { status: 200 }
-      );
-    }
-
-    // Check direct casual/FAQ response (greeting, company inquiry, casual chat, general tech trivia)
-    const casualResponse = getCasualOrFAQResponse(message);
-    if (casualResponse) {
-      return NextResponse.json(
-        {
-          answer: casualResponse,
-          isValid: false, // Does NOT increase progress percentage
-        },
-        { status: 200 }
-      );
-    }
-
-    // 3. Process LLM Response via Primary LLM Provider Orchestration
-    const answer = await generatePulseCompletion(message, history, context, requestId);
-    const isGreeting = isGreetingInput(message);
-    const isCasual = isCasualOrFAQOrGeneralQuery(message);
-    const isInvalid = isInvalidOrUnclearInput(message, history, context);
-    const isProjectScope = isExplicitProjectScopeInput(message);
-
-    // CORE RULE: Only explicit project scope responses increase progress (isValid: true)!
-    const isValid = isProjectScope && !isCasual && !isGreeting && !isInvalid && answer !== GREETING_REJECTION && answer !== OUT_OF_SCOPE_REJECTION;
-
+  // Check gibberish, nonsense, or random characters first
+  if (isGibberishInput(message)) {
     return NextResponse.json(
       {
-        answer,
-        isValid,
+        answer: getGibberishOrNonsenseResponse(),
+        isValid: false, // Does NOT increase progress percentage
       },
       { status: 200 }
     );
+  }
+
+  // Check direct casual/FAQ response (greeting, company inquiry, casual chat, general tech trivia)
+  const casualResponse = getCasualOrFAQResponse(message);
+  if (casualResponse) {
+    return NextResponse.json(
+      {
+        answer: casualResponse,
+        isValid: false, // Does NOT increase progress percentage
+      },
+      { status: 200 }
+    );
+  }
+
+  // 3. Process LLM Response via Primary LLM Provider Orchestration
+  const answer = await generatePulseCompletion(message, history, context, requestId);
+
+  // 4. Validate answer against the CURRENT discovery question independently of LLM response
+  const targetField = detectActiveQuestionTarget(history, context);
+  const answerValidation = validateAnswerAgainstQuestion(message, targetField);
+  const isValid = answerValidation.isValid && answer !== GREETING_REJECTION && answer !== OUT_OF_SCOPE_REJECTION;
+
+  return NextResponse.json(
+    {
+      answer,
+      isValid,
+    },
+    { status: 200 }
+  );
 });
 
 export const GET  = methodNotAllowedHandler(["POST"]);

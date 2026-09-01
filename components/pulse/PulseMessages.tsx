@@ -157,7 +157,7 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
       <div className={styles.introBlock}>
         <div className={styles.heroBadge}>
           <span className={styles.badgePulseDot} />
-          <span>ACEVA PULSE AI • SYSTEM ARCHITECT</span>
+          <span>ACEVA PULSE • SYSTEM ARCHITECT</span>
         </div>
 
         <h2>
@@ -166,7 +166,7 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
         </h2>
 
         <p className={styles.directionCopy} style={{ marginBottom: "1.8rem" }}>
-          Hello! I&apos;m PULSE, ACEVA&apos;s AI assistant. Tell me what you&apos;d like to build or improve, and I&apos;ll help map out your project.
+          Hello! I&apos;m Aceva Pulse, ACEVA&apos;s AI assistant. Tell me what you&apos;d like to build or improve, and I&apos;ll help map out your project.
         </p>
 
         <div className={styles.intentGrid}>
@@ -546,7 +546,7 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
         <p>Your project direction is ready to travel with the conversation.</p>
 
         <div className={styles.sessionId}>
-          <span>PULSE ID</span>
+          <span>ACEVA PULSE ID</span>
           <strong>{pulseId}</strong>
           <small style={{ marginBottom: "1rem" }}>Reference this ID when speaking with Aceva.</small>
 

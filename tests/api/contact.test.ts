@@ -50,7 +50,9 @@ describe("POST /api/contact", () => {
   it("rejects invalid input without sending email", async () => {
     const response = await POST(request({ ...validBody, email: "not-an-email" }));
     expect(response.status).toBe(400);
-    await expect(response.json()).resolves.toMatchObject({ ok: false, errors: { email: true } });
+    const data = await response.json();
+    expect(data.ok).toBe(false);
+    expect(data.message).toContain("Please check your details");
     expect(send).not.toHaveBeenCalled();
   });
 

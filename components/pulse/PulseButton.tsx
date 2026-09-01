@@ -43,9 +43,9 @@ export default function PulseButton({
     };
   }, []);
 
-  // On mobile screens, strictly show "PULSE"
+  // On mobile screens, strictly show "ACEVA PULSE"
   const isExpanded = !isMobile && (expandedState || autoExpanded);
-  const labelText = isMobile ? "PULSE" : activeContextText || (isExpanded ? "TURN AN IDEA INTO DIRECTION" : "PULSE");
+  const labelText = isMobile ? "ACEVA PULSE" : activeContextText || (isExpanded ? "TURN AN IDEA INTO DIRECTION" : "ACEVA PULSE");
 
   return (
     <button
