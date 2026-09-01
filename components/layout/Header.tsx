@@ -17,14 +17,12 @@ const DESKTOP_LINKS: { href: string; label: string; match: (p: string) => boolea
   { href: ROUTES.about, label: "Why Aceva", match: (p) => p === ROUTES.about },
 ];
 
+// Footer-tier pages (Technology Stack, Careers, Insights, FAQs) deliberately live only
+// in the footer — this list is navigation, not a duplicate of it.
 const MORE_LINKS = [
   { href: ROUTES.company, label: "About Us" },
-  { href: ROUTES.technology, label: "Technology Stack" },
   { href: ROUTES.industries, label: "Industries We Serve" },
   { href: ROUTES.testimonials, label: "Client Feedback" },
-  { href: ROUTES.careers, label: "Careers" },
-  { href: ROUTES.insights, label: "Insights" },
-  { href: ROUTES.faq, label: "FAQs" },
 ];
 
 const MORE_ROUTES = MORE_LINKS.map((l) => l.href);
@@ -40,7 +38,7 @@ export default function Header() {
   const moreButtonRef = useRef<HTMLButtonElement>(null);
   const burgerRef = useRef<HTMLButtonElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
-  const mobileOverlayRef = useRef<HTMLDivElement>(null);
+  const mobilePanelRef = useRef<HTMLDivElement>(null);
 
   // Returns focus to the control that opened the menu, so keyboard users are not dumped
   // at the top of the document.
@@ -70,7 +68,7 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, [moreOpen]);
 
-  // While the full-screen menu is open it behaves as a modal dialog: the page behind must
+  // While the drawer is open it behaves as a modal dialog: the page behind must
   // not scroll, focus starts inside it, Tab cycles within it, and Escape dismisses it.
   useEffect(() => {
     if (!menuOpen) return;
@@ -86,7 +84,7 @@ export default function Header() {
       }
       if (e.key !== "Tab") return;
 
-      const root = mobileOverlayRef.current;
+      const root = mobilePanelRef.current;
       if (!root) return;
       const focusable = Array.from(
         root.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')
@@ -255,84 +253,89 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Mobile fullscreen menu */}
-      {menuOpen && (
-        <div
-          ref={mobileOverlayRef}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Site menu"
-          className={styles.mobileOverlay}
-        >
-          <div className={styles.mobileHeader}>
-            <span className={styles.mobileMenuLabel}>MENU</span>
-            <button
-              ref={closeBtnRef}
-              type="button"
-              onClick={closeMenu}
-              aria-label="Close menu"
-              className={styles.closeBtn}
-            >
-              <CloseIcon />
-            </button>
-          </div>
-          <div className={styles.mobileBody}>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              {DESKTOP_LINKS.map((l, i) => {
-                const active = l.match(pathname);
-                return (
-                  <Link
-                    key={l.href}
-                    href={l.href}
-                    onClick={l.href === ROUTES.home ? handleHomeClick : undefined}
-                    aria-current={active ? "page" : undefined}
-                    className={`${styles.mobilePrimaryLink} ${active ? styles.mobilePrimaryLinkActive : ""}`}
-                    style={{ animationDelay: `${90 + i * 55}ms` }}
-                  >
-                    {l.label}
-                  </Link>
-                );
-              })}
-            </div>
-
-            <p className={styles.mobileSection}>COMPANY</p>
-            <div className={styles.mobileGrid}>
-              {MORE_LINKS.map((l, i) => (
+      {/* Mobile drawer — kept mounted so it can animate both in and out; `inert` keeps
+          it out of the tab order and accessibility tree while closed. */}
+      <div
+        className={styles.mobileScrim}
+        data-open={menuOpen || undefined}
+        onClick={closeMenu}
+        aria-hidden="true"
+      />
+      <div
+        ref={mobilePanelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Site menu"
+        data-open={menuOpen || undefined}
+        inert={!menuOpen}
+        className={styles.mobilePanel}
+      >
+        <div className={styles.mobileHeader}>
+          <span className={styles.mobileMenuLabel}>MENU</span>
+          <button
+            ref={closeBtnRef}
+            type="button"
+            onClick={closeMenu}
+            aria-label="Close menu"
+            className={styles.closeBtn}
+          >
+            <CloseIcon />
+          </button>
+        </div>
+        <div className={styles.mobileBody}>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            {DESKTOP_LINKS.map((l, i) => {
+              const active = l.match(pathname);
+              return (
                 <Link
                   key={l.href}
                   href={l.href}
-                  className={styles.mobileSecondaryLink}
-                  style={{ animationDelay: `${400 + i * 35}ms` }}
+                  onClick={l.href === ROUTES.home ? handleHomeClick : undefined}
+                  aria-current={active ? "page" : undefined}
+                  className={`${styles.mobilePrimaryLink} ${styles.mobileFadeItem} ${active ? styles.mobilePrimaryLinkActive : ""}`}
+                  style={{ transitionDelay: `${90 + i * 45}ms` }}
                 >
                   {l.label}
                 </Link>
-              ))}
-            </div>
+              );
+            })}
+          </div>
 
-            <div className={styles.mobileCtas}>
+          <p className={`${styles.mobileSection} ${styles.mobileFadeItem}`} style={{ transitionDelay: "320ms" }}>
+            COMPANY
+          </p>
+          <div className={styles.mobileGrid}>
+            {MORE_LINKS.map((l, i) => (
               <Link
-                href={ROUTES.contact}
-                className="ac-btn-primary"
-                style={{
-                  padding: 17,
-                  borderRadius: 12,
-                  minHeight: 56,
-                  animationDelay: `${680 + MORE_LINKS.length * 35}ms`,
-                }}
+                key={l.href}
+                href={l.href}
+                className={`${styles.mobileSecondaryLink} ${styles.mobileFadeItem}`}
+                style={{ transitionDelay: `${360 + i * 35}ms` }}
               >
-                Start a Project
+                {l.label}
               </Link>
-              <a
-                href={`mailto:${CONTACT_EMAIL}`}
-                className={styles.mobileEmail}
-                style={{ animationDelay: `${760 + MORE_LINKS.length * 35}ms` }}
-              >
-                {CONTACT_EMAIL}
-              </a>
-            </div>
+            ))}
+          </div>
+
+          {/* The fade rides the wrapper: both children own `transition` declarations of
+              their own (hover lift, border colour) that a fade class would overwrite. */}
+          <div
+            className={`${styles.mobileCtas} ${styles.mobileFadeItem}`}
+            style={{ transitionDelay: `${440 + MORE_LINKS.length * 35}ms` }}
+          >
+            <Link
+              href={ROUTES.contact}
+              className="ac-btn-primary"
+              style={{ padding: 17, borderRadius: 12, minHeight: 56 }}
+            >
+              Start a Project
+            </Link>
+            <a href={`mailto:${CONTACT_EMAIL}`} className={styles.mobileEmail}>
+              {CONTACT_EMAIL}
+            </a>
           </div>
         </div>
-      )}
+      </div>
     </>
   );
 }
