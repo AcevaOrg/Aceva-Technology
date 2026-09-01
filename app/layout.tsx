@@ -9,7 +9,7 @@ import Footer from "@/components/layout/Footer";
 import MobileCtaBar from "@/components/layout/MobileCtaBar";
 import AmbientBackground from "@/components/layout/AmbientBackground";
 import BackToTopButton from "@/components/layout/BackToTopButton";
-import { PulseProvider, PulseOverlay } from "@/components/pulse";
+import { PulseProvider, PulseOverlay, FloatingPulseButton } from "@/components/pulse";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -142,6 +142,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <Footer />
             <BackToTopButton />
             <MobileCtaBar />
+            <FloatingPulseButton />
             <PulseOverlay />
           </div>
         </PulseProvider>

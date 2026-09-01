@@ -264,13 +264,9 @@ export function PulseProvider({ children }: { children: React.ReactNode }) {
             value: text,
             inferred: inferredContext,
           });
-          const newTotalAnswers = state.answers.length + 1;
-          // Require 5 valid answers to complete 5-step discovery and proceed to direction page
-          if (newTotalAnswers >= 5) {
-            setTimeout(() => {
-              dispatch({ type: "COMPLETE" });
-            }, 1000);
-          }
+          // After the 5th valid answer the discovery view keeps the final Pulse
+          // response in the chat for a short pause, then advances to the
+          // direction stage (timer lives in PulseMessages).
         }
       } else {
         dispatch({
