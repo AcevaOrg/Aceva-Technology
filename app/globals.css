@@ -1143,8 +1143,16 @@ html {
 }
 
 .hero-actions > a {
-  flex: 1 1 220px;
   justify-content: center;
+}
+
+/* Contact Us reads as the primary action and fills the remaining row width;
+   Explore Experiments stays sized to its own content. */
+.hero-actions > .ac-btn-primary {
+  flex: 1 1 0%;
+}
+.hero-actions > .ac-btn-ghost {
+  flex: 0 1 auto;
 }
 
 .hero-note {
@@ -1215,9 +1223,30 @@ html {
     width: min(100%, 360px);
   }
 
-  .hero-actions > a {
+  .hero-actions > a,
+  .hero-actions > .ac-btn-primary,
+  .hero-actions > .ac-btn-ghost {
     flex: 1 1 100%;
     justify-content: center;
+  }
+}
+
+/* Process strip step grid: explicit column counts instead of auto-fit, so a
+   5-item grid never lands on a column count (e.g. 4) that strands one item
+   alone on its own row with a large empty gap beside it. */
+.process-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+  .process-steps-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 767px) {
+  .process-steps-grid {
+    grid-template-columns: 1fr;
   }
 }
 

@@ -494,8 +494,10 @@
 }
 
 /* ─── Responsive overrides ────────────────────────────────────── */
-/* On small screens: hide desktop nav & cta, show burger */
-@media (max-width: 999px) {
+/* Phones only: hide desktop nav & cta, show burger. Above this, every
+   tablet down to iPad Mini gets the full "iPad Pro" nav (see the
+   700-999px tier below), not the compact burger-only bar. */
+@media (max-width: 699px) {
   .crystalPill {
     height: 58px;
     padding: 0 12px 0 14px;
@@ -509,6 +511,54 @@
   }
   .burger {
     margin-left: 0;
+  }
+}
+
+/* Tablet tier (iPad Mini/Air/Pro-portrait, Surface Pro, Android tablets, ...):
+   same full nav as desktop, fluidly scaled between a compact floor (tight
+   enough to fit the logo, all five links, the CTA and the menu button on one
+   row as narrow as ~700px) and the full desktop sizing it reaches at 1000px
+   — so it fills the extra room on a wide tablet like Surface Pro 8/9 instead
+   of sitting fixed-tiny, and there is no visible jump at the 1000px handoff
+   to the real desktop rules. Each clamp() is min-at-700px, max-at-1000px,
+   linearly interpolated by viewport width in between. */
+@media (min-width: 700px) and (max-width: 999px) {
+  .crystalPill {
+    height: clamp(56px, 37.33px + 2.667vw, 64px);
+    padding: 0 clamp(10px, -22.67px + 4.667vw, 24px);
+    gap: 0;
+  }
+  .logoBtn {
+    gap: clamp(4px, -10px + 2vw, 10px);
+  }
+  .logoName {
+    font-size: clamp(12.5px, 4.33px + 1.167vw, 16px);
+    letter-spacing: 0.14em;
+  }
+  .logoSub {
+    font-size: clamp(6px, 2.5px + 0.5vw, 7.5px);
+  }
+  .pillDivider {
+    margin: 0 clamp(4px, -10px + 2vw, 10px);
+  }
+  .crystalNav {
+    gap: 0;
+  }
+  .crystalLink {
+    padding: clamp(5px, 0.33px + 0.667vw, 7px) clamp(6px, -12.67px + 2.667vw, 14px);
+    font-size: clamp(11.5px, 5.67px + 0.833vw, 14px);
+  }
+  .crystalCta {
+    gap: clamp(4px, -3px + 1vw, 7px);
+    padding: clamp(6px, -1px + 1vw, 9px) clamp(9px, -16.67px + 3.667vw, 20px);
+    font-size: clamp(12px, 7.33px + 0.667vw, 14px);
+    margin-left: clamp(3px, -4px + 1vw, 6px);
+  }
+  .desktopMore {
+    margin-left: clamp(3px, -4px + 1vw, 6px);
+  }
+  .burger {
+    display: none;
   }
 }
 
