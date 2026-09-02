@@ -56,7 +56,7 @@ describe("POST /api/pulse/save-direction Route Handler", () => {
     expect(send).toHaveBeenCalledOnce();
     expect(send).toHaveBeenCalledWith(
       expect.objectContaining({
-        to: "acevatechnology@gmail.com",
+        to: "acevatech.official@gmail.com",
         subject: expect.stringContaining("Jordan Ellis"),
         replyTo: "jordan@example.com",
       })

@@ -211,7 +211,7 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
         </div>
 
         <PulseInput
-          placeholder="Or describe your project vision in your own words…"
+          placeholder="Or describe your project vision in your own wording"
           buttonText="MAP THIS VISION ↗"
           onSubmit={(text) => {
             dispatch({ type: "INTENT", value: "Solve a problem" });
