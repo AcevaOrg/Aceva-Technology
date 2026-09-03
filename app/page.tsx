@@ -70,18 +70,19 @@ export default function HomePage() {
           </p>
           <h1 className="hero-heading" style={{ animation: "acMaskUp 900ms cubic-bezier(.16,1,.3,1) 80ms both" }}>
             <span className="ac-text-shimmer">
-              Build what your business <span className="hero-title-accent">needs next.</span>
+              Build what your<br />
+              business <span className="hero-title-accent">needs next.</span>
             </span>
           </h1>
           <p className="hero-summary" style={{ animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 160ms both" }}>
             Aceva designs digital experiences, custom software, mobile products and intelligent systems — and rescues products that need a stronger path forward.
           </p>
           <div className="hero-actions" style={{ animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 260ms both" }}>
-            <Link href={ROUTES.contact} className="ac-btn-primary" style={{ minHeight: 52, padding: "16px 12px" }}>
+            <Link href={ROUTES.contact} className="ac-btn-primary" style={{ flex: 1, minHeight: 52, padding: "16px 12px", background: "rgba(30, 79, 217, 0.35)", border: "1px solid rgba(59, 124, 255, 0.3)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", borderRadius: "var(--radius)" }}>
               Contact Us
               <ArrowRightIcon width={15} height={15} />
             </Link>
-            <Link href={ROUTES.work} className="ac-btn-ghost" style={{ minHeight: 52, padding: "16px 12px" }}>
+            <Link href={ROUTES.work} className="ac-btn-ghost" style={{ flex: 1, minHeight: 52, padding: "16px 12px", background: "rgba(10, 10, 12, 0.6)", border: "1px solid rgba(255, 255, 255, 0.1)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", borderRadius: "var(--radius)" }}>
               Explore Experiments
               <ArrowRightIcon width={15} height={15} />
             </Link>

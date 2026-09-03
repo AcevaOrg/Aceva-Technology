@@ -494,10 +494,9 @@
 }
 
 /* ─── Responsive overrides ────────────────────────────────────── */
-/* Phones only: hide desktop nav & cta, show burger. Above this, every
-   tablet down to iPad Mini gets the full "iPad Pro" nav (see the
-   700-999px tier below), not the compact burger-only bar. */
-@media (max-width: 699px) {
+/* Phones and portrait tablets use the spacious drawer instead of squeezing
+   six desktop actions into a narrow navigation pill. */
+@media (max-width: 899px) {
   .crystalPill {
     height: 58px;
     padding: 0 12px 0 14px;
@@ -514,15 +513,15 @@
   }
 }
 
-/* Tablet tier (iPad Mini/Air/Pro-portrait, Surface Pro, Android tablets, ...):
+/* Landscape tablet tier:
    same full nav as desktop, fluidly scaled between a compact floor (tight
-   enough to fit the logo, all five links, the CTA and the menu button on one
-   row as narrow as ~700px) and the full desktop sizing it reaches at 1000px
+   enough to fit the logo, all five links, the CTA and the menu button) and
+   the full desktop sizing it reaches at 1000px
    — so it fills the extra room on a wide tablet like Surface Pro 8/9 instead
    of sitting fixed-tiny, and there is no visible jump at the 1000px handoff
-   to the real desktop rules. Each clamp() is min-at-700px, max-at-1000px,
+   to the real desktop rules. Each clamp() scales toward its max at 1000px,
    linearly interpolated by viewport width in between. */
-@media (min-width: 700px) and (max-width: 999px) {
+@media (min-width: 900px) and (max-width: 999px) {
   .crystalPill {
     height: clamp(56px, 37.33px + 2.667vw, 64px);
     padding: 0 clamp(10px, -22.67px + 4.667vw, 24px);

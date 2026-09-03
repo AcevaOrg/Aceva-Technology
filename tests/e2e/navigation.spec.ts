@@ -79,7 +79,7 @@ test("mobile menu opens without horizontal overflow and navigates", async ({ pag
     return main && footer ? footer.getBoundingClientRect().top - main.getBoundingClientRect().bottom : null;
   })).toBe(0);
   const hero = page.locator(".hero");
-  await expect(hero.getByRole("link", { name: "Contact Us" })).toHaveAttribute("href", "mailto:acevatech.official@gmail.com");
+  await expect(hero.getByRole("link", { name: "Contact Us" })).toHaveAttribute("href", "mailto:contact@acevatech.com");
   await expect.poll(() => hero.locator(".ac-section-image").evaluate((image) => getComputedStyle(image).animationName)).toBe("acDrift");
   await page.locator("#paths").scrollIntoViewIfNeeded();
   await expect.poll(() => page.locator("#paths > div > div").first().evaluate((reveal) => getComputedStyle(reveal).opacity)).toBe("1");

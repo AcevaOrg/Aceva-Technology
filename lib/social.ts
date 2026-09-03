@@ -14,7 +14,7 @@
  * Where enquiries go. Server routes prefer the CONTACT_TO_EMAIL env var and use this
  * only as a fallback, so production can be redirected without a deploy.
  */
-export const CONTACT_EMAIL = "acevatech.official@gmail.com";
+export const CONTACT_EMAIL = "contact@acevatech.com";
 
 export interface SocialLink {
   key: string;

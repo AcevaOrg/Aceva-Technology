@@ -1,9 +1,18 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ROUTES } from "@/lib/nav";
 import { CONTACT_EMAIL } from "@/lib/social";
 import { MailIcon } from "@/components/ui/icons";
 
 export default function MobileCtaBar() {
+  const pathname = usePathname();
+
+  // The contact page already keeps its form and direct contact methods in view.
+  // Repeating this fixed action there only covers the controls people need.
+  if (pathname === ROUTES.contact) return null;
+
   return (
     <div
       data-mobile-cta
