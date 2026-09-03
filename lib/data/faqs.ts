@@ -38,7 +38,7 @@ export const FAQS: Faq[] = [
   },
   {
     q: "Can I see real client work?",
-    a: "Not yet, and we will not fabricate it. What we do show is our own work: this website, an operations dashboard, a mobile journey, an automation with human approval, and a sample Rescue Report — all clearly labeled as ours.",
+    a: "Yes — our homepage includes feedback from clients we’ve worked with, alongside selected examples of what we build. Some projects stay private because of confidentiality, but where we have permission, we are happy to show the work, the problem it solved, and what we delivered.",
   },
   {
     q: "Do you have the capacity to handle my project?",
