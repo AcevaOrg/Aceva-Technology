@@ -9,7 +9,7 @@ source: knowledge/website-content.md
 ## Why ACEVA — Market Positioning & Core Values
 ACEVA Technology competes by proving more, not by saying more. 
 - **Global Market Reach**: Operating with New York market access for proximity to real business problems while maintaining global delivery capacity.
-- **Engineering Mentorship Engine**: Structured engineering model where 5 senior engineering professionals review all work of 5 juniors growing under named mentors. No junior code reaches production without senior review.
+- **Engineering Mentorship Engine**: Structured engineering model where senior engineering professionals review all work of juniors growing under named mentors. No junior code reaches production without senior review.
 - **Finished Proof Over Huge Promises**: Started with a clear constraint to demonstrate that a smaller finished version beats a huge unfinished promise. The website itself is designed as a product-grade experience rather than a brochure.
 
 ## What ACEVA Competes On

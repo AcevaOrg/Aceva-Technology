@@ -8,7 +8,7 @@ import Tag from "@/components/ui/Tag";
 export const metadata: Metadata = pageMetadata({
   title: "About ACEVA Technology — Team & Structure",
   description:
-    "Aceva is the software division of Aceva Holdings. Five senior engineers, named mentorship for every junior, and the month-one launch plan behind this site.",
+    "Aceva is the software division of Aceva Holdings. Senior-led engineering, named mentorship for every junior, and the month-one launch plan behind this site.",
   path: ROUTES.company,
   absoluteTitle: true,
 });
@@ -20,11 +20,11 @@ interface Senior {
 }
 
 const SENIORS: Senior[] = [
-  { role: "SENIOR 1", title: "Technical Lead", body: "Architecture, engineering standards, technical decisions, and code review." },
-  { role: "SENIOR 2", title: "Backend & AI", body: "APIs, database management, authentication, integrations, and automation." },
-  { role: "SENIOR 3", title: "Frontend & Product", body: "Website experience, interactive elements, dashboards, and mobile web quality." },
-  { role: "SENIOR 4", title: "DevOps & Security", body: "Hosting infrastructure, deployment pipelines, secrets management, monitoring, backups, and security checks." },
-  { role: "SENIOR 5", title: "Product & QA Lead", body: "Requirements scoping, acceptance criteria, testing coverage, documentation, and delivery schedules." },
+  { role: "SENIOR ENGINEER", title: "Technical Lead", body: "Architecture, engineering standards, technical decisions, and code review." },
+  { role: "SENIOR ENGINEER", title: "Backend & AI", body: "APIs, database management, authentication, integrations, and automation." },
+  { role: "SENIOR ENGINEER", title: "Frontend & Product", body: "Website experience, interactive elements, dashboards, and mobile web quality." },
+  { role: "SENIOR ENGINEER", title: "DevOps & Security", body: "Hosting infrastructure, deployment pipelines, secrets management, monitoring, backups, and security checks." },
+  { role: "SENIOR ENGINEER", title: "Product & QA Lead", body: "Requirements scoping, acceptance criteria, testing coverage, documentation, and delivery schedules." },
 ];
 
 interface Week {
@@ -93,7 +93,7 @@ export default function CompanyPage() {
           </Reveal>
           <div className="ac-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))", gap: 14 }}>
             {SENIORS.map((s) => (
-              <Reveal key={s.role}>
+              <Reveal key={s.title}>
                 <Card
                   variant="plain"
                   style={{ padding: 24 }}
@@ -112,7 +112,7 @@ export default function CompanyPage() {
             <Reveal>
               <Card variant="ghost" style={{ padding: 24 }}>
                 <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10.5, letterSpacing: ".14em", color: "var(--muted)", margin: "0 0 12px" }}>
-                  FIVE JUNIORS
+                  JUNIOR ENGINEERS
                 </p>
                 <h3 className="ac-heading-sm" style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 18, fontWeight: 500, lineHeight: "normal", margin: 0 }}>Growing under named mentors</h3>
                 <p style={{ fontSize: 14.5, lineHeight: 1.6, color: "var(--muted)", margin: "8px 0 0" }}>
