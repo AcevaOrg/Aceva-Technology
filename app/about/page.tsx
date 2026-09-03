@@ -28,7 +28,7 @@ const FACTS: Fact[] = [
   {
     kicker: "ENGINEERING",
     title: "Delivery capacity with mentorship built in.",
-    body: "Five senior professionals reviewing the work of five juniors who are growing under named mentors.",
+    body: "Senior engineers review every line of work from juniors who are growing under named mentors.",
   },
   {
     kicker: "CONSTRAINT",

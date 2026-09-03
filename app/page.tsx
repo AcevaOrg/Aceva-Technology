@@ -270,7 +270,7 @@ export default function HomePage() {
           <Reveal>
             <Card variant="flagship" className="home-teaser-card" style={{ padding: 30, height: "100%" }}>
               <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 16px" }}>CAREERS</p>
-              <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 21, fontWeight: 500, lineHeight: 1.34, letterSpacing: "-.01em", margin: 0 }}>Five seniors. Five juniors. Every change reviewed.</p>
+              <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 21, fontWeight: 500, lineHeight: 1.34, letterSpacing: "-.01em", margin: 0 }}>Every change reviewed. Every engineer mentored.</p>
               <p style={{ fontSize: 14.5, lineHeight: 1.6, color: "var(--muted)", margin: "12px 0 0" }}>No junior change reaches production without a named senior review. That is how people grow here.</p>
               <ArrowLink href={ROUTES.careers} style={{ marginTop: 22, fontSize: 14 }}>
                 How the team works
