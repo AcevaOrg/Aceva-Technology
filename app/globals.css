@@ -881,7 +881,15 @@ html {
   display: flex;
 }
 [data-main] {
-  padding-bottom: 0;
+  padding-bottom: calc(76px + env(safe-area-inset-bottom));
+}
+@media (min-width: 700px) {
+  [data-mobile-cta] {
+    display: none;
+  }
+  [data-main] {
+    padding-bottom: 0;
+  }
 }
 @media (min-width: 1000px) {
   [data-desktop-nav] {
@@ -1210,7 +1218,9 @@ html {
 
 @media (max-width: 767px) {
   .hero-content {
-    padding: 116px 20px 56px;
+    /* Clear the floating header on notched iPhones and Android devices with
+       display cutouts without relying on a model-specific pixel offset. */
+    padding: max(124px, calc(102px + env(safe-area-inset-top))) 20px 56px;
   }
 
   .hero-kicker {
@@ -1228,6 +1238,24 @@ html {
   .hero-actions > .ac-btn-ghost {
     flex: 1 1 100%;
     justify-content: center;
+  }
+}
+
+/* Short phone landscapes need the same safe header clearance, but should not
+   inherit portrait-scale vertical rhythm. The section can grow naturally when
+   browser chrome leaves very little usable height. */
+@media (max-width: 767px) and (orientation: landscape) and (max-height: 520px) {
+  .hero {
+    min-height: auto;
+  }
+
+  .hero-content {
+    padding-top: max(96px, calc(80px + env(safe-area-inset-top)));
+    padding-bottom: 44px;
+  }
+
+  .hero-kicker {
+    margin-bottom: 18px;
   }
 }
 

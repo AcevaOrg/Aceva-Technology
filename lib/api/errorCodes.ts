@@ -79,7 +79,7 @@ export const API_ERROR_MESSAGES: Record<ApiErrorCode, string> = {
   RATE_LIMITED: "You have sent too many messages. Please wait a minute and try again.",
   // Shown when the message looks automated or spammy.
   SPAM_REJECTED:
-    "We were unable to process your message. Please email us directly at acevatech.official@gmail.com.",
+    "We were unable to process your message. Please email us directly at contact@acevatech.com.",
   // Shown when a disposable/throwaway email address is detected.
   DISPOSABLE_EMAIL: "Please use your real work email address so we can reply to you.",
   // Shown when the human verification check has not been completed yet.
@@ -93,13 +93,13 @@ export const API_ERROR_MESSAGES: Record<ApiErrorCode, string> = {
     "Verification is temporarily unavailable. Please try again in a moment.",
   // Shown when the contact form service itself is down.
   SERVICE_UNAVAILABLE:
-    "Our contact form is temporarily unavailable. Please email us directly at acevatech.official@gmail.com.",
+    "Our contact form is temporarily unavailable. Please email us directly at contact@acevatech.com.",
   // Shown when the email could not be delivered due to a third-party issue.
   UPSTREAM_ERROR:
-    "We were unable to send your message right now. Please email us directly at acevatech.official@gmail.com.",
+    "We were unable to send your message right now. Please email us directly at contact@acevatech.com.",
   // Shown when an unexpected error occurs on our side.
   INTERNAL_ERROR:
-    "Something went wrong on our end. Please try again, or email us at acevatech.official@gmail.com.",
+    "Something went wrong on our end. Please try again, or email us at contact@acevatech.com.",
 };
 
 /**

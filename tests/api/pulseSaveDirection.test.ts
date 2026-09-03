@@ -43,7 +43,7 @@ describe("POST /api/pulse/save-direction Route Handler", () => {
     vi.unstubAllEnvs();
     vi.clearAllMocks();
     vi.stubEnv("RESEND_API_KEY", "test-key");
-    vi.stubEnv("CONTACT_TO_EMAIL", "acevatech.official@gmail.com");
+    vi.stubEnv("CONTACT_TO_EMAIL", "contact@acevatech.com");
     send.mockResolvedValue({ data: { id: "email-id" }, error: null });
   });
 
@@ -56,7 +56,7 @@ describe("POST /api/pulse/save-direction Route Handler", () => {
     expect(send).toHaveBeenCalledOnce();
     expect(send).toHaveBeenCalledWith(
       expect.objectContaining({
-        to: "acevatech.official@gmail.com",
+        to: "contact@acevatech.com",
         subject: expect.stringContaining("Jordan Ellis"),
         replyTo: "jordan@example.com",
       })
