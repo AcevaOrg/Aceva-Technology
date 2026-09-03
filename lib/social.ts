@@ -16,6 +16,16 @@
  */
 export const CONTACT_EMAIL = "contact@acevatech.com";
 
+/**
+ * Reception / help line. `e164` is the machine form used by tel: links and by the
+ * Organization schema; `display` is the spaced form shown to people.
+ */
+export const CONTACT_PHONE = {
+  e164: "+923055552230",
+  display: "+92 305 555 2230",
+  whatsapp: "https://wa.me/923055552230",
+} as const;
+
 export interface SocialLink {
   key: string;
   /** Accessible name for the link; the icon inside it is aria-hidden. */
@@ -46,17 +56,12 @@ export const SOCIAL_LINKS: SocialLink[] = [
     label: "ACEVA Technology on X",
     href: "https://x.com/AcevaTechnology",
   },
+  {
+    key: "whatsapp",
+    label: "Chat with ACEVA Technology on WhatsApp",
+    href: CONTACT_PHONE.whatsapp,
+  },
 ];
 
 /** Used for the twitter:site and twitter:creator card tags. */
 export const X_HANDLE = "@AcevaTechnology";
-
-/**
- * Reception / help line. `e164` is the machine form used by tel: links and by the
- * Organization schema; `display` is the spaced form shown to people.
- */
-export const CONTACT_PHONE = {
-  e164: "+923055552230",
-  display: "+92 305 555 2230",
-  whatsapp: "https://wa.me/923055552230",
-} as const;
