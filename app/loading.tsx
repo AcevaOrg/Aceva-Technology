@@ -1,54 +1,19 @@
 "use client";
+import { useRef } from "react";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
-import Skeleton, { SkeletonGrid, SkeletonText } from "@/components/ui/Skeleton";
-import CardSkeleton, { CapabilityCardSkeleton, ProofCardSkeleton, TeaserCardSkeleton, PathCardSkeleton } from "@/components/ui/CardSkeleton";
+import Skeleton from "@/components/ui/Skeleton";
+import { CapabilityCardSkeleton, ProofCardSkeleton, TeaserCardSkeleton, PathCardSkeleton } from "@/components/ui/CardSkeleton";
 
 /**
  * Root loading skeleton - shows while the home page is loading
  * This is the App Router loading.tsx pattern
  */
 export default function Loading() {
-  const reduceMotion = usePrefersReducedMotion();
-  const [inView, setInView] = useState(false);
+
+
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el || reduceMotion) {
-      setInView(true);
-      return;
-    }
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setInView(true);
-            io.unobserve(el);
-          }
-        });
-      },
-      { rootMargin: "50px", threshold: 0.01 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [reduceMotion]);
 
-  const shouldAnimate = inView && !reduceMotion;
-
-  const baseStyle: CSSProperties = {
-    backgroundColor: "var(--elevated)",
-    border: "1px solid var(--hairline)",
-    borderRadius: "var(--radius)",
-    backgroundImage: shouldAnimate
-      ? `linear-gradient(90deg, var(--elevated) 25%, rgba(59,124,255,.12) 50%, var(--elevated) 75%)`
-      : "none",
-    backgroundSize: shouldAnimate ? "200% 100%" : "auto",
-    backgroundPosition: shouldAnimate ? "200% 0" : "0 0",
-    animation: shouldAnimate ? `acShimmer 1500ms cubic-bezier(.16,1,.3,1) infinite` : "none",
-    overflow: "hidden",
-  };
 
   return (
     <div

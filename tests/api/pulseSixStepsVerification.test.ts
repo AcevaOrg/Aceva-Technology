@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { pulseReducer, initialState } from "@/components/pulse/PulseContext";
-import { formatEnrichedProjectContext, getConciseUIModules } from "@/lib/pulse/modules";
+import { formatEnrichedProjectContext, getRecommendedModules } from "@/lib/pulse/modules";
 import { downloadPulseBlueprintDocx } from "@/lib/pulse/docxGenerator";
 
 describe("Pulse 6-Step Discovery & Direction System Verification Suite", () => {
@@ -123,14 +123,14 @@ describe("Pulse 6-Step Discovery & Direction System Verification Suite", () => {
     expect(enriched.targetTimeline).toContain("3");
     expect(enriched.primaryGoals).toMatch(/Ordering|Kitchen|Catalog/i);
 
-    const uiModules = getConciseUIModules(state.context.industry, state.context, state.answers);
+    const uiModules = getRecommendedModules(state.context.industry, state.context, state.answers);
     expect(uiModules.length).toBeGreaterThanOrEqual(4);
     for (const mod of uiModules) {
       expect(mod.length).toBeLessThan(250);
       expect(mod).toContain("—");
     }
 
-    const pulseId = "PLS-260830-101";
+
     expect(typeof downloadPulseBlueprintDocx).toBe("function");
   });
 });

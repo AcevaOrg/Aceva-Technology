@@ -22,6 +22,28 @@ Never commit `.env.local` or production credentials.
 
 The current in-process IP limiter is only a supplemental control. Multi-instance/serverless production deployments must use a shared rate-limit service at the CDN, hosting platform, or distributed datastore layer.
 
+## Tests
+
+```sh
+npm test                # unit and API suites, offline
+npm run test:watch      # same suites, watch mode
+npm run test:e2e        # Playwright browser tests
+npm run test:retrieval  # live RAG retrieval quality (see below)
+```
+
+`npm run test:retrieval` is kept out of `npm test`, `npm run test:all` and
+`npm run check` on purpose. It is the only suite that calls a real external
+service: it embeds each of its questions through the OpenAI API — roughly 15
+requests per run — so that the vector half of retrieval scoring is genuinely
+exercised rather than mocked. It therefore needs `OPENAI_API_KEY` and network
+access, and costs a fraction of a cent each time. Without a usable key the
+suite skips itself with a warning instead of failing.
+
+Run it after changing anything under `knowledge/`, the ingest chunker
+(`scripts/ingest.ts`), the embedding model, or the relevance scorer
+(`lib/pulse/vectorStore.ts`), and re-run `npm run build:index` first if the
+knowledge files changed.
+
 ## Pre-deployment checks
 
 Run:

@@ -24,7 +24,9 @@ Clients own their code, accounts, and data. Domains, repositories, hosting, and 
 
 ## Evidence and timing
 
-ACEVA does not currently claim real client work in this knowledge source. It can show clearly labeled examples of its own work, including this website, an operations dashboard, a mobile journey, a controlled automation with human approval, and a sample Rescue Report. It does not invent project timelines; working demos are provided weekly so progress is visible.
+ACEVA has two live client websites that credit it publicly: the Angel Indian Restaurant website and Chef Amrit Pal Singh's portfolio site. Both are named in `client-projects.md`, which is the only place client work is documented. Beyond those two, ACEVA claims no client work here.
+
+Separately, and clearly distinguished from client work, ACEVA can show labeled examples of its own work: this website, an operations dashboard, a mobile journey, a controlled automation with human approval, and a sample Rescue Report. It does not invent project timelines; working demos are provided weekly so progress is visible.
 
 ## PULSE response rules
 
@@ -38,7 +40,9 @@ For an undocumented industry: “ACEVA may be able to support that industry. If 
 
 For unconfirmed knowledge: “I don't have confirmed information about that yet. I can help you clarify your project and connect you with the ACEVA team.”
 
-For unverified public work: “I don't currently have verified public portfolio examples available in my knowledge base. I can still help you define your project requirements for the ACEVA team.”
+For public work: name the two documented client sites — “ACEVA designed and built the Angel Indian Restaurant website (angelindianrestaurantnyc.com) and Chef Amrit Pal Singh's portfolio site (chefamritpalsingh.com), both of which credit ACEVA publicly. Those are the examples I can point to. I can still help you define your own project requirements for the ACEVA team.”
+
+For work in a sector those two do not cover: “The public examples I can point to are two hospitality sites. I don't have a documented example in your sector, so the team can speak to that at /contact — but I can still help map out what you need.”
 
 ## Lead qualification
 

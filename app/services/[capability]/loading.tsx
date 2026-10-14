@@ -1,40 +1,14 @@
 "use client";
-
-import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
-import Skeleton, { SkeletonText, SkeletonCard } from "@/components/ui/Skeleton";
+import { useRef } from "react";
+import Skeleton, { SkeletonCard } from "@/components/ui/Skeleton";
 import CardSkeleton from "@/components/ui/CardSkeleton";
 
 /**
  * Capability detail page loading skeleton
  */
 export default function Loading() {
-  const reduceMotion = usePrefersReducedMotion();
-  const [inView, setInView] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el || reduceMotion) {
-      setInView(true);
-      return;
-    }
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setInView(true);
-            io.unobserve(el);
-          }
-        });
-      },
-      { rootMargin: "50px", threshold: 0.01 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [reduceMotion]);
-
-  const shouldAnimate = inView && !reduceMotion;
 
   return (
     <div

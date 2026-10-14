@@ -2,11 +2,14 @@
 title: ACEVA Technology Stack and Architecture Guide
 category: technology
 source: knowledge/tech-stack-and-architecture.md
+url: "/technology"
+company: "ACEVA Technology"
 ---
 
 # ACEVA Technology Stack and Architecture Guide
 
-ACEVA Technology selects production-proven, highly scalable technologies designed for security, high performance, maintainability, and client longevity. Every technical decision is explained below in both technical depth and simple business terms.
+This is ACEVA's tech stack: the default technology choices behind the platforms
+ACEVA builds. ACEVA Technology selects production-proven, highly scalable technologies designed for security, high performance, maintainability, and client longevity. Every technical decision is explained below in both technical depth and simple business terms.
 
 ---
 
@@ -75,3 +78,24 @@ ACEVA Technology selects production-proven, highly scalable technologies designe
 ### Client Ownership & Code Quality Standards
 - **Technical Explanation**: 100% client ownership of Git source code repositories, deployment pipelines, cloud vendor accounts, and database schemas under clean licenses.
 - **Non-Technical Explanation**: You own 100% of your software code, database, and accounts. You are never locked into proprietary agency platforms.
+
+---
+
+## Not yet documented
+
+The stack above is the default. These questions come up and are not yet
+answered anywhere approved, so Pulse must say it is not certain and point to
+/contact rather than guess.
+
+- TODO(aceva): Will ACEVA work in a stack it did not choose — an existing Laravel, Django, Rails or .NET codebase? Say yes or no, and name any limits.
+- TODO(aceva): Which mobile approach is the default — React Native, Flutter, or fully native Swift/Kotlin — and what decides it?
+- TODO(aceva): Can a client require hosting somewhere other than Vercel or AWS (their own cloud account, on-premise, a specific region for data residency)?
+- TODO(aceva): Which LLM providers are used for AI features, and can a client require a specific one or self-hosting?
+- TODO(aceva): Is there a documented minimum browser or device support baseline?
+- TODO(aceva): What is the documented position on accessibility beyond WCAG AA, if a client needs an audit or certification?
+
+## Review note
+
+- The technologies listed above are approved defaults and may be described freely.
+- Anything under "Not yet documented" is unconfirmed. Do not state a position on it.
+- Do not publish, paraphrase, or hint at any TODO line to a visitor.

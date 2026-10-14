@@ -2,11 +2,18 @@ import { generateEmbedding } from "./embeddings";
 import { findSimilarChunks } from "./vectorStore";
 import { LLMMessage } from "./llm";
 
+/**
+ * The two most frequently seen canned replies, so they are written as an
+ * assistant speaking rather than as form validation ("Please enter a clear,
+ * relevant question…"). Both still do the same job — no progress, and a nudge
+ * back to the project — and both use the one identity wording this module and
+ * the UI share: "Aceva Pulse, ACEVA's AI assistant".
+ */
 export const GREETING_REJECTION =
-  "Hello! Please enter a specific question about ACEVA's services or describe your project so I can help map out your project direction.";
+  "Hello! I'm Aceva Pulse, ACEVA's AI assistant. Tell me what you'd like to build or improve, or ask about ACEVA's services, and I'll help map out your project direction.";
 
 export const OUT_OF_SCOPE_REJECTION =
-  "Please enter a clear, relevant question about your project or ACEVA's software development services.";
+  "That one is outside what I can help with — I cover ACEVA's services and your own project. Tell me what you'd like to build, improve, or automate, and I'll help map out a direction.";
 
 // Helper function to normalize stretched characters (e.g. "heelooo" -> "helo", "hyyyyyyyyyyyyyyyy" -> "hy", "heyyyyyyyy" -> "hey", "salaaaam" -> "salam")
 function normalizeStretchedText(text: string): string {
@@ -44,10 +51,12 @@ const GREETING_PATTERNS = [
 ];
 
 // Explicit ACEVA domain keywords & intent indicators
+// Every term here promises that a question about it is answerable, so each one
+// must have a knowledge/ file behind it. "seva" was removed: nothing under
+// knowledge/ documents it, so it admitted questions Pulse could only guess at.
 const ACEVA_DOMAIN_TERMS = [
   "aceva",
   "pulse",
-  "seva",
   "proof sprint",
   "rescue sprint",
   "product rescue",
@@ -56,8 +65,9 @@ const ACEVA_DOMAIN_TERMS = [
   "digital experiences",
   "mobile product",
   "mobile products",
+  // "mobile application" was removed as a dead entry: matching is substring-based,
+  // so "mobile app" already matches it in any user message.
   "mobile app",
-  "mobile application",
   "intelligence",
   "automation",
   "engagement",
@@ -68,6 +78,8 @@ const ACEVA_DOMAIN_TERMS = [
   "contact",
   "career",
   "job",
+  // The literal word does not appear in knowledge/, but careers.md is what
+  // answers "are you hiring?" and does so correctly, so the topic is covered.
   "hiring",
   "process",
   "understand",
@@ -100,6 +112,18 @@ const ACEVA_DOMAIN_TERMS = [
   "staging",
   "rollback",
   "discovery",
+  // Client work. Each of these is answerable from knowledge/client-projects.md,
+  // which documents the two publicly credited client sites. "angel" is not a
+  // term on its own: matching is substring-based, so it would also fire on
+  // "Los Angeles".
+  "portfolio",
+  "case study",
+  "case studies",
+  "client work",
+  "angel indian",
+  "angel restaurant",
+  "amrit",
+  "chefamritpalsingh",
 ];
 
 // Specific Software & Agency Project Service Intent
@@ -148,10 +172,33 @@ const OUT_OF_SCOPE_PATTERNS = [
 
   // General Knowledge Trivia, Geography, History, People, Science
   /\b(capital|president|prime minister|governor|king|queen|emperor|ceo|founder)\s+of\b/i,
-  /\bwho\s+(won|is|was|played|scored|painted|wrote|invented|created|founded)\s+(the|a)?\s*(cricket|football|match|world cup|super bowl|oscar|election|game|mona lisa|romeo|telephone|apple|bitcoin)?\b/i,
+  // The subject is required. It was optional, so this reduced to "who" plus a
+  // verb and matched every "Who is …" question ever asked — including "Who is
+  // Amrit?", the chef ACEVA built two websites for, whose name is a documented
+  // domain term. Trivia subjects are still caught, and questions about a person
+  // at ACEVA are handled by ACEVA_FAQ_PATTERNS and the "ceo|founder of" pattern
+  // above, which are unchanged.
+  /\bwho\s+(won|is|was|played|scored|painted|wrote|invented|created|founded)\s+(the|a)?\s*(cricket|football|match|world cup|super bowl|oscar|election|game|mona lisa|romeo|telephone|apple|bitcoin)\b/i,
   /\b(weather|temperature|forecast|rain|snow)\s+(today|tomorrow|in|this)\b/i,
   /\b(tell|give)\s+me\s+a\s+(joke|riddle|story|poem|song|recipe|quote|movie|film|bedtime story)\b/i,
-  /\b(recipe|ingredients|cook|bake|kitchen|tea|coffee|cake|pizza)\s+(for|how|to)?\b/i,
+  // A recipe request, not any mention of food.
+  //
+  // This was one pattern — `(recipe|ingredients|cook|bake|kitchen|tea|coffee|
+  // cake|pizza)\s+(for|how|to)?` — whose trailing group was fully optional, so
+  // it reduced to "a food word followed by a space" and matched the ordinary
+  // vocabulary of the industry this product uses as its own example:
+  // "kitchen staff", "coffee shop", "pizza place", "staff bake fresh bread".
+  // Pulse's own suggested answer for discovery step 4 — "Customers can order
+  // online directly, and kitchen staff see orders on one simple screen" — was
+  // rejected as out-of-scope, so a visitor who typed the placeholder they were
+  // shown got a "please enter a clear, relevant question" refusal and no
+  // progress. Actual recipe requests are still caught: they are question-shaped
+  // ("how do I bake…", "tell me a recipe", "what's the recipe for…"), which the
+  // patterns above and below already cover, and which `isProjectDiscoveryInput`
+  // rejects on its own question-format rule. A bare verb like "cook the food"
+  // or "brew the coffee" is not a recipe request — it is how a restaurant
+  // describes its own operation — so it is deliberately not matched here.
+  /\b(recipes?|ingredients)\s+(for|to)\b/i,
   /\b(planet|planets|solar system|galaxy|universe|space|star|stars|astronomy|physics|biology|chemistry|moon|everest|ocean|trench|photosynthesis|airplane|airplanes|sky|evolution)\b/i,
   /\bwhy\s+is\s+the\s+(sky|ocean|sea|sun|grass)\s+(blue|green|yellow|red)\b/i,
   /\b(news|happened)\s+(today|in the news)\b/i,
@@ -165,8 +212,20 @@ const OUT_OF_SCOPE_PATTERNS = [
   /\bhow\s+(many|much|far|deep|tall|high)\s+(continents|planets|ocean|mountains|distance|people)\b/i,
   /\bhow\s+do\s+i\s+(train|clean|make|cook|bake|fix a flat|fly)\b/i,
 
-  // Homework & Math Tasks & Unit Conversions
-  /\b(solve|calculate|compute|convert)\s+(this|the)?\s*(math|equation|integral|derivative|algebra|calculus|problem|square root|cube root|kilograms|meters|miles)?\b/i,
+  // Homework & Math Tasks & Unit Conversions.
+  //
+  // The subject is now required. Both trailing groups used to be optional, so
+  // this reduced to "solve|calculate|compute|convert followed by a space" and
+  // swallowed everyday product language: "the app should calculate delivery
+  // fees", "convert more visitors into customers", and the intent menu's own
+  // opener "I want to solve a business problem." ("problem" has also left the
+  // subject list for that reason — solving a business problem is the entire
+  // point of the product.) Bare arithmetic like "Calculate 25*25" names no
+  // subject, so it is matched on the expression instead — and the expression
+  // has to follow the verb directly, or "calculate delivery fees for 2-3
+  // locations" would read as arithmetic on the "2-3".
+  /\b(solve|calculate|compute|convert)\s+(this|the)?\s*[\d.,]*\s*(math|equation|integral|derivative|algebra|calculus|square root|cube root|kilograms?|kilos?|grams?|pounds?|meters?|metres?|miles|celsius|fahrenheit)\b/i,
+  /\b(solve|calculate|compute)\s+(this\s+)?[\d\s().]*\d\s*[-+*/x×÷^]\s*\d/i,
   /\bwhat\s+is\s+\d+\s*[\+\-\*\/\s\w]*\d+/i,
   /\bsolve\s+[x-z0-9\+\-\*\/\=\s]+/i,
   /\bpythagorean\s+theorem\b/i,
@@ -225,6 +284,29 @@ export function isProjectDiscoveryInput(userMessage: string): boolean {
   // Explicit non-discovery meta/question checks FIRST
   if (/\bwhy\s+do\s+you\s+(need|ask)\b/i.test(lower)) return false;
   if (/\bwhy\s+do\s+(websites|apps|systems)\s+(need|use)\b/i.test(lower)) return false;
+
+  // A question put to ACEVA about its own work or capabilities is not an answer
+  // to a discovery question, so it must not advance the progress bar.
+  //
+  // This has to be decided before `hasExplicitProjectIntent` below, which
+  // returns early on a bare "build" or on a platform word beside an industry
+  // word. That let three portfolio and capability questions count as discovery
+  // answers: "Can you build a mobile app for iOS and Android?", "What did you
+  // build for Angel Indian Restaurant?" and "Tell me about the Angel Indian
+  // Restaurant website" all moved the progress bar while a visitor was simply
+  // reading about past work.
+  //
+  // A visitor describing their own requirement is still a discovery answer,
+  // including when they phrase it politely as a question ("Can you build me an
+  // ordering app for my restaurant?"). What separates the two is a first-person
+  // reference to their own business, so that is what lifts the veto. "me" is
+  // deliberately not one of those words: it appears in "tell me about…".
+  const isQuestionAboutAceva =
+    /^(can|could|do|does|did|have|has|are|is|will|would)\s+(you|aceva|pulse)\b/i.test(lower) ||
+    /^(tell|show)\s+me\s+(about|more)\b/i.test(lower) ||
+    /^(what|which|who|when|where|why|how)\b[^?]*\b(you|your|aceva|pulse)\b/i.test(lower);
+  const describesOwnBusiness = /\b(i|we|my|our|i'm|i am|we're|we are|i've|we've)\b/i.test(lower);
+  if (isQuestionAboutAceva && !describesOwnBusiness) return false;
 
   // Check for explicit project discovery intent (including mixed intent statements)
   const hasExplicitProjectIntent =
@@ -330,28 +412,34 @@ export function getCasualOrFAQResponse(userMessage: string): string | null {
       clean
     )
   ) {
-    return "I am Aceva Pulse, an AI-powered project discovery assistant.";
+    return "I'm Aceva Pulse, ACEVA's AI assistant. I help map out your project direction before you speak to the team.";
   }
 
   // Questions about unrelated individuals (e.g. Shiva)
   if (/\b(shiva|who\s+is\s+shiva|tell\s+me\s+about\s+shiva)\b/i.test(clean)) {
-    return "I am Aceva Pulse, ACEVA's AI System Architect focused on software architecture discovery. For team or individual inquiries, please feel free to reach out to our team directly. What software product or project are you looking to build?";
+    return "I'm Aceva Pulse, ACEVA's AI assistant, and I only have information about ACEVA's services and your project. For questions about a specific person or the team, please reach out via /contact. What software product or project are you looking to build?";
   }
 
   const isAnswerPref = /\b(discuss|flexible|direct|team|deal|negotiate|asap|tbd)\b/i.test(clean);
 
   // Company FAQ & ACEVA WH Questions
   if (!isAnswerPref && (ACEVA_FAQ_PATTERNS.some((p) => p.test(clean)) || /\baceva\b/i.test(clean))) {
-    return "ACEVA Technologies is a digital engineering agency that designs and builds custom web platforms, mobile apps, and automated software systems for modern businesses. What software product or project are you looking to build?";
+    // Kept in step with knowledge/company.md and knowledge/capabilities.md. The
+    // previous wording called the company "ACEVA Technologies" — a name that
+    // appears nowhere else in the product — and described it as a "digital
+    // engineering agency", which no knowledge source says. No location is
+    // claimed here: company.md still has that open for team confirmation, and a
+    // location question reaches company.md through retrieval anyway.
+    return "ACEVA Technology designs and builds custom software, web platforms, mobile products, and intelligence and automation systems for businesses. What software product or project are you looking to build?";
   }
 
   // Greetings & Check-ins
   if (/^(how\s+are\s+you|how\s+r\s+u|how\s+is\s+it\s+going|what'?s\s+up)[\s?!.]*$/i.test(clean)) {
-    return "I'm doing great, thank you! I'm Aceva Pulse, ACEVA's AI System Architect. What software project or digital direction can I help map out for you today?";
+    return "I'm doing great, thank you! I'm Aceva Pulse, ACEVA's AI assistant. What software project or digital direction can I help map out for you today?";
   }
 
   if (/^(hi|hello|hey|greetings|good morning|good afternoon|good evening|yo|sup|hola|hy|hallo|halo|salam|salaam|assalamu?\s*alaikum|aoa)(\s+pulse|\s+there|\s+bro|\s+friend|\s+team)?[\s!.]*$/i.test(clean)) {
-    return "Hello! I'm Aceva Pulse, ACEVA's AI System Architect. Tell me what you'd like to build or improve, and I'll help map out your project direction.";
+    return "Hello! I'm Aceva Pulse, ACEVA's AI assistant. Tell me what you'd like to build or improve, and I'll help map out your project direction.";
   }
 
   if (/^(ok|okay|cool|nice|thanks|thank you|great|awesome|got it|understood)[\s!.]*$/i.test(clean)) {
@@ -365,6 +453,22 @@ export function getCasualOrFAQResponse(userMessage: string): string | null {
 
   // Fallback for any non-discovery query
   return "I'm here to help map out your software project direction with ACEVA. Please tell me a bit about what software product, web platform, or mobile app you would like to build!";
+}
+
+/** Phrasings that ask who or what Pulse is, rather than asking about a project. */
+const ASSISTANT_IDENTITY_PATTERN =
+  /\b(who\s+are\s+you|what\s+is\s+your\s+name|who\s+am\s+i\s+talking\s+to|are\s+you\s+pulse|what\s+should\s+i\s+call\s+you|tell\s+me\s+about\s+yourself|are\s+you\s+an?\s+ai\s+assistant)\b/i;
+
+/**
+ * Who/what Pulse is, as opposed to a question about the caller's project.
+ *
+ * Kept on the canned path deliberately: the assistant's own name is a fixed fact
+ * and letting the model improvise it is how "Pulse AI Assistant" got shipped once
+ * before. Nothing here reaches the knowledge base, so there is nothing to gain
+ * from a retrieval round trip.
+ */
+export function isAssistantIdentityQuery(userMessage: string): boolean {
+  return ASSISTANT_IDENTITY_PATTERN.test(userMessage.trim().toLowerCase());
 }
 
 /**
@@ -450,11 +554,7 @@ export function isExplicitProjectScopeInput(userMessage: string): boolean {
 /**
  * Check if the input is raw, unclear, or gibberish.
  */
-export function isInvalidOrUnclearInput(
-  userMessage: string,
-  history?: LLMMessage[],
-  projectContext?: Record<string, unknown>
-): boolean {
+export function isInvalidOrUnclearInput(userMessage: string): boolean {
   const clean = userMessage.trim();
   if (!clean) return true;
 
@@ -464,6 +564,13 @@ export function isInvalidOrUnclearInput(
   // Out of scope pattern match (general knowledge trivia, math, recipes, etc.)
   const isOOS = OUT_OF_SCOPE_PATTERNS.some((pattern) => pattern.test(clean));
   if (isOOS) return true;
+
+  // General tech trivia ("Why was Ruby popular in the 2010s?", "What is Java?").
+  // These patterns were previously consulted only once a conversation was under
+  // way, so on a first message the trivia reached the model. That was masked by
+  // the chat route's blanket casual-reply gate; with that gate narrowed to
+  // greetings and noise, the check has to happen here to stay deterministic.
+  if (GENERAL_TECH_TRIVIA_PATTERNS.some((pattern) => pattern.test(clean))) return true;
 
   return false;
 }
@@ -486,9 +593,16 @@ export async function isQuestionInScope(
     return true;
   }
 
-  // 1. Explicit Out-of-Scope Pattern Match -> High confidence IRRELEVANT
+  // 1. Explicit Out-of-Scope Pattern Match -> High confidence IRRELEVANT.
+  //
+  // Unless the same message also carries a genuine project requirement. The
+  // aside in "I need a mobile app for my restaurant. Also, how does Python
+  // work?" matched the general-programming pattern and vetoed the whole
+  // message, so the requirement was thrown away and the visitor got a
+  // rejection. A message with real intent stays in scope; the model is told to
+  // answer the project half, and the aside simply goes unanswered.
   const matchesOOS = OUT_OF_SCOPE_PATTERNS.some((pattern) => pattern.test(clean));
-  if (matchesOOS) {
+  if (matchesOOS && !isProjectDiscoveryInput(clean)) {
     return false;
   }
 
@@ -519,7 +633,23 @@ export async function isQuestionInScope(
     if (ACEVA_FAQ_PATTERNS.some((p) => p.test(clean))) {
       return true;
     }
-    return isProjectDiscoveryInput(clean);
+    // Inside a conversation that is already under way, anything left is on
+    // topic. This used to return `isProjectDiscoveryInput`, which answers a
+    // different question: whether the message is an *answer to a discovery
+    // question*, and it rejects every message shaped like a question. So once a
+    // visitor had said anything at all, every natural follow-up was ruled out
+    // of scope and never reached retrieval — "How long did that one take?",
+    // "Who hosts it?", "What did the SEO achieve for them?" and "How much would
+    // something like that cost me?" all came back with the out-of-scope
+    // rejection in a few milliseconds. Follow-ups carry their subject in the
+    // history rather than in the words, which is exactly why a keyword test
+    // cannot judge them.
+    //
+    // Nothing is waved through: gibberish, incoherent chains, greetings and
+    // tech trivia are rejected immediately above, and the explicit
+    // out-of-scope patterns at step 1 run before any of this — so a mid-chat
+    // "What is the capital of France?" is still refused.
+    return true;
   }
 
   // 5. Vector Knowledge Similarity Check

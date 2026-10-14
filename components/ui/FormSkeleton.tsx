@@ -1,6 +1,5 @@
 "use client";
-
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { type CSSProperties } from "react";
 import Skeleton from "./Skeleton";
 
 interface FormSkeletonProps {
@@ -9,9 +8,9 @@ interface FormSkeletonProps {
   /** Whether to show a textarea */
   showTextarea?: boolean;
   /** Whether to show a select dropdown */
-  showSelect?: boolean;
+
   /** Number of select dropdowns */
-  selectCount?: number;
+
   /** Whether to show the Turnstile CAPTCHA placeholder */
   showTurnstile?: boolean;
   /** Whether to show the submit button */
@@ -75,8 +74,8 @@ export function FormFieldSkeleton({
 export default function FormSkeleton({
   fieldCount = 6,
   showTextarea = true,
-  showSelect = true,
-  selectCount = 2,
+
+
   showTurnstile = true,
   showSubmit = true,
   showTitle = true,
@@ -203,8 +202,6 @@ export function ContactFormSkeleton({ delay = 0, ...props }: Omit<FormSkeletonPr
     <FormSkeleton
       fieldCount={6}
       showTextarea={true}
-      showSelect={true}
-      selectCount={2}
       showTurnstile={true}
       showSubmit={true}
       showTitle={true}

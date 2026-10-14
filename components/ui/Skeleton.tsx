@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 
@@ -211,10 +210,10 @@ export function SkeletonText({
   lines = 3,
   width = "100%",
   lastLineWidth = "60%",
-  lineHeight = 1.6,
+
   spacing = "0.625rem",
   ...props
-}: Omit<SkeletonProps, "variant" | "lines" | "lastLineWidth"> & { lines?: number; lastLineWidth?: string; lineHeight?: number; spacing?: string }) {
+}: Omit<SkeletonProps, "variant" | "lines" | "lastLineWidth"> & { lines?: number; lastLineWidth?: string; spacing?: string }) {
   const reduceMotion = usePrefersReducedMotion();
   const [inView, setInView] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -380,7 +379,7 @@ export function SkeletonCard({
  * SkeletonGrid - Grid of skeleton cards
  */
 interface SkeletonGridProps {
-  columns?: number;
+
   minColumnWidth?: string;
   gap?: string;
   count?: number;
@@ -389,7 +388,7 @@ interface SkeletonGridProps {
 }
 
 export function SkeletonGrid({
-  columns = 3,
+
   minColumnWidth = "280px",
   gap = "14px",
   count = 6,
@@ -417,7 +416,7 @@ export function SkeletonGrid({
  */
 interface SkeletonListProps {
   count?: number;
-  itemHeight?: string | number;
+
   gap?: string;
   showAvatar?: boolean;
   showMeta?: boolean;
@@ -427,7 +426,7 @@ interface SkeletonListProps {
 
 export function SkeletonList({
   count = 5,
-  itemHeight,
+
   gap = "16px",
   showAvatar = false,
   showMeta = false,
