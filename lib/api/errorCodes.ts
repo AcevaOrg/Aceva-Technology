@@ -40,21 +40,28 @@ export type ApiErrorCode = (typeof API_ERROR_CODES)[number];
  */
 export type ApiFieldErrors = Record<string, boolean>;
 
-/** The body every failing endpoint returns. No other error shape is emitted. */
+/**
+ * The body every failing endpoint returns. No other error shape is emitted.
+ *
+ * `{ ok, error, code, retryAfter }` is the contract clients code against.
+ * `retryable`, `requestId` and `errors` ride alongside it: the first two are
+ * what make a production failure diagnosable, and `errors` carries the contact
+ * form's per-field flags.
+ */
 export interface ApiErrorBody {
   ok: false;
+  /** Display-safe copy. Contains no stack traces, provider text or config. */
+  error: string;
   /** Stable identifier the frontend branches on. Never reworded. */
   code: ApiErrorCode;
-  /** Display-safe copy. Contains no stack traces, provider text or config. */
-  message: string;
+  /** Seconds to wait before retrying. Present on RATE_LIMITED; mirrors the Retry-After header. */
+  retryAfter?: number;
   /** Present only for VALIDATION_FAILED. */
   errors?: ApiFieldErrors;
   /** `true` when retrying the identical request may succeed. */
   retryable: boolean;
   /** Correlates this response with the server log line that explains it. */
   requestId: string;
-  /** Present on RATE_LIMITED; mirrors the Retry-After header. */
-  retryAfterSeconds?: number;
 }
 
 /** The body every succeeding endpoint returns, plus its own payload fields. */
@@ -132,7 +139,7 @@ export function isApiErrorCode(value: unknown): value is ApiErrorCode {
 export function isApiErrorBody(value: unknown): value is ApiErrorBody {
   if (!value || typeof value !== "object") return false;
   const body = value as Record<string, unknown>;
-  return body.ok === false && isApiErrorCode(body.code) && typeof body.message === "string";
+  return body.ok === false && isApiErrorCode(body.code) && typeof body.error === "string";
 }
 
 /** `true` when the frontend should reset its Turnstile widget before retrying. */
@@ -149,13 +156,42 @@ export function shouldResetTurnstile(value: unknown): boolean {
  * renders a raw parse error.
  */
 export function resolveApiErrorMessage(value: unknown, fallback = API_ERROR_MESSAGES.INTERNAL_ERROR): string {
-  if (isApiErrorBody(value)) return value.message;
+  if (isApiErrorBody(value)) return value.error;
   if (value && typeof value === "object") {
     const body = value as Record<string, unknown>;
-    if (typeof body.message === "string" && body.message.trim()) return body.message;
     if (typeof body.error === "string" && body.error.trim()) return body.error;
+    // Tolerated for a body that predates the rename of `message` to `error`.
+    if (typeof body.message === "string" && body.message.trim()) return body.message;
   }
   return fallback;
+}
+
+/** Seconds the caller should wait, when the server said so. */
+export function resolveRetryAfterSeconds(value: unknown): number | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const raw = (value as Record<string, unknown>).retryAfter;
+  if (typeof raw !== "number" || !Number.isFinite(raw) || raw < 0) return undefined;
+  return Math.ceil(raw);
+}
+
+/**
+ * The sentence to show a user for a failed request.
+ *
+ * Specialises the cases where the generic copy is unhelpful — a rate limit is
+ * only actionable with the countdown attached, and without this a 429 surfaced
+ * as an unexplained "An error occurred" with no hint to wait.
+ */
+export function describeApiError(value: unknown, fallback = API_ERROR_MESSAGES.INTERNAL_ERROR): string {
+  const code = isApiErrorBody(value) ? value.code : undefined;
+
+  if (code === "RATE_LIMITED") {
+    const seconds = resolveRetryAfterSeconds(value);
+    return seconds && seconds > 0
+      ? `Too many requests, try again in ${seconds}s`
+      : "Too many requests, try again in a moment";
+  }
+
+  return resolveApiErrorMessage(value, fallback);
 }
 
 /** Reads the field-error map, tolerating bodies that omit or malform it. */

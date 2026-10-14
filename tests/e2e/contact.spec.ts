@@ -3,6 +3,14 @@ import { expect, test } from "@playwright/test";
 async function completeForm(page: import("@playwright/test").Page) {
   await page.getByLabel("Your name").fill("Jordan Ellis");
   await page.getByLabel("Work email").fill("jordan@example.com");
+  // Company and Budget range are required by ContactForm.tsx. They were added
+  // after this helper was written, so every submit failed client-side
+  // validation and neither test ever reached the server — which is why both
+  // assertions below looked broken when the application was behaving
+  // correctly. "Where you are right now" and "Capability of interest" are
+  // selects that already default to a valid option.
+  await page.getByLabel("Company").fill("Ellis & Co");
+  await page.getByLabel("Budget range").selectOption("small");
   await page.getByLabel("What is the problem, in your own words").fill("We need help rebuilding our customer portal this quarter.");
 }
 

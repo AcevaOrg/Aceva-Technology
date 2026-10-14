@@ -3,6 +3,7 @@
 import React from "react";
 import styles from "./pulse.module.css";
 import { PulseStage } from "./types";
+import { DISCOVERY_STEPS } from "@/lib/pulse/discoverySteps";
 
 interface PulseHeaderProps {
   stage: PulseStage;
@@ -11,19 +12,16 @@ interface PulseHeaderProps {
   onRestart: () => void;
 }
 
-const STEP_BADGES: Record<number, string> = {
-  0: "READING THE SYSTEM",
-  1: "MAPPING FRICTION",
-  2: "BUILDING CONTEXT",
-  3: "FORMING DIRECTION",
-  4: "SYSTEM FIT",
-};
+// Derived from the step definitions rather than duplicated: the hardcoded copy
+// had drifted, badging step 4 as "SYSTEM FIT" while the panel heading below it
+// read "TIMELINE & BUDGET FIT".
+const LAST_STEP = DISCOVERY_STEPS.length - 1;
 
 export default function PulseHeader({ stage, step, onClose, onRestart }: PulseHeaderProps) {
   const currentBadge =
     ["direction", "contact", "confirmation"].includes(stage)
       ? "DIRECTION FOUND"
-      : STEP_BADGES[Math.min(step, 4)] || "READING THE SYSTEM";
+      : DISCOVERY_STEPS[Math.min(Math.max(step, 0), LAST_STEP)]?.label ?? DISCOVERY_STEPS[0].label;
 
   return (
     <header className={styles.pulseHead}>

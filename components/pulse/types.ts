@@ -26,6 +26,12 @@ export interface PulseMessage {
   timestamp: string;
 }
 
+/** The turn a Retry button would re-send. Null once it succeeds. */
+export interface PulseRetryTarget {
+  text: string;
+  inferred?: Partial<PulseContextData>;
+}
+
 export interface PulseState {
   open: boolean;
   stage: PulseStage;
@@ -36,6 +42,18 @@ export interface PulseState {
   lead?: PulseLead;
   id?: string;
   loading?: boolean;
+  /** True between the first token and the done frame. */
+  streaming?: boolean;
+  /** Set when the last turn failed, so the UI can offer Retry. */
+  retry?: PulseRetryTarget | null;
+  /**
+   * `messages.length` as each recorded answer's turn began, one entry per
+   * entry in `answers`. Undo rewinds to the last of these, so it removes
+   * exactly the turn that was recorded and nothing else.
+   */
+  answerMarks?: number[];
+  /** Where the in-flight turn began. Promoted to `answerMarks` if it counts. */
+  turnStart?: number;
 }
 
 export type PulseAction =
@@ -47,6 +65,10 @@ export type PulseAction =
   | { type: "SEND_MESSAGE"; text: string }
   | { type: "SET_LOADING"; loading: boolean }
   | { type: "ADD_PULSE_RESPONSE"; text: string }
+  | { type: "PULSE_STREAM_START" }
+  | { type: "PULSE_STREAM_DELTA"; text: string }
+  | { type: "PULSE_STREAM_END"; text?: string }
+  | { type: "SET_RETRY"; retry: PulseRetryTarget | null }
   | { type: "COMPLETE" }
   | { type: "CONTACT" }
   | { type: "CONFIRM"; lead: PulseLead; id: string }

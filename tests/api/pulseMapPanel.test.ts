@@ -133,7 +133,7 @@ describe("Pulse Live Project Map Sequential Node Logic Verification Suite", () =
     expect(getSequentialNodeValue(1, state)).toMatch(/Restaurant/i);
     expect(getSequentialNodeValue(2, state)).toMatch(/Online Food Ordering|Order/i);
     expect(getSequentialNodeValue(3, state)).toMatch(/WhatsApp/i);
-    expect(getSequentialNodeValue(4, state)).toMatch(/Difficult to track/i);
+    expect(getSequentialNodeValue(4, state)).toMatch(/difficult to keep track/i);
     expect(getSequentialNodeValue(5, state)).toBeNull();
   });
 
@@ -156,7 +156,7 @@ describe("Pulse Live Project Map Sequential Node Logic Verification Suite", () =
     expect(getSequentialNodeValue(1, state)).toMatch(/Restaurant/i);
     expect(getSequentialNodeValue(2, state)).toMatch(/Online Food Ordering|Order/i);
     expect(getSequentialNodeValue(3, state)).toMatch(/WhatsApp/i);
-    expect(getSequentialNodeValue(4, state)).toMatch(/Difficult to track/i);
-    expect(getSequentialNodeValue(5, state)).toMatch(/Centralized order management|managed/i);
+    expect(getSequentialNodeValue(4, state)).toMatch(/difficult to keep track/i);
+    expect(getSequentialNodeValue(5, state)).toMatch(/managed through one system/i);
   });
 });

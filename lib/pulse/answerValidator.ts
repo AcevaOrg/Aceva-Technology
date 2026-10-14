@@ -1,4 +1,5 @@
 import { LLMMessage } from "./llm";
+import { getDiscoveryField } from "./discoverySteps";
 import {
   isGibberishInput,
   isIncoherentQuestion,
@@ -17,13 +18,53 @@ export type DiscoveryQuestionField =
   | "goals"
   | "general_discovery";
 
+
 /**
- * Detect the target discovery field based on the active question in history or missing context.
+ * A real monetary amount.
+ *
+ * Deliberately strict. The previous pattern began `\$?\d{1,3}`, so the bare "2"
+ * in "end of Q2" read as a budget figure and a timeline answer satisfied the
+ * budget question. A figure now needs a currency symbol, a k/m suffix, grouped
+ * or four-plus digits, or a spelled-out money word.
+ */
+const MONETARY_AMOUNT =
+  /[$€£]\s?\d|\b\d+(\.\d+)?\s*(k|m|mil|million|thousand)\b|\b\d{1,3}(,\d{3})+\b|\b\d{4,}\b|\b(dollars?|usd|eur|euros?|gbp|pounds?|rupees?|pkr)\b/i;
+
+/**
+ * The user has a budget position but declines to name a figure. Still a valid
+ * answer to the budget question — "whatever it takes" is a real answer, not a
+ * non-answer, and used to be rejected, stalling progress at the final step.
+ */
+const BUDGET_DEFERRED =
+  /\b(not sure|haven'?t decided|not decided|undecided|tbd|to be decided|discuss|discussion|team|negotiate|negotiable|flexible|open|no limit|no cap|no fixed|no set|within reason|market rate|going rate|whatever it (takes|costs)|what ?ever it costs|what it (takes|costs)|depends on (the )?scope)\b/i;
+
+/** Explicitly names the subject of the question. */
+const BUDGET_SUBJECT = /\b(budget|budgets|cost|costs|price|pricing|spend|invest|investment|rate|rates|quote)\b/i;
+
+/**
+ * Detect the target discovery field for the answer being validated.
+ *
+ * `step` is the wizard step the client is displaying and is authoritative when
+ * present: `DISCOVERY_STEP_FIELDS` maps it straight to a field. The keyword
+ * heuristics below only run for free chat, where there is no step — they read
+ * the last assistant bubble, and Pulse's own prose sets them off. "When things
+ * get busy, what slows your team down?" matched the timeline pattern on the
+ * word "when" alone, so a friction answer at step 2 was validated against the
+ * timeline question and, because timeline/budget marks the end of discovery,
+ * the route closed the questioning phase three steps early.
+ *
+ * An unmapped or out-of-range step falls through to the heuristics, so this is
+ * a narrowing of when they apply rather than a replacement.
  */
 export function detectActiveQuestionTarget(
   history?: LLMMessage[],
-  context?: Record<string, unknown>
+  context?: Record<string, unknown>,
+  step?: unknown
 ): DiscoveryQuestionField {
+  // 0. The question actually on screen, when the client told us which it is.
+  const stepField = getDiscoveryField(step);
+  if (stepField) return stepField;
+
   // 1. Check the last assistant question in history
   if (history && history.length > 0) {
     const lastAssistantMsg = [...history].reverse().find((m) => m.role === "assistant")?.content.toLowerCase() || "";
@@ -70,21 +111,34 @@ export function validateAnswerAgainstQuestion(
   const clean = message.trim();
   if (!clean) return { isValid: false };
 
+  const lower = clean.toLowerCase();
+
+  // An unmistakable answer to the question actually being asked outranks the
+  // generic noise heuristics below. `isProjectDiscoveryInput` lists "whatever"
+  // among its dismissive-noise words, which vetoed "whatever it takes" before
+  // the budget case ever ran — a real answer, rejected, stalling the final step.
+  const answersBudgetOutright =
+    targetField === "budget" && (MONETARY_AMOUNT.test(lower) || BUDGET_DEFERRED.test(lower));
+
   // 1. General Input Quality & Noise Checks (Gibberish, Incoherent WH-chain, Greetings, Company FAQ)
   if (isGibberishInput(clean)) return { isValid: false };
   if (isIncoherentQuestion(clean)) return { isValid: false };
   if (isGreetingInput(clean)) return { isValid: false };
-  if (isCasualOrFAQOrGeneralQuery(clean)) return { isValid: false };
-
-  const lower = clean.toLowerCase();
+  if (!answersBudgetOutright && isCasualOrFAQOrGeneralQuery(clean)) return { isValid: false };
 
   // 2. Field-Specific Answer Validation
   switch (targetField) {
     case "budget": {
-      // Rejections for budget question:
-      // Reject pure timeline text (e.g., "As soon as possible", "ASAP", "3 weeks", "next month")
-      const isTimelineOnly = /^(as soon as possible|asap|urgent|immediately|next month|next week|\d+\s*(weeks?|months?|days?))[\s!.]*$/i.test(lower);
-      if (isTimelineOnly) return { isValid: false };
+      const hasAmount = MONETARY_AMOUNT.test(lower);
+      const isDeferred = BUDGET_DEFERRED.test(lower);
+      const namesSubject = BUDGET_SUBJECT.test(lower);
+
+      // A pure timeline answer — "As soon as possible", "3 weeks", "end of Q2"
+      // — carries none of the three signals below and so falls through to the
+      // rejection at the end of this case. It no longer slips past on a stray
+      // digit: MONETARY_AMOUNT used to start `\$?\d{1,3}`, which matched the
+      // "2" of "Q2". A combined "6 weeks, around $15k" still passes, on the
+      // strength of the figure rather than the week count.
 
       // Reject pure industry text (e.g., "restaurant", "healthcare", "education", "finance")
       const isIndustryOnly = /^(restaurant|cafe|hotel|clinic|healthcare|education|school|gym|salon|real estate|ecommerce|shop|logistics|dairy|finance|fintech|legal|travel|manufacturing)[\s!.]*$/i.test(lower);
@@ -98,13 +152,7 @@ export function validateAnswerAgainstQuestion(
         return { isValid: false };
       }
 
-      // Valid Budget Acceptance:
-      // Monetary numbers ($5,000, 5000, 5k, 10k-20k, $5k-$10k, five thousand dollars)
-      const hasMonetary = /\$?\d{1,3}(,\d{3})*(\.\d{2})?\s*k?\b|\b\d+\s*k\b|\b(dollars?|usd|thousand|hundred|million)\b/i.test(lower);
-      // Valid Uncertainty / Team Discussion / Flexible / TBD
-      const hasValidUncertainty = /\b(not sure|haven'?t decided|not decided|tbd|to be decided|team|discuss|discuss with|flexible|open|deal|negotiate|window|undecided)\b/i.test(lower);
-
-      if (hasMonetary || hasValidUncertainty || /\bbudget\b/i.test(lower)) {
+      if (hasAmount || isDeferred || namesSubject) {
         return { isValid: true };
       }
 

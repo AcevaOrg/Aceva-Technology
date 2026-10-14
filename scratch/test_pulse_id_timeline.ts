@@ -29,7 +29,7 @@ async function testPulseIdTimeline() {
     createdAt: new Date().toISOString(),
   });
 
-  const response = await generatePulseCompletion(`Tell me about ${pulseId}`);
+  const { answer: response } = await generatePulseCompletion(`Tell me about ${pulseId}`);
   console.log(`\nPULSE ID Lookup Response:\n${response}\n`);
 
   if (response.includes("6 weeks") && response.includes("Operational within 6 weeks")) {

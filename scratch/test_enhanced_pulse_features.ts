@@ -5,7 +5,7 @@ function testEnhancedPulseFeatures() {
 
   // Test 1: UNDO_LAST_ANSWER
   console.log("\n1. Testing UNDO_LAST_ANSWER action...");
-  let state = {
+  const state = {
     ...initialState,
     stage: "discovery" as const,
     step: 2,

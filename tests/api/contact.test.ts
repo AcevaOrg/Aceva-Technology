@@ -52,7 +52,7 @@ describe("POST /api/contact", () => {
     expect(response.status).toBe(400);
     const data = await response.json();
     expect(data.ok).toBe(false);
-    expect(data.message).toContain("Please check your details");
+    expect(data.error).toContain("Please check your details");
     expect(send).not.toHaveBeenCalled();
   });
 

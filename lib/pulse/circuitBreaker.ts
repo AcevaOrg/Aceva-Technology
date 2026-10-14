@@ -1,8 +1,13 @@
 /**
- * Lightweight In-Memory Circuit Breaker for Primary LLM Provider (Groq)
+ * Lightweight in-memory circuit breaker for the LLM provider.
  *
- * Prevents hammering a primary provider when it is repeatedly rate-limited or experiencing outage.
- * Note: Resets when server process restarts (documented in-memory behavior).
+ * Stops the provider being hammered once per visitor message while it is
+ * rate-limited, misconfigured or down: three provider-side failures inside the
+ * cooldown window open the circuit for 60 seconds, and callers get the
+ * "currently unavailable" fallback without a network round trip.
+ *
+ * State is per process and resets on restart, which is the right trade for a
+ * guard whose only job is to shed load during an outage.
  */
 
 interface ProviderCircuitState {
