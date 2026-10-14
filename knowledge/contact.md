@@ -10,7 +10,7 @@ company: "ACEVA Technology"
 
 These are the verified public contact channels, and they are the only ones that may be shared:
 
-- Email: `acevatech.official@gmail.com`
+- Email: `contact@acevatech.com`
 - Phone (help and reception): `+92 305 555 2230`
 - WhatsApp: `https://wa.me/923055552230`
 - LinkedIn: `https://www.linkedin.com/company/143570032/`

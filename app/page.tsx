@@ -70,23 +70,22 @@ export default function HomePage() {
           </p>
           <h1 className="hero-heading" style={{ animation: "acMaskUp 900ms cubic-bezier(.16,1,.3,1) 80ms both" }}>
             <span className="ac-text-shimmer">
-              Build what your business <span className="hero-title-accent">needs next.</span>
+              Build what your<br />
+              business <span className="hero-title-accent">needs next.</span>
             </span>
           </h1>
           <p className="hero-summary" style={{ animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 160ms both" }}>
             Aceva designs digital experiences, custom software, mobile products and intelligent systems — and rescues products that need a stronger path forward.
           </p>
           <div className="hero-actions" style={{ animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 260ms both" }}>
-            <div style={{ display: "flex", flexDirection: "row", flexWrap: "nowrap", justifyContent: "center", gap: 16, marginTop: "clamp(30px,4vw,42px)", animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 260ms both", width: "100%", maxWidth: 560 }}>
-              <Link href={ROUTES.contact} className="ac-btn-primary" style={{ flex: 1, minHeight: 52, padding: "16px 12px", justifyContent: "center" }}>
-                Contact Us
-                <ArrowRightIcon width={15} height={15} />
-              </Link>
-              <Link href={ROUTES.work} className="ac-btn-ghost" style={{ minHeight: 52, padding: "16px 12px" }}>
-                Explore Experiments
-                <ArrowRightIcon width={15} height={15} />
-              </Link>
-            </div>
+            <Link href={ROUTES.contact} className="ac-btn-primary" style={{ flex: 1, minHeight: 52, padding: "16px 12px", background: "rgba(30, 79, 217, 0.35)", border: "1px solid rgba(59, 124, 255, 0.3)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", borderRadius: "var(--radius)" }}>
+              Contact Us
+              <ArrowRightIcon width={15} height={15} />
+            </Link>
+            <Link href={ROUTES.work} className="ac-btn-ghost" style={{ flex: 1, minHeight: 52, padding: "16px 12px", background: "rgba(10, 10, 12, 0.6)", border: "1px solid rgba(255, 255, 255, 0.1)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", borderRadius: "var(--radius)" }}>
+              Explore Experiments
+              <ArrowRightIcon width={15} height={15} />
+            </Link>
           </div>
           <p className="hero-note" style={{ animation: "acBlurIn 800ms cubic-bezier(.16,1,.3,1) 360ms both" }}>
             For buyers with a clear idea or problem — or visitors who want to see how Aceva thinks and builds.
@@ -192,7 +191,7 @@ export default function HomePage() {
               <ArrowRightIcon />
             </Link>
           </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 0, marginTop: "clamp(30px,4vw,50px)", borderTop: "1px solid var(--hairline)" }}>
+          <div className="process-steps-grid" style={{ marginTop: "clamp(30px,4vw,50px)", borderTop: "1px solid var(--hairline)" }}>
             {PROCESS_STEPS.map((step, i, arr) => (
               <Reveal key={step.n} style={{ padding: "26px 22px", borderRight: i < arr.length - 1 ? "1px solid var(--hairline)" : "none" }}>
                 <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, color: "var(--electric)", margin: "0 0 14px" }}>STEP {step.n}</p>
@@ -271,7 +270,7 @@ export default function HomePage() {
           <Reveal>
             <Card variant="flagship" className="home-teaser-card" style={{ padding: 30, height: "100%" }}>
               <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 16px" }}>CAREERS</p>
-              <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 21, fontWeight: 500, lineHeight: 1.34, letterSpacing: "-.01em", margin: 0 }}>Five seniors. Five juniors. Every change reviewed.</p>
+              <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 21, fontWeight: 500, lineHeight: 1.34, letterSpacing: "-.01em", margin: 0 }}>Every change reviewed. Every engineer mentored.</p>
               <p style={{ fontSize: 14.5, lineHeight: 1.6, color: "var(--muted)", margin: "12px 0 0" }}>No junior change reaches production without a named senior review. That is how people grow here.</p>
               <ArrowLink href={ROUTES.careers} style={{ marginTop: 22, fontSize: 14 }}>
                 How the team works

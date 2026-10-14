@@ -881,7 +881,15 @@ html {
   display: flex;
 }
 [data-main] {
-  padding-bottom: 0;
+  padding-bottom: calc(76px + env(safe-area-inset-bottom));
+}
+@media (min-width: 700px) {
+  [data-mobile-cta] {
+    display: none;
+  }
+  [data-main] {
+    padding-bottom: 0;
+  }
 }
 @media (min-width: 1000px) {
   [data-desktop-nav] {
@@ -1143,8 +1151,16 @@ html {
 }
 
 .hero-actions > a {
-  flex: 1 1 220px;
   justify-content: center;
+}
+
+/* Contact Us reads as the primary action and fills the remaining row width;
+   Explore Experiments stays sized to its own content. */
+.hero-actions > .ac-btn-primary {
+  flex: 1 1 0%;
+}
+.hero-actions > .ac-btn-ghost {
+  flex: 0 1 auto;
 }
 
 .hero-note {
@@ -1202,7 +1218,9 @@ html {
 
 @media (max-width: 767px) {
   .hero-content {
-    padding: 116px 20px 56px;
+    /* Clear the floating header on notched iPhones and Android devices with
+       display cutouts without relying on a model-specific pixel offset. */
+    padding: max(124px, calc(102px + env(safe-area-inset-top))) 20px 56px;
   }
 
   .hero-kicker {
@@ -1215,9 +1233,48 @@ html {
     width: min(100%, 360px);
   }
 
-  .hero-actions > a {
+  .hero-actions > a,
+  .hero-actions > .ac-btn-primary,
+  .hero-actions > .ac-btn-ghost {
     flex: 1 1 100%;
     justify-content: center;
+  }
+}
+
+/* Short phone landscapes need the same safe header clearance, but should not
+   inherit portrait-scale vertical rhythm. The section can grow naturally when
+   browser chrome leaves very little usable height. */
+@media (max-width: 767px) and (orientation: landscape) and (max-height: 520px) {
+  .hero {
+    min-height: auto;
+  }
+
+  .hero-content {
+    padding-top: max(96px, calc(80px + env(safe-area-inset-top)));
+    padding-bottom: 44px;
+  }
+
+  .hero-kicker {
+    margin-bottom: 18px;
+  }
+}
+
+/* Process strip step grid: explicit column counts instead of auto-fit, so a
+   5-item grid never lands on a column count (e.g. 4) that strands one item
+   alone on its own row with a large empty gap beside it. */
+.process-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+  .process-steps-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 767px) {
+  .process-steps-grid {
+    grid-template-columns: 1fr;
   }
 }
 

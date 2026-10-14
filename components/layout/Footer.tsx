@@ -99,14 +99,6 @@ export default function Footer() {
               <a href={`tel:${CONTACT_PHONE.e164}`} style={{ fontSize: 14, color: "var(--ink)" }}>
                 {CONTACT_PHONE.display}
               </a>
-              <a
-                href={CONTACT_PHONE.whatsapp}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ fontSize: 14, color: "var(--muted)" }}
-              >
-                Chat on WhatsApp
-              </a>
             </div>
             <SocialLinks className={styles.socialRow} />
           </div>

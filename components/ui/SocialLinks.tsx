@@ -1,6 +1,6 @@
 import type { ComponentType, SVGProps } from "react";
 import { SOCIAL_LINKS } from "@/lib/social";
-import { FacebookIcon, InstagramIcon, LinkedInIcon, XIcon } from "@/components/ui/icons";
+import { FacebookIcon, InstagramIcon, LinkedInIcon, WhatsAppIcon, XIcon } from "@/components/ui/icons";
 import styles from "./SocialLinks.module.css";
 
 const ICONS: Record<string, ComponentType<SVGProps<SVGSVGElement>>> = {
@@ -8,6 +8,7 @@ const ICONS: Record<string, ComponentType<SVGProps<SVGSVGElement>>> = {
   instagram: InstagramIcon,
   facebook: FacebookIcon,
   x: XIcon,
+  whatsapp: WhatsAppIcon,
 };
 
 export default function SocialLinks({

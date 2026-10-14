@@ -9,7 +9,7 @@ source: knowledge/website-content.md
 ## Why ACEVA — Market Positioning & Core Values
 ACEVA Technology competes by proving more, not by saying more. 
 - **Global Market Reach**: Operating with New York market access for proximity to real business problems while maintaining global delivery capacity.
-- **Engineering Mentorship Engine**: Structured engineering model where 5 senior engineering professionals review all work of 5 juniors growing under named mentors. No junior code reaches production without senior review.
+- **Engineering Mentorship Engine**: Structured engineering model where senior engineering professionals review all work of juniors growing under named mentors. No junior code reaches production without senior review.
 - **Finished Proof Over Huge Promises**: Started with a clear constraint to demonstrate that a smaller finished version beats a huge unfinished promise. The website itself is designed as a product-grade experience rather than a brochure.
 
 ## What ACEVA Competes On
@@ -49,4 +49,4 @@ ACEVA showcases concept demos and internal product frameworks (honestly labeled 
 ## Legal and Terms Principles
 - **Privacy**: Contact form collects name, work email, optional company, capability of interest, and project description for direct human review. Data is retained strictly for project evaluation.
 - **Intellectual Property Guarantee**: Clients maintain complete ownership of all delivered source code, repositories, cloud accounts, and data under agreed terms.
-- **Verified Contact Channel**: Official public contact channels are `acevatech.official@gmail.com` and `+92 305 555 2230`. See `contact.md` for the full verified list including social profiles.
+- **Verified Contact Channel**: Official public contact channels are `contact@acevatech.com` and `+92 305 555 2230`. See `contact.md` for the full verified list including social profiles.
