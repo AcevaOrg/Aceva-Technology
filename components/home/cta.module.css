@@ -1,0 +1,131 @@
+/* ---------- Final CTA: back on the dark stage, flowing into the footer ---------- */
+
+.cta {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(110px, 13vw, 200px);
+}
+
+.beam {
+  --bw: clamp(320px, 36vw, 620px);
+  position: absolute;
+  top: -30%;
+  left: calc(84% - var(--bw) / 2);
+  width: var(--bw);
+  height: 160%;
+  transform: rotate(26deg);
+  pointer-events: none;
+}
+
+.beamLines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(90deg, transparent 0 11px, rgba(70, 104, 255, 0.32) 11px 12px);
+  -webkit-mask-image: radial-gradient(closest-side, #000 0%, rgba(0, 0, 0, 0.45) 45%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 0%, rgba(0, 0, 0, 0.45) 45%, transparent 100%);
+}
+
+.beamCore {
+  position: absolute;
+  top: 12%;
+  bottom: 12%;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, transparent, rgba(143, 168, 255, 0.5) 25%, #fff 50%, rgba(143, 168, 255, 0.5) 75%, transparent);
+  box-shadow: 0 0 22px 3px rgba(47, 80, 255, 0.5);
+}
+
+.grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(56px, 7vw, 96px);
+}
+
+@media (min-width: 1100px) {
+  .grid {
+    grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+    align-items: end;
+  }
+}
+
+.title {
+  max-width: 17ch;
+  font-size: clamp(2.4rem, 5.2vw, 5rem);
+}
+
+.lede {
+  margin-top: 26px;
+}
+
+.actions {
+  margin-top: 36px;
+}
+
+.faq {
+  padding: 24px;
+  border-radius: 18px;
+  background: rgba(20, 22, 28, 0.82);
+  box-shadow: inset 0 0 0 1px var(--c-line);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.faqLabel {
+  margin: 0 0 8px;
+  font-family: var(--h-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--h-ice);
+}
+
+.faqList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.faqLink,
+.faqLink:visited {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 52px;
+  padding: 12px 0;
+  border-top: 1px solid var(--c-line);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--c-fg);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.faqList li:first-child .faqLink {
+  border-top: 0;
+}
+
+.faqLink svg {
+  flex: none;
+  transition: transform 0.35s var(--h-ease);
+}
+
+.faqLink:hover {
+  color: var(--h-ice);
+}
+
+.faqLink:hover svg {
+  transform: translateX(3px);
+}
+
+@media (max-width: 767px) {
+  .beam {
+    --bw: 70vw;
+    top: -45%;
+    left: calc(96% - var(--bw) / 2);
+    opacity: 0.45;
+  }
+}
