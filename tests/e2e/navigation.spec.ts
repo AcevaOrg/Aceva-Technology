@@ -55,17 +55,20 @@ test("each experiment links back to the homepage", async ({ page }, testInfo) =>
   }
 });
 
-test("the selected path can be closed with an accessible control", async ({ page }, testInfo) => {
+test("a path row opens its first engagement and closes again", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop-chromium", "Desktop-only interaction check");
   await page.goto("/");
 
-  const pathCard = page.getByRole("button", { name: /I am starting something new/ });
-  await pathCard.click();
-  const closeButton = page.getByRole("button", { name: "Close", exact: true });
-  await expect(closeButton).toBeVisible();
-  await closeButton.click();
-  await expect(closeButton).toBeHidden();
-  await expect(pathCard).toHaveAttribute("aria-pressed", "false");
+  const pathToggle = page.getByRole("button", { name: /I am starting something new/ });
+  await expect(pathToggle).toHaveAttribute("aria-expanded", "false");
+  await pathToggle.click();
+  await expect(pathToggle).toHaveAttribute("aria-expanded", "true");
+  const cta = page.locator("#path-new-panel").getByRole("link", { name: "Scope my idea" });
+  await expect(cta).toBeVisible();
+  await expect(cta).toHaveAttribute("href", "/contact?situation=new");
+  await pathToggle.click();
+  await expect(pathToggle).toHaveAttribute("aria-expanded", "false");
+  await expect(cta).toBeHidden();
 });
 
 test("mobile menu opens without horizontal overflow and navigates", async ({ page }, testInfo) => {
@@ -78,11 +81,11 @@ test("mobile menu opens without horizontal overflow and navigates", async ({ pag
     const footer = document.querySelector("footer");
     return main && footer ? footer.getBoundingClientRect().top - main.getBoundingClientRect().bottom : null;
   })).toBe(0);
-  const hero = page.locator(".hero");
-  await expect(hero.getByRole("link", { name: "Contact Us" })).toHaveAttribute("href", "mailto:contact@acevatech.com");
-  await expect.poll(() => hero.locator(".ac-section-image").evaluate((image) => getComputedStyle(image).animationName)).toBe("acDrift");
+  const hero = page.locator("[data-home-hero]");
+  await expect(hero.getByRole("heading", { level: 1 })).toContainText("Build what’s next.");
+  await expect(hero.getByRole("link", { name: "Start a project" })).toHaveAttribute("href", "/contact");
   await page.locator("#paths").scrollIntoViewIfNeeded();
-  await expect.poll(() => page.locator("#paths > div > div").first().evaluate((reveal) => getComputedStyle(reveal).opacity)).toBe("1");
+  await expect.poll(() => page.locator("#paths [data-reveal]").first().evaluate((reveal) => getComputedStyle(reveal).opacity)).toBe("1");
   const menuButton = page.getByRole("button", { name: "Open menu" });
   await expect(menuButton).toBeInViewport();
   await menuButton.click();

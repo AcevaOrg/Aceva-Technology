@@ -880,15 +880,10 @@ html {
 [data-mobile-cta] {
   display: flex;
 }
-[data-main] {
-  padding-bottom: calc(76px + env(safe-area-inset-bottom));
-}
+/* The footer reserves room for this bar (components/layout/Footer.module.css). */
 @media (min-width: 700px) {
   [data-mobile-cta] {
     display: none;
-  }
-  [data-main] {
-    padding-bottom: 0;
   }
 }
 @media (min-width: 1000px) {
@@ -903,9 +898,6 @@ html {
   }
   [data-mobile-cta] {
     display: none;
-  }
-  [data-main] {
-    padding-bottom: 0;
   }
 }
 

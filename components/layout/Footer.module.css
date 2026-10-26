@@ -1,282 +1,474 @@
-.animatedBackdrop {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
+/*
+ * Site footer: the dark closing frame shared by every route.
+ * Editorial hairline grid, contact first, a quiet slash-lit wordmark to close.
+ * Tokens are local so the footer never depends on page-level variables.
+ */
+
+.footer {
+  --f-bg: #08090c;
+  --f-fg: #f4f5f7;
+  --f-text: #c3c8d3;
+  --f-muted: #9aa1b2;
+  --f-dim: #868d9c;
+  --f-line: rgba(255, 255, 255, 0.09);
+  --f-line-strong: rgba(255, 255, 255, 0.24);
+  --f-ice: #8fa8ff;
+  --f-blue: #1a3cf5;
+  --f-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --f-display: var(--font-space-grotesk), "Space Grotesk", sans-serif;
+  --f-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --f-gutter: clamp(20px, 4vw, 56px);
+
+  position: relative;
+  z-index: 1;
   overflow: hidden;
-  pointer-events: none;
+  border-top: 1px solid var(--f-line);
   background:
-    linear-gradient(rgba(127, 178, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(127, 178, 255, 0.035) 1px, transparent 1px),
-    #08090d;
-  background-size: 64px 64px;
+    radial-gradient(60% 120% at 50% 118%, rgba(26, 60, 245, 0.12), transparent 70%),
+    var(--f-bg);
+  color: var(--f-fg);
 }
 
-.ambientGlow {
-  position: absolute;
-  inset: -45%;
-  background:
-    radial-gradient(circle at 50% 50%, rgba(59, 124, 255, 0.24), transparent 28%),
-    conic-gradient(from 210deg at 50% 50%, transparent 0 30%, rgba(30, 79, 217, 0.12), transparent 48% 100%);
-  filter: blur(18px);
-  animation: glowOrbit 18s ease-in-out infinite alternate;
-}
-
-.wordmarkTrack {
-  position: absolute;
-  top: 66%;
-  left: 50%;
-  width: min(68vw, 940px);
-  transform: translate(-50%, -50%);
-  animation: wordmarkFloat 12s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
-}
-
-.backgroundWord {
-  display: block;
+.wrap {
   width: 100%;
-  height: auto;
-  opacity: 0.22;
-  filter: drop-shadow(0 0 38px rgba(59, 124, 255, 0.12));
-  animation: wordmarkSheen 9s linear infinite;
-  user-select: none;
+  max-width: 1360px;
+  margin-inline: auto;
+  padding: clamp(56px, 6.5vw, 96px) var(--f-gutter) clamp(12px, 2vw, 24px);
 }
 
-.backdropVeil {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(180deg, rgba(10, 10, 12, 0.84), rgba(10, 10, 12, 0.42) 34%, rgba(10, 10, 12, 0.56) 72%, rgba(10, 10, 12, 0.92)),
-    linear-gradient(90deg, rgba(10, 10, 12, 0.78), transparent 30%, transparent 70%, rgba(10, 10, 12, 0.78));
+/* ---------- top: brand and contact ---------- */
+
+.top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(36px, 4vw, 64px);
+  padding-bottom: clamp(40px, 5vw, 64px);
+  border-bottom: 1px solid var(--f-line);
 }
 
-.brandLockup {
-  display: flex;
+@media (min-width: 1100px) {
+  .top {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: end;
+  }
+}
+
+.lockup,
+.lockup:visited,
+.lockup:hover {
+  display: inline-flex;
   align-items: center;
   gap: 12px;
+  color: var(--f-fg);
 }
 
-.brandText {
+.lockupText {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   line-height: 1;
 }
 
-.brandName {
-  font-family: var(--font-space-grotesk), sans-serif;
-  font-size: 16px;
+.lockupName {
+  font-family: var(--f-display);
+  font-size: 17px;
   font-weight: 600;
   letter-spacing: 0.16em;
 }
 
-.brandSub {
-  font-family: var(--font-jetbrains-mono), monospace;
+.lockupSub {
+  margin-top: 4px;
+  font-family: var(--f-mono);
   font-size: 7.5px;
   letter-spacing: 0.32em;
-  color: var(--electric);
-  margin-top: 3px;
+  color: var(--f-ice);
 }
 
-@keyframes wordmarkFloat {
-  from { transform: translate(-51.5%, -48%) scale(1); }
-  to { transform: translate(-48.5%, -52%) scale(1.035); }
+.statement {
+  max-width: 40ch;
+  margin-top: 22px;
+  font-size: clamp(16px, 1.25vw, 18px);
+  line-height: 1.62;
+  color: var(--f-muted);
 }
 
-@keyframes wordmarkSheen {
-  0%, 100% { opacity: 0.16; filter: drop-shadow(0 0 24px rgba(59, 124, 255, 0.08)); }
-  50% { opacity: 0.28; filter: drop-shadow(0 0 42px rgba(59, 124, 255, 0.18)); }
-}
-
-@keyframes glowOrbit {
-  from { transform: translate3d(-4%, 1%, 0) rotate(-4deg); }
-  to { transform: translate3d(4%, -2%, 0) rotate(5deg); }
-}
-
-.footerGrid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 28px;
-  align-items: stretch;
-}
-
-.brandBlock {
-  grid-column: span 2;
-  min-width: 0;
-}
-
-.contactBlock {
-  min-width: 0;
-}
-
-.socialRow {
+.entity {
   margin-top: 18px;
-}
-
-.navCard {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  height: 100%;
-  min-height: 218px;
-  padding: 20px;
-  overflow: hidden;
-  border: 1px solid rgba(59, 124, 255, 0.3);
-  border-radius: var(--radius);
-  background: linear-gradient(
-    145deg,
-    rgba(30, 79, 217, 0.13),
-    rgba(106, 79, 224, 0.06) 55%,
-    rgba(20, 20, 24, 0.24)
-  );
-  backdrop-filter: blur(32px) saturate(115%);
-  -webkit-backdrop-filter: blur(32px) saturate(115%);
-  box-shadow:
-    0 16px 44px rgba(0, 0, 0, 0.32),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-
-.navTitle {
-  margin: 0 0 15px;
-  color: var(--muted);
-  font-family: var(--font-jetbrains-mono);
-  font-size: 10px;
-  line-height: 1.4;
+  font-family: var(--f-mono);
+  font-size: 11px;
   letter-spacing: 0.16em;
+  color: var(--f-dim);
 }
 
-.linkList {
+.label {
   display: flex;
-  flex: 1;
-  flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  font-family: var(--f-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--f-muted);
+}
+
+/* the logo's slash, as a marker */
+.slash {
+  display: inline-block;
+  flex: none;
+  width: 9px;
+  height: 14px;
+  background: var(--f-ice);
+  clip-path: polygon(62% 0, 100% 0, 38% 100%, 0 100%);
+}
+
+.emailRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 20px;
+}
+
+.email,
+.email:visited {
+  font-family: var(--f-display);
+  font-size: clamp(1.7rem, 3.4vw, 3rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  color: var(--f-fg);
+  overflow-wrap: anywhere;
+  background-image: linear-gradient(var(--f-ice), var(--f-ice));
+  background-size: 0% 2px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.5s var(--f-ease), color 0.2s;
+}
+
+.email:hover {
+  color: #fff;
+  background-size: 100% 2px;
+}
+
+.copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--f-line-strong);
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--f-text);
+  transition: color 0.2s, box-shadow 0.2s;
+}
+
+.copy:hover {
+  color: var(--f-fg);
+  box-shadow: inset 0 0 0 1px var(--f-fg);
+}
+
+.copy[data-state="copied"] {
+  color: #6fdca5;
+  box-shadow: inset 0 0 0 1px rgba(111, 220, 165, 0.5);
+}
+
+.copy[data-state="failed"] {
+  color: #ff8f80;
+  box-shadow: inset 0 0 0 1px rgba(255, 143, 128, 0.5);
+}
+
+.channels {
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
-}
-
-.link {
-  background: none;
-  border: 0;
+  margin: 24px 0 0;
   padding: 0;
-  color: var(--ink);
-  font-size: 13px;
-  line-height: 1.4;
-  text-align: left;
+  list-style: none;
+}
+
+.channel,
+.channel:visited {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 46px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: inset 0 0 0 1px var(--f-line-strong);
+  font-family: var(--font-instrument-sans), system-ui, sans-serif;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--f-fg);
+  transition: box-shadow 0.25s var(--f-ease), background-color 0.25s var(--f-ease), color 0.2s;
+}
+
+.channel svg {
+  color: var(--f-ice);
+}
+
+.channel:hover {
+  color: var(--f-fg);
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 0 0 1px var(--f-fg);
+}
+
+/* ---------- link columns ---------- */
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px 24px;
+  padding-block: clamp(36px, 4.5vw, 60px);
+}
+
+@media (min-width: 900px) {
+  .columns {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 32px;
+  }
+}
+
+.column {
+  min-width: 0;
+}
+
+.columnTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--f-line);
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--f-muted);
+}
+
+.columnIndex {
+  color: var(--f-ice);
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.link,
+.link:visited {
   position: relative;
-  transition: color 160ms ease;
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  color: var(--f-text);
+  font-size: 15px;
+  line-height: 1.35;
 }
 
-@media (max-width: 980px) {
-  .footerGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .brandBlock {
-    grid-column: span 2;
-  }
-}
-
-@media (max-width: 560px) {
-  .animatedBackdrop {
-    background-size: 42px 42px;
-  }
-
-  .wordmarkTrack {
-    top: 46%;
-    width: min(100vw, 520px);
-    transform: translate(-50%, -50%) rotate(-90deg);
-    animation: wordmarkFloatMobile 12s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
-  }
-
-  .backgroundWord {
-    opacity: 0.2;
-  }
-
-  .footerGrid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .brandBlock {
-    grid-column: span 1;
-    margin-bottom: 12px;
-  }
-
-  .navCard {
-    min-height: 0;
-    padding: 18px;
-    border-color: rgba(127, 178, 255, 0.22);
-    background: rgba(16, 18, 28, 0.72);
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
-  }
-
-  .linkList {
-    gap: 13px;
-  }
-
-  .link {
-    min-height: 30px;
-    font-size: 14px;
-  }
-}
-
-.link::after {
+/* hover: the slash steps in and the label makes room for it */
+.link::before {
   content: "";
   position: absolute;
   left: 0;
-  bottom: -3px;
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(90deg, var(--royal), var(--electric));
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  top: 50%;
+  width: 7px;
+  height: 12px;
+  margin-top: -6px;
+  background: var(--f-ice);
+  clip-path: polygon(62% 0, 100% 0, 38% 100%, 0 100%);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.25s var(--f-ease), transform 0.35s var(--f-ease);
 }
-.link:hover {
-  color: var(--ice);
+
+.linkText {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  transition: transform 0.35s var(--f-ease);
 }
-.link:hover::after {
-  transform: scaleX(1);
+
+.link:hover,
+.link:focus-visible {
+  color: var(--f-fg);
 }
-.bottomLink {
-  background: none;
-  border: 0;
+
+.link:hover::before,
+.link:focus-visible::before {
+  opacity: 1;
+  transform: none;
+}
+
+.link:hover .linkText,
+.link:focus-visible .linkText {
+  transform: translateX(15px);
+}
+
+.profileIcon {
+  flex: none;
+  color: var(--f-muted);
+  transition: color 0.2s;
+}
+
+.link:hover .profileIcon,
+.link:focus-visible .profileIcon {
+  color: var(--f-fg);
+}
+
+.external {
+  flex: none;
+  color: var(--f-dim);
+  transform: rotate(-45deg);
+}
+
+/* ---------- legal ---------- */
+
+.legal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 28px;
+  padding-block: 14px;
+  border-top: 1px solid var(--f-line);
+}
+
+.copyright {
+  font-family: var(--f-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  color: var(--f-dim);
+}
+
+.legalLinks {
+  display: flex;
+  gap: 24px;
+  margin: 0;
   padding: 0;
-  color: var(--muted);
-  font-size: 13px;
-  position: relative;
-  transition: color 160ms ease;
+  list-style: none;
 }
-.bottomLink::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -3px;
+
+.legalLink,
+.legalLink:visited {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 13.5px;
+  color: var(--f-muted);
+  transition: color 0.2s;
+}
+
+.legalLink:hover {
+  color: var(--f-fg);
+}
+
+/* ---------- signature ---------- */
+
+.signature {
+  display: block;
   width: 100%;
+  height: auto;
+  margin-top: clamp(16px, 2.5vw, 32px);
+}
+
+.sweep {
+  transform: translateX(0);
+}
+
+.signature[data-in] .sweep {
+  animation: footerSweep 2.4s cubic-bezier(0.65, 0, 0.35, 1) 0.15s both;
+}
+
+@keyframes footerSweep {
+  to {
+    transform: translateX(1350px);
+  }
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
   height: 1px;
-  background: linear-gradient(90deg, var(--royal), var(--electric));
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
-.bottomLink:hover {
-  color: var(--ink);
+
+/* ---------- small screens ---------- */
+
+@media (max-width: 699px) {
+  .link,
+  .link:visited {
+    min-height: 42px;
+  }
+
+  .email,
+  .email:visited {
+    font-size: clamp(1.35rem, 6.4vw, 1.7rem);
+  }
+
+  /* icon-only beside the address; the button keeps its accessible name */
+  .copy {
+    width: 44px;
+    min-height: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .copy > span {
+    display: none;
+  }
+
+  .emailRow {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .channels li {
+    flex: 1 1 auto;
+  }
+
+  .channel {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .legal {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+  }
+
+  /* the fixed mobile action bar covers the last 76px of the page; keep the footer clear of it */
+  :global(body:has([data-mobile-cta])) .footer {
+    padding-bottom: calc(76px + env(safe-area-inset-bottom));
+  }
 }
-.bottomLink:hover::after {
-  transform: scaleX(1);
-}
+
 @media (prefers-reduced-motion: reduce) {
-  .ambientGlow,
-  .wordmarkTrack,
-  .backgroundWord {
+  .email,
+  .copy,
+  .channel,
+  .link::before,
+  .linkText,
+  .legalLink {
+    transition: none;
+  }
+
+  .signature[data-in] .sweep {
     animation: none;
   }
-
-  .link::after,
-  .bottomLink::after {
-    transition: none;
-    transform: none;
-  }
-}
-
-@keyframes wordmarkFloatMobile {
-  from { transform: translate(-50%, -51%) rotate(-90deg) scale(1); }
-  to { transform: translate(-50%, -47%) rotate(-90deg) scale(1.025); }
 }

@@ -1,0 +1,253 @@
+/* ---------- How we work: principle, delivery loop, commitments, limits ---------- */
+
+.quoteWrap {
+  margin-bottom: clamp(80px, 10vw, 150px);
+}
+
+.quote {
+  margin: 0;
+  max-width: 20ch;
+  font-family: var(--h-display);
+  font-size: clamp(2.5rem, 6vw, 6rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.045em;
+  color: var(--c-fg);
+}
+
+/* each word lights up as the line scrolls through the viewport; finished state by default */
+.word {
+  opacity: clamp(0.13, calc(var(--p, 1) * (var(--n) + 3) - var(--i)), 1);
+}
+
+.accent {
+  color: var(--c-accent);
+}
+
+@media (max-width: 767px) {
+  .how .quote {
+    font-size: clamp(2.1rem, 9.6vw, 2.9rem) !important;
+    line-height: 1.02 !important;
+    letter-spacing: -0.04em !important;
+  }
+}
+
+.subhead {
+  margin: 0;
+  font-family: var(--h-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+}
+
+/* ---------- delivery loop ---------- */
+
+.process {
+  margin-bottom: clamp(80px, 10vw, 140px);
+}
+
+.processHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: clamp(28px, 4vw, 48px);
+}
+
+.timeline {
+  position: relative;
+}
+
+.track {
+  position: absolute;
+  top: 11px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--c-line);
+}
+
+.trackFill {
+  display: block;
+  height: 100%;
+  background: var(--h-blue);
+  transform: scaleX(var(--p, 1));
+  transform-origin: left;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(16px, 2.4vw, 36px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  position: relative;
+  padding-top: 44px;
+}
+
+.node {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  background: var(--c-bg);
+  box-shadow: inset 0 0 0 1px var(--c-line-strong);
+}
+
+.nodeFill {
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  background: var(--h-blue);
+  opacity: clamp(0, calc((var(--p, 1) * 5 - var(--i)) * 2), 1);
+}
+
+.stepNum {
+  display: block;
+  font-family: var(--h-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.stepTitle {
+  margin: 10px 0 10px;
+  font-family: var(--h-display);
+  font-size: clamp(1.3rem, 1.8vw, 1.65rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.stepBody {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--c-muted);
+}
+
+@media (max-width: 899px) {
+  .track {
+    top: 0;
+    bottom: 0;
+    left: 11px;
+    right: auto;
+    width: 1px;
+    height: auto;
+  }
+
+  .trackFill {
+    width: 100%;
+    height: 100%;
+    transform: scaleY(var(--p, 1));
+    transform-origin: top;
+  }
+
+  .steps {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+
+  .step {
+    padding-top: 0;
+    padding-left: 48px;
+  }
+}
+
+/* ---------- commitments and limits ---------- */
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(56px, 6vw, 96px);
+}
+
+@media (min-width: 1000px) {
+  .split {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+.commitments,
+.limits {
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--c-line-strong);
+}
+
+.commitments li {
+  padding: 24px 0;
+  border-bottom: 1px solid var(--c-line);
+}
+
+.commitTitle {
+  margin: 0;
+  font-family: var(--h-display);
+  font-size: clamp(1.35rem, 2vw, 1.75rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.commitBody {
+  margin: 10px 0 0;
+  max-width: 48ch;
+  font-size: 15.5px;
+  line-height: 1.62;
+  color: var(--c-muted);
+}
+
+.limits li {
+  display: flex;
+  gap: 18px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--c-line);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--c-muted);
+}
+
+.limitNum {
+  flex: none;
+  padding-top: 4px;
+  font-family: var(--h-mono);
+  font-size: 11px;
+  color: var(--c-accent);
+}
+
+.limitCap {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-fg);
+}
+
+.signatures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  margin: clamp(56px, 7vw, 96px) 0 0;
+  padding: 28px 0 0;
+  list-style: none;
+  border-top: 1px solid var(--c-line);
+}
+
+.signatures li {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--h-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--c-fg);
+}

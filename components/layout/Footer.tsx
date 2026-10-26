@@ -1,120 +1,192 @@
+import type { ComponentType, SVGProps } from "react";
 import Link from "next/link";
 import { ROUTES, capabilityRoute } from "@/lib/nav";
-import { CONTACT_EMAIL, CONTACT_PHONE } from "@/lib/social";
-import { LogoMark } from "@/components/ui/icons";
-import SocialLinks from "@/components/ui/SocialLinks";
+import { CONTACT_EMAIL, CONTACT_PHONE, SOCIAL_LINKS } from "@/lib/social";
+import { ArrowRightIcon, FacebookIcon, InstagramIcon, LinkedInIcon, LogoMark, PhoneIcon, WhatsAppIcon, XIcon } from "@/components/ui/icons";
+import FooterCopyEmail from "./FooterCopyEmail";
+import FooterPulseButton from "./FooterPulseButton";
+import FooterSignature from "./FooterSignature";
 import styles from "./Footer.module.css";
 
-const CAPABILITY_LINKS = [
-  { href: capabilityRoute("digital"), label: "Digital Experiences" },
-  { href: capabilityRoute("software"), label: "Custom Software" },
-  { href: capabilityRoute("mobile"), label: "Mobile Products" },
-  { href: capabilityRoute("intelligence"), label: "Intelligence & Automation" },
-  { href: capabilityRoute("rescue"), label: "Product Rescue" },
+type FooterLink = { href: string; label: string };
+
+const GROUPS: { key: string; title: string; links: FooterLink[] }[] = [
+  {
+    key: "capabilities",
+    title: "Capabilities",
+    links: [
+      { href: capabilityRoute("digital"), label: "Digital Experiences" },
+      { href: capabilityRoute("software"), label: "Custom Software" },
+      { href: capabilityRoute("mobile"), label: "Mobile Products" },
+      { href: capabilityRoute("intelligence"), label: "Intelligence & Automation" },
+      { href: capabilityRoute("rescue"), label: "Product Rescue" },
+    ],
+  },
+  {
+    key: "company",
+    title: "Company",
+    links: [
+      { href: ROUTES.company, label: "About Us" },
+      { href: ROUTES.about, label: "Why Aceva" },
+      { href: ROUTES.process, label: "How We Work" },
+      { href: ROUTES.industries, label: "Industries" },
+      { href: ROUTES.careers, label: "Careers" },
+      { href: ROUTES.contact, label: "Contact" },
+    ],
+  },
+  {
+    key: "resources",
+    title: "Resources",
+    links: [
+      { href: ROUTES.work, label: "Experiments" },
+      { href: ROUTES.technology, label: "Technology Stack" },
+      { href: ROUTES.insights, label: "Insights" },
+      { href: ROUTES.faq, label: "FAQs" },
+    ],
+  },
 ];
 
-const COMPANY_LINKS = [
-  { href: ROUTES.company, label: "About Us" },
-  { href: ROUTES.about, label: "Why Aceva" },
-  { href: ROUTES.process, label: "How We Work" },
-  { href: ROUTES.industries, label: "Industries" },
-  { href: ROUTES.careers, label: "Careers" },
-];
+// WhatsApp is a conversation channel, so it sits with the phone line rather than the profiles.
+const PROFILE_NAMES: Record<string, { name: string; Icon: ComponentType<SVGProps<SVGSVGElement>> }> = {
+  linkedin: { name: "LinkedIn", Icon: LinkedInIcon },
+  instagram: { name: "Instagram", Icon: InstagramIcon },
+  facebook: { name: "Facebook", Icon: FacebookIcon },
+  x: { name: "X", Icon: XIcon },
+};
+const PROFILES = SOCIAL_LINKS.filter((social) => social.key in PROFILE_NAMES);
 
-const RESOURCE_LINKS = [
-  { href: ROUTES.work, label: "Experiments" },
-  { href: ROUTES.technology, label: "Technology Stack" },
-  { href: ROUTES.insights, label: "Insights" },
-  { href: ROUTES.faq, label: "FAQs" },
-];
-
-function LinkColumn({ title, links, card = false }: { title: string; links: { href: string; label: string }[]; card?: boolean }) {
+function PulseGlyph() {
   return (
-    <div className={card ? styles.navCard : undefined}>
-      <p className={styles.navTitle}>{title}</p>
-      <div className={styles.linkList}>
-        {links.map((l) => (
-          <Link key={l.href} href={l.href} className={styles.link}>
-            {l.label}
-          </Link>
-        ))}
-      </div>
-    </div>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M2 12h4l2.5-7 4 14 3-10.5 1.5 3.5h5" />
+    </svg>
   );
 }
 
 export default function Footer() {
   return (
-    <footer className="ac-hairline" style={{ borderTop: "1px solid var(--hairline)", position: "relative", zIndex: 1, overflow: "hidden" }}>
-      <div aria-hidden="true" className={styles.animatedBackdrop}>
-        <div className={styles.ambientGlow} />
-        <div className={styles.wordmarkTrack}>
-          <svg className={styles.backgroundWord} viewBox="0 0 1000 170" role="presentation">
-            <defs>
-              <linearGradient id="footerWordmarkFill" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0" stopColor="#315baf" />
-                <stop offset="0.48" stopColor="#dce9ff" />
-                <stop offset="1" stopColor="#3b7cff" />
-              </linearGradient>
-            </defs>
-            <g fill="url(#footerWordmarkFill)">
-              <path d="M20 150 100 20l80 130h-32l-48-79-48 79Z" />
-              <path d="M380 20H280l-60 65 60 65h100v-26h-89l-39-39 39-39h89Z" />
-              <path d="M420 20h160v26H420Zm0 54h140v22H420Zm0 50h160v26H420Z" />
-              <path d="m620 20 32 1 48 81 48-81 32-1-80 130Z" />
-              <path d="m820 150 80-130 80 130h-32l-48-79-48 79Z" />
-            </g>
-          </svg>
-        </div>
-        <div className={styles.backdropVeil} />
-      </div>
-      <div className="image-backed-content" style={{ position: "relative", zIndex: 2, maxWidth: 1280, margin: "0 auto", padding: "clamp(48px,6vw,72px) clamp(20px,4vw,48px)" }}>
-        <div className={styles.footerGrid}>
-          <div className={styles.brandBlock}>
-            <div className={styles.brandLockup}>
-              <LogoMark id="acevaStrokeFoot" width={36} height={22} />
-              <span className={styles.brandText}>
-                <span className={styles.brandName}>ACEVA</span>
-                <span className={styles.brandSub}>TECHNOLOGY</span>
+    <footer className={styles.footer}>
+      <div className={styles.wrap}>
+        <div className={styles.top}>
+          <div className={styles.brand}>
+            <Link href={ROUTES.home} className={styles.lockup} aria-label="ACEVA Technology home">
+              <LogoMark id="acevaStrokeFoot" width={40} height={24} />
+              <span className={styles.lockupText}>
+                <span className={styles.lockupName}>ACEVA</span>
+                <span className={styles.lockupSub}>TECHNOLOGY</span>
               </span>
-            </div>
-            <p style={{ fontSize: 14.5, lineHeight: 1.65, color: "var(--muted)", margin: "18px 0 0", maxWidth: "34ch" }}>
+            </Link>
+            <p className={styles.statement}>
               Aceva builds new products, improves existing operations and rescues software that needs a stronger path forward.
             </p>
-            <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".16em", color: "#4b4f5b", margin: "20px 0 0" }}>
-              ACEVA HOLDINGS / SOFTWARE DIVISION
-            </p>
+            <p className={styles.entity}>ACEVA HOLDINGS / SOFTWARE DIVISION</p>
           </div>
 
-          <LinkColumn title="CAPABILITIES" links={CAPABILITY_LINKS} card />
-          <LinkColumn title="COMPANY" links={COMPANY_LINKS} card />
-          <LinkColumn title="RESOURCES" links={RESOURCE_LINKS} card />
-
-          <div className={styles.contactBlock}>
-            <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".18em", color: "var(--muted)", margin: "0 0 16px" }}>CONTACT</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 11, alignItems: "flex-start" }}>
-              <a href={`mailto:${CONTACT_EMAIL}`} style={{ fontSize: 14, color: "var(--ink)" }}>
+          <div className={styles.contact}>
+            <p className={styles.label}>
+              <span className={styles.slash} aria-hidden="true" />
+              Start a conversation
+            </p>
+            <div className={styles.emailRow}>
+              <a href={`mailto:${CONTACT_EMAIL}`} className={styles.email}>
                 {CONTACT_EMAIL}
               </a>
-              <a href={`tel:${CONTACT_PHONE.e164}`} style={{ fontSize: 14, color: "var(--ink)" }}>
-                {CONTACT_PHONE.display}
-              </a>
+              <FooterCopyEmail email={CONTACT_EMAIL} className={styles.copy} statusClassName={styles.srOnly} />
             </div>
-            <SocialLinks className={styles.socialRow} />
+            <ul className={styles.channels}>
+              <li>
+                <a href={`tel:${CONTACT_PHONE.e164}`} className={styles.channel}>
+                  <PhoneIcon width={16} height={16} />
+                  {CONTACT_PHONE.display}
+                </a>
+              </li>
+              <li>
+                <a
+                  href={CONTACT_PHONE.whatsapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.channel}
+                  aria-label="Chat with ACEVA Technology on WhatsApp (opens in a new tab)"
+                >
+                  <WhatsAppIcon width={16} height={16} />
+                  WhatsApp
+                </a>
+              </li>
+              <li>
+                <FooterPulseButton className={styles.channel}>
+                  <PulseGlyph />
+                  Ask Aceva Pulse
+                </FooterPulseButton>
+              </li>
+            </ul>
           </div>
         </div>
 
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "14px 26px", alignItems: "center", justifyContent: "space-between", marginTop: "clamp(36px,5vw,56px)", paddingTop: 24 }}>
-          <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11.5, color: "#4b4f5b", margin: 0 }}>© 2026 ACEVA TECHNOLOGY. ALL RIGHTS RESERVED.</p>
-          <div style={{ display: "flex", gap: 22, alignItems: "center" }}>
-            <Link href={ROUTES.privacy} className={styles.bottomLink}>
-              Privacy Policy
-            </Link>
-            <Link href={ROUTES.terms} className={styles.bottomLink}>
-              Terms of Service
-            </Link>
+        <nav className={styles.columns} aria-label="Footer">
+          {GROUPS.map((group, index) => (
+            <div key={group.key} className={styles.column}>
+              <p id={`footer-${group.key}`} className={styles.columnTitle}>
+                <span className={styles.columnIndex}>0{index + 1}</span>
+                {group.title}
+              </p>
+              <ul className={styles.list} aria-labelledby={`footer-${group.key}`}>
+                {group.links.map((link) => (
+                  <li key={link.href}>
+                    <Link href={link.href} className={styles.link}>
+                      <span className={styles.linkText}>{link.label}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+          <div className={styles.column}>
+            <p id="footer-follow" className={styles.columnTitle}>
+              <span className={styles.columnIndex}>0{GROUPS.length + 1}</span>
+              Follow
+            </p>
+            <ul className={styles.list} aria-labelledby="footer-follow">
+              {PROFILES.map((profile) => {
+                const { name, Icon } = PROFILE_NAMES[profile.key];
+                return (
+                  <li key={profile.key}>
+                    <a
+                      href={profile.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.link}
+                      aria-label={`${profile.label} (opens in a new tab)`}
+                    >
+                      <span className={styles.linkText}>
+                        <Icon width={15} height={15} className={styles.profileIcon} />
+                        {name}
+                        <ArrowRightIcon width={12} height={12} className={styles.external} />
+                      </span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
+        </nav>
+
+        <div className={styles.legal}>
+          <p className={styles.copyright}>© {new Date().getFullYear()} Aceva Technology. All rights reserved.</p>
+          <ul className={styles.legalLinks}>
+            <li>
+              <Link href={ROUTES.privacy} className={styles.legalLink}>
+                Privacy Policy
+              </Link>
+            </li>
+            <li>
+              <Link href={ROUTES.terms} className={styles.legalLink}>
+                Terms of Service
+              </Link>
+            </li>
+          </ul>
         </div>
+
+        <FooterSignature className={styles.signature} sweepClassName={styles.sweep} />
       </div>
     </footer>
   );

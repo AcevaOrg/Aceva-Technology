@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import type { CSSProperties } from "react";
 
 type Variant =
-  | "home"
   | "services"
   | "capDetail"
   | "work"
@@ -23,7 +22,8 @@ type Variant =
   | null;
 
 function variantFor(pathname: string): Variant {
-  if (pathname === "/") return "home";
+  // The homepage paints its own opaque sections, so it needs no ambient layer.
+  if (pathname === "/") return null;
   if (pathname === "/services") return "services";
   if (pathname.startsWith("/services/")) return "capDetail";
   if (pathname === "/experiments") return "work";
@@ -54,13 +54,6 @@ export default function AmbientBackground() {
 
   return (
     <div data-bg aria-hidden="true" style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", overflow: "hidden" }}>
-      {variant === "home" && (
-        <Layer>
-          <div style={{ position: "absolute", top: "-30%", left: "-25%", width: "150%", height: "160%", backgroundImage: "repeating-linear-gradient(90deg,rgba(59,124,255,.03) 0 1px,transparent 1px 120px)", animation: "acBgLeft 26s linear infinite" }} />
-          <div style={{ position: "absolute", top: "-40%", right: "-30%", width: "80vw", height: "80vw", maxWidth: 1000, maxHeight: 1000, borderRadius: "50%", background: "radial-gradient(circle,rgba(59,124,255,.13),transparent 62%)", animation: "acBgGlow 30s ease-in-out infinite" }} />
-          <div style={{ position: "absolute", bottom: "-45%", left: "-15%", width: "70vw", height: "70vw", maxWidth: 860, maxHeight: 860, borderRadius: "50%", background: "radial-gradient(circle,rgba(106,79,224,.10),transparent 64%)", animation: "acBgGlowAlt 38s ease-in-out infinite" }} />
-        </Layer>
-      )}
       {variant === "services" && (
         <Layer>
           <div style={{ position: "absolute", top: "-40%", left: 0, width: "100%", height: "180%", backgroundImage: "repeating-linear-gradient(0deg,rgba(59,124,255,.04) 0 1px,transparent 1px 120px)", animation: "acBgUp 22s linear infinite" }} />
