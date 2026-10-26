@@ -69,7 +69,12 @@ export default function PulseOverlay() {
       ? 0
       : ["direction", "contact", "confirmation"].includes(state.stage)
       ? 100
-      : Math.min(95, Math.round((validAnswersCount / 5) * 100));
+      // Capped below 100 only while answers are still outstanding. The cap used
+      // to apply at five answers too, so a finished discovery sat at 95% for the
+      // 4.5s before the stage flipped.
+      : validAnswersCount >= 5
+      ? 100
+      : Math.round((validAnswersCount / 5) * 100);
 
   return (
     <div

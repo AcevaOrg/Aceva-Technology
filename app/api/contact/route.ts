@@ -14,7 +14,7 @@ import {
   sanitizeHeaderValue,
 } from "@/lib/api/response";
 import { validateContact, type ContactFormValues } from "@/lib/validateContact";
-import { getClientIp, checkRateLimit, createRateLimitResponse, cleanupRateLimitStore } from "@/lib/rateLimit";
+import { getClientIp, checkRateLimit, cleanupRateLimitStore } from "@/lib/rateLimit";
 import { checkSpamContent, isDisposableEmail } from "@/lib/spamFilter";
 
 const MAX_BODY_BYTES = 16_384;
@@ -142,16 +142,11 @@ export const POST = withRouteErrorHandling("contact", async (request, requestId)
 
   // 2. Rate limiting — checked before reading the body to minimise work on abuse.
   const ip = getClientIp(request);
-  const rateLimit = checkRateLimit(ip);
+  // Scoped to "contact": the chat endpoint has its own, larger budget, so a
+  // visitor who has been chatting can still submit this form.
+  const rateLimit = checkRateLimit("contact", ip);
   if (!rateLimit.allowed) {
-    // createRateLimitResponse uses the old plain shape; throw ApiError instead
-    // so the canonical envelope is always used.
-    const seconds = Math.max(0, Math.ceil((rateLimit.resetAt - Date.now()) / 1000));
-    throw new ApiError(
-      "RATE_LIMITED",
-      { retryAfterSeconds: seconds },
-      { ip },
-    );
+    throw new ApiError("RATE_LIMITED", { retryAfter: rateLimit.retryAfter }, { ip });
   }
   if (Math.random() < 0.01) cleanupRateLimitStore();
 

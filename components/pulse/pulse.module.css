@@ -1419,3 +1419,87 @@
     animation: none;
   }
 }
+
+/* Stop / Retry for a streaming turn. */
+.streamControls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin: 0.9rem 0 0.2rem;
+}
+
+.stopBtn,
+.retryBtn {
+  font: inherit;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.stopBtn {
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.22));
+  color: var(--muted, #9aa4b2);
+}
+
+.stopBtn:hover {
+  border-color: var(--error, #e0503b);
+  color: var(--error, #e0503b);
+}
+
+.retryBtn {
+  border: 1px solid var(--accent, #3b7cff);
+  color: var(--accent, #3b7cff);
+}
+
+.retryBtn:hover {
+  background: color-mix(in srgb, var(--accent, #3b7cff) 12%, transparent);
+}
+
+/* Links, ordered lists and fenced code inside a formatted Pulse reply. */
+.formattedLink {
+  color: var(--accent, #3b7cff);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.formattedLink:hover {
+  text-decoration-thickness: 2px;
+}
+
+.formattedOrderedList {
+  margin: 0.4rem 0 0.6rem;
+  padding-left: 1.3rem;
+  list-style: decimal;
+}
+
+.formattedOrderedList li {
+  margin-bottom: 0.3rem;
+}
+
+.codeBlock {
+  margin: 0.6rem 0;
+  padding: 0.75rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.14));
+  background: var(--surface-2, rgba(255, 255, 255, 0.04));
+  overflow-x: auto;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.codeBlock code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  white-space: pre;
+}
+
+/* Status line under the confirmation actions (copy / email outcomes). */
+.actionNote {
+  margin: 0.7rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--muted, #9aa4b2);
+}

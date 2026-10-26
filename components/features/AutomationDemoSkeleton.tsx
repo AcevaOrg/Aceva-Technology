@@ -1,6 +1,5 @@
 "use client";
-
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { type CSSProperties } from "react";
 import Skeleton, { SkeletonCard, SkeletonText } from "@/components/ui/Skeleton";
 
 interface AutomationDemoSkeletonProps {

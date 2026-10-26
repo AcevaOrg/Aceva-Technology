@@ -17,7 +17,7 @@ async function test5StepFlow() {
     const userPrompt = prompts[i];
     console.log(`\n--- Step ${i + 1} Prompt: "${userPrompt}" ---`);
 
-    const response = await generatePulseCompletion(userPrompt, history);
+    const { answer: response } = await generatePulseCompletion(userPrompt, history);
     console.log(`PULSE Step ${i + 1} Response:\n${response}\n`);
 
     // Verify budget ban

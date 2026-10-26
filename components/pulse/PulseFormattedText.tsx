@@ -7,16 +7,73 @@ interface PulseFormattedTextProps {
   content: string;
 }
 
+/**
+ * Resolves a markdown link target, or null if it is not safe to render.
+ *
+ * The text being formatted is model output, so a link target is untrusted:
+ * `javascript:` and `data:` URLs are script execution, and a protocol-relative
+ * `//host` or the `/\host` variant silently leaves the site. Only https and
+ * genuinely same-document references survive. A rejected link falls back to its
+ * own label as plain text, so nothing disappears.
+ */
+export function safeHref(raw: string): string | null {
+  const href = raw.trim();
+  if (!href) return null;
+
+  // Same-document: a path, query or fragment. The lookahead rejects "//evil"
+  // and "/\evil", both of which browsers resolve as another origin.
+  if (/^[/#?](?![/\\])/.test(href)) return href;
+
+  try {
+    return new URL(href).protocol === "https:" ? href : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Splits inline markdown while keeping the delimiters, so each part self-identifies. */
+const INLINE_PATTERN = /(\[[^\]\n]*\]\([^)\s]*\)|\*\*.*?\*\*|`[^`]*`)/g;
+
 function renderFormattedInline(text: string): React.ReactNode[] {
-  // Parse **bold** and `code` inline elements
-  const parts = text.split(/(\*\*.*?\*\*|`.*?`)/g);
+  const parts = text.split(INLINE_PATTERN);
+
   return parts.map((part, idx) => {
+    if (!part) return null;
+
     if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
       return <strong key={idx}>{part.slice(2, -2)}</strong>;
     }
+
     if (part.startsWith("`") && part.endsWith("`") && part.length > 2) {
-      return <code key={idx} className={styles.inlineCode}>{part.slice(1, -1)}</code>;
+      return (
+        <code key={idx} className={styles.inlineCode}>
+          {part.slice(1, -1)}
+        </code>
+      );
     }
+
+    const link = part.match(/^\[([^\]\n]*)\]\(([^)\s]*)\)$/);
+    if (link) {
+      const [, label, target] = link;
+      const href = safeHref(target);
+      const text = label || target;
+
+      // An unsafe or unparsable target degrades to its label.
+      if (!href) return <React.Fragment key={idx}>{text}</React.Fragment>;
+
+      const isExternal = href.startsWith("https:");
+      return (
+        <a
+          key={idx}
+          href={href}
+          className={styles.formattedLink}
+          {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+        >
+          {text}
+        </a>
+      );
+    }
+
     return part;
   });
 }
@@ -41,7 +98,7 @@ function parseMarkdownTable(lines: string[]): React.ReactNode | null {
   const bodyRows = lines.slice(bodyStartIndex).map(parseRow);
 
   return (
-    <div key={Math.random()} className={styles.tableWrapper}>
+    <div className={styles.tableWrapper}>
       <table className={styles.pulseTable}>
         <thead>
           <tr>
@@ -71,38 +128,80 @@ export default function PulseFormattedText({ content }: PulseFormattedTextProps)
   const blocks: React.ReactNode[] = [];
   let tableBuffer: string[] = [];
   let listBuffer: string[] = [];
+  // Which list is open. A numbered list renders as <ol> so its numbering
+  // survives — every list used to be flattened into a <ul>.
+  let listKind: "ordered" | "unordered" | null = null;
+
+  // Fenced code accumulates verbatim: no inline parsing inside a fence.
+  let fenceBuffer: string[] | null = null;
+  let fenceLanguage = "";
 
   const flushList = () => {
     if (listBuffer.length > 0) {
+      const items = listBuffer.map((item, idx) => <li key={idx}>{renderFormattedInline(item)}</li>);
       blocks.push(
-        <ul key={`list-${blocks.length}`} className={styles.formattedList}>
-          {listBuffer.map((item, idx) => (
-            <li key={idx}>{renderFormattedInline(item)}</li>
-          ))}
-        </ul>
+        listKind === "ordered" ? (
+          <ol key={`list-${blocks.length}`} className={styles.formattedOrderedList}>
+            {items}
+          </ol>
+        ) : (
+          <ul key={`list-${blocks.length}`} className={styles.formattedList}>
+            {items}
+          </ul>
+        )
       );
       listBuffer = [];
     }
+    listKind = null;
   };
 
   const flushTable = () => {
     if (tableBuffer.length > 0) {
       const tableElem = parseMarkdownTable(tableBuffer);
       if (tableElem) {
-        blocks.push(tableElem);
+        blocks.push(<React.Fragment key={`table-${blocks.length}`}>{tableElem}</React.Fragment>);
       } else {
         // Fallback if table parsing failed
-        tableBuffer.forEach((line) => {
-          blocks.push(<p key={Math.random()}>{renderFormattedInline(line)}</p>);
+        tableBuffer.forEach((line, idx) => {
+          blocks.push(<p key={`tf-${blocks.length}-${idx}`}>{renderFormattedInline(line)}</p>);
         });
       }
       tableBuffer = [];
     }
   };
 
+  const flushFence = () => {
+    if (fenceBuffer === null) return;
+    blocks.push(
+      <pre key={`fence-${blocks.length}`} className={styles.codeBlock} data-language={fenceLanguage || undefined}>
+        <code>{fenceBuffer.join("\n")}</code>
+      </pre>
+    );
+    fenceBuffer = null;
+    fenceLanguage = "";
+  };
+
   for (let i = 0; i < lines.length; i++) {
     const rawLine = lines[i];
     const trimmed = rawLine.trim();
+
+    // A fence swallows every line until it closes, so markdown inside one is
+    // shown rather than interpreted.
+    if (trimmed.startsWith("```")) {
+      if (fenceBuffer === null) {
+        flushList();
+        flushTable();
+        fenceBuffer = [];
+        fenceLanguage = trimmed.slice(3).trim();
+      } else {
+        flushFence();
+      }
+      continue;
+    }
+    if (fenceBuffer !== null) {
+      fenceBuffer.push(rawLine);
+      continue;
+    }
 
     // Check for Markdown Table Row
     if (trimmed.startsWith("|") && trimmed.endsWith("|")) {
@@ -113,9 +212,13 @@ export default function PulseFormattedText({ content }: PulseFormattedTextProps)
       flushTable();
     }
 
-    // Check for Bullet List Items (- , * , • or 1. )
-    const bulletMatch = trimmed.match(/^([\*\-•]|\d+\.)\s+(.+)$/);
+    // Check for List Items (- , * , • or 1. )
+    const bulletMatch = trimmed.match(/^([*\-•]|\d+[.)])\s+(.+)$/);
     if (bulletMatch) {
+      const kind = /^\d/.test(bulletMatch[1]) ? "ordered" : "unordered";
+      // Switching marker style starts a new list rather than merging the two.
+      if (listKind && listKind !== kind) flushList();
+      listKind = kind;
       listBuffer.push(bulletMatch[2]);
       continue;
     } else {
@@ -145,6 +248,8 @@ export default function PulseFormattedText({ content }: PulseFormattedTextProps)
     );
   }
 
+  // An unterminated fence still renders as code rather than vanishing.
+  flushFence();
   flushTable();
   flushList();
 

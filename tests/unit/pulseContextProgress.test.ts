@@ -42,7 +42,7 @@ describe("Pulse Context & Progress Reducer Suite", () => {
       "To be decided.",
     ];
 
-    uncertaintyAnswers.forEach((ans, index) => {
+    uncertaintyAnswers.forEach((ans) => {
       const state = pulseReducer(initialState, {
         type: "RECORD_VALID_ANSWER",
         value: ans,

@@ -19,7 +19,7 @@ async function testPercentageStepValidation() {
   for (const input of inputs) {
     const isGreeting = isGreetingInput(input.text);
     const isInvalid = isInvalidOrUnclearInput(input.text);
-    const answer = await generatePulseCompletion(input.text);
+    const { answer: answer } = await generatePulseCompletion(input.text);
     const isValid = !isGreeting && !isInvalid && answer !== GREETING_REJECTION && answer !== OUT_OF_SCOPE_REJECTION;
 
     console.log(`\nInput: "${input.text}"`);

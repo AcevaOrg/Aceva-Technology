@@ -122,21 +122,24 @@ export function getSequentialNodeValue(nodeIndex: number, state: PulseState): st
 
     case 2: { // 03 / OPERATION
       const ans1 = answers[1] || "";
-      if (/order|food|online/i.test(ans1)) return "Online Food Ordering";
+      // Was: a hardcoded "Online Food Ordering" for any answer mentioning an
+      // order. The panel must show what the visitor said, not a demo string.
       if (ctx.scale && !ctx.scale.toLowerCase().includes("core platform")) return condenseText(ctx.scale, 45);
       return condenseText(ans1, 45) || null;
     }
 
     case 3: { // 04 / CURRENT STATE
       const ans2 = answers[2] || answers[1] || "";
-      if (/whatsapp/i.test(ans2)) return "Orders currently handled through WhatsApp";
+      // Was: a hardcoded WhatsApp sentence the visitor may never have said.
       if (ctx.current && !ctx.current.toLowerCase().includes("existing workflow")) return condenseText(ctx.current, 50);
       return condenseText(ans2, 50) || null;
     }
 
     case 4: { // 05 / FRICTION DETECTED
       const ans3 = answers[3] || answers[2] || "";
-      if (/difficult|track|keep track|manage/i.test(ans3)) return "Difficult to track and manage orders";
+      // Was: a hardcoded "Difficult to track and manage orders", which fired
+      // for any answer containing "track" — including a logistics visitor
+      // describing driver tracking, who has no orders at all.
       if (Array.isArray(ctx.friction) && ctx.friction.length > 0) {
         const fStr = ctx.friction.join(" / ");
         if (!fStr.toLowerCase().includes("manual handoffs")) return condenseText(fStr, 50);
@@ -146,7 +149,7 @@ export function getSequentialNodeValue(nodeIndex: number, state: PulseState): st
 
     case 5: { // 06 / DESIRED OUTCOME
       const ans4 = answers[4] || answers[3] || "";
-      if (/one system|managed|centralized|single platform/i.test(ans4)) return "Centralized order management";
+      // Was: a hardcoded "Centralized order management".
       if (Array.isArray(ctx.goals) && ctx.goals.length > 0) {
         const gStr = ctx.goals.join(" / ");
         if (!gStr.toLowerCase().includes("operational clarity")) return condenseText(gStr, 50);
