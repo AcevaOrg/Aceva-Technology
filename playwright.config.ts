@@ -18,6 +18,10 @@ export default defineConfig({
     timeout: 120_000,
     env: {
       ...process.env,
+      // The e2e dev server must never write analytics rows to the real
+      // database. NODE_ENV is "development" here, which already suppresses
+      // the turn log, but this states the intent explicitly.
+      PULSE_DISABLE_TURN_LOG: "1",
       CONTACT_REQUIRE_TURNSTILE: "false",
       NEXT_PUBLIC_TURNSTILE_SITE_KEY: "",
     },

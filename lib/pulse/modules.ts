@@ -1,5 +1,40 @@
 import { PulseContextData } from "@/components/pulse/types";
-import { cleanUserMappedValue, distillTimelineText, distillBudgetText } from "./format";
+import { distillTimelineText, distillBudgetText } from "./format";
+
+/**
+ * Unmistakable codebase signals: naming a language, the code itself, or a
+ * legacy artefact. Any one of these on its own means a modernization project.
+ */
+const CODEBASE_SIGNAL =
+  /\b(refactor(ing|ed|s)?|codebase|code base|transpile|transpilation|monolith|java|kotlin|objective-?c|\.net|legacy (code|codebase|app|application|system|platform|stack))\b/i;
+
+/** Verbs that mean a migration only when something code-shaped is named too. */
+const MODERNIZE_VERB =
+  /\b(migrat(e|es|ing|ion)|upgrad(e|es|ing)|rewrit(e|es|ing)|moderni[sz](e|es|ing|ation))\b/i;
+
+/** The something-code-shaped that `MODERNIZE_VERB` needs to count. */
+const CODE_OBJECT =
+  /\b(code|codebase|code base|stack|language|framework|version|api|apis|database|schema|architecture|library|dependencies|repo|repository|backend|front-?end)\b/i;
+
+/**
+ * True for a codebase-modernization project, as opposed to a project that
+ * merely uses the word "upgrade".
+ *
+ * This replaces three near-identical copies of
+ * `/\b(java|kotlin|refactor|migrate|codebase|legacy|upgrade|rewrite)\b/`, the
+ * widest of which was tested ahead of every industry branch in
+ * `getRecommendedModules`. "I want to upgrade my restaurant ordering website"
+ * matched on "upgrade" alone, so a restaurant project was handed Java-to-Kotlin
+ * transpilation, null-safety and async-refactoring modules — on screen, in the
+ * saved record, in the lead email and in the .docx. "upgrade", "migrate",
+ * "rewrite" and "modernize" are ordinary words for ordinary projects, so they
+ * now only mean a code migration when the text also names something
+ * code-shaped. Strictly narrower than what it replaces: everything it matches,
+ * the old pattern matched too.
+ */
+export function isCodebaseModernization(text: string): boolean {
+  return CODEBASE_SIGNAL.test(text) || (MODERNIZE_VERB.test(text) && CODE_OBJECT.test(text));
+}
 
 export interface EnrichedProjectContext {
   industryFocus: string;
@@ -72,31 +107,31 @@ export function extractPrimaryGoalFeatures(
 
   const featureList: string[] = [];
 
-  if (/order|cart|menu|ordering/i.test(combinedText)) {
+  if (/\b(orders?|ordering|cart|menu)\b/i.test(combinedText)) {
     featureList.push("Digital Product/Menu Catalog & Cart Ordering Engine");
   }
-  if (/kitchen|kds|prep|dispatch/i.test(combinedText)) {
+  if (/\b(kitchen|kds|prep|dispatch)\b/i.test(combinedText)) {
     featureList.push("Kitchen Display System (KDS) & Real-time Queue Dispatch");
   }
-  if (/track|status|sms|notification/i.test(combinedText)) {
+  if (/\b(track|tracking|status|sms|notification|notifications)\b/i.test(combinedText)) {
     featureList.push("Live Order Progress Tracking & Automated SMS/Push Alerts");
   }
-  if (/mobile|app|ios|android/i.test(combinedText)) {
-    featureList.push("Native iOS & Android Mobile User Experience");
+  if (/\b(mobile|apps?|application|applications|ios|android)\b/i.test(combinedText)) {
+    featureList.push("iOS & Android Mobile Experience");
   }
-  if (/refactor|java|kotlin|codebase|migrate/i.test(combinedText)) {
-    featureList.push("Automated Code Migration, Null-Safety, & Coroutine Async Refactoring");
+  if (isCodebaseModernization(combinedText)) {
+    featureList.push("Automated Code Migration, Null-Safety & Async Refactoring");
   }
-  if (/account|user|auth|login|profile/i.test(combinedText)) {
+  if (/\b(accounts?|users?|auth|authentication|login|profile)\b/i.test(combinedText)) {
     featureList.push("User Authentication Vault & Customer Self-Service Profile");
   }
-  if (/admin|dashboard|owner|management|analytics/i.test(combinedText)) {
+  if (/\b(admin|dashboard|owner|management|analytics)\b/i.test(combinedText)) {
     featureList.push("Centralized Operational Admin Console & Real-time Revenue Telemetry");
   }
   if (/pay|checkout|stripe|billing/i.test(combinedText)) {
     featureList.push("Integrated Payment Gateway Checkout & Digital Invoicing");
   }
-  if (/milk|farm|yield|dairy/i.test(combinedText)) {
+  if (/\b(milk|farms?|yield|dairy)\b/i.test(combinedText)) {
     featureList.push("Milk Production & Daily Yield Logging Vault");
     featureList.push("Distributor Distribution & Delivery Tracking Module");
   }
@@ -106,10 +141,10 @@ export function extractPrimaryGoalFeatures(
   }
 
   // Domain-specific feature fallbacks if user text was broad (e.g., "Yes I want all specified features")
-  if (/dairy|farm|milk/i.test(combinedText)) {
+  if (/\b(dairy|farms?|milk)\b/i.test(combinedText)) {
     return "Milk Production & Daily Yield Logging; Distributor Tracking Vault; Customer Delivery Ordering; Operational Management Dashboard.";
   }
-  if (/restaurant|food/i.test(combinedText)) {
+  if (/\b(restaurants?|food)\b/i.test(combinedText)) {
     return "Online Ordering & Digital Menu Catalog; Kitchen Display System (KDS); Live Delivery Tracking; Owner Command Dashboard.";
   }
 
@@ -138,33 +173,33 @@ export function formatEnrichedProjectContext(
 
   // 1. Industry Focus Mapping (preserves specific domain)
   let industryFocus = "Business Services & Custom Software";
-  if (/restaurant|food|cafe|dining|kitchen|takeaway|bakery/i.test(lower)) {
+  if (/\b(restaurants?|food|cafe|dining|kitchen|takeaway|bakery)\b/i.test(lower)) {
     industryFocus = "Restaurant & Food Service Operations";
-  } else if (/dairy|farm|cattle|milk|agriculture|livestock/i.test(lower)) {
+  } else if (/\b(dairy|farms?|cattle|milk|agriculture|livestock)\b/i.test(lower)) {
     industryFocus = "Dairy & Agricultural Operations";
-  } else if (/clinic|health|doctor|medical|telehealth|hospital|dental|patient/i.test(lower)) {
+  } else if (/\b(clinics?|health|healthcare|doctors?|medical|telehealth|hospital|dental|dentist|patients?)\b/i.test(lower)) {
     industryFocus = "Healthcare & Telehealth Services";
-  } else if (/e-?commerce|retail|shop|store|boutique|merchandise/i.test(lower)) {
+  } else if (/\b(e-?commerce|retail|shops?|stores?|boutique|merchandise)\b/i.test(lower)) {
     industryFocus = "E-Commerce & Retail Brand";
-  } else if (/real estate|property|tenant|landlord|realtor|leasing/i.test(lower)) {
+  } else if (/\b(real estate|property|properties|tenants?|landlord|realtor|leasing)\b/i.test(lower)) {
     industryFocus = "Real Estate & Property Management";
-  } else if (/logistics|fleet|delivery|warehouse|freight|courier|transport/i.test(lower)) {
+  } else if (/\b(logistics|fleet|delivery|deliveries|warehouse|freight|courier|transport)\b/i.test(lower)) {
     industryFocus = "Logistics & Transport Fleet";
-  } else if (/construction|contractor|builder|renovation|field/i.test(lower)) {
+  } else if (/\b(construction|contractors?|builder|renovation|field)\b/i.test(lower)) {
     industryFocus = "Construction & Field Contracting";
-  } else if (/education|school|university|academy|lms|course|tutor/i.test(lower)) {
+  } else if (/\b(education|school|university|academy|lms|courses?|tutor)\b/i.test(lower)) {
     industryFocus = "Education & E-Learning Platform";
-  } else if (/beauty|salon|spa|barber|grooming/i.test(lower)) {
+  } else if (/\b(beauty|salon|spa|barber|grooming)\b/i.test(lower)) {
     industryFocus = "Beauty & Wellness Operations";
-  } else if (/fitness|gym|workout|trainer|sports/i.test(lower)) {
+  } else if (/\b(fitness|gym|workout|trainer|sports)\b/i.test(lower)) {
     industryFocus = "Fitness & Sports Center";
-  } else if (/law|legal|attorney|consulting|agency|firm/i.test(lower)) {
+  } else if (/\b(law|lawyer|lawyers|legal|attorney|consulting|agency|firm)\b/i.test(lower)) {
     industryFocus = "Professional Services & Consulting Practice";
-  } else if (/event|ticket|conference|festival|show/i.test(lower)) {
+  } else if (/\b(events?|tickets?|ticketing|conference|festival|venue)\b/i.test(lower)) {
     industryFocus = "Events & Ticketing Operations";
-  } else if (/finance|fintech|bank|microfinance|loan|wallet/i.test(lower)) {
+  } else if (/\b(finance|financial|fintech|bank|banking|microfinance|loans?|wallet)\b/i.test(lower)) {
     industryFocus = "Financial Services & Fintech";
-  } else if (/java|kotlin|refactor|migrate|codebase|legacy|upgrade|rewrite/i.test(lower)) {
+  } else if (isCodebaseModernization(lower)) {
     industryFocus = "Software Engineering & Codebase Refactoring";
   } else if (ctx.industry && ctx.industry !== "General Business") {
     industryFocus = ctx.industry;
@@ -172,15 +207,15 @@ export function formatEnrichedProjectContext(
 
   // 2. Primary Intent / Product Purpose
   let primaryIntent = "Custom Platform & Digital System Architecture";
-  if (/mobile app|ios|android|native app/i.test(lower)) {
+  if (/\b(mobile app|mobile apps|ios|android|native app)\b/i.test(lower)) {
     primaryIntent = "Custom Mobile Application (iOS & Android)";
-  } else if (/java|kotlin|refactor|migrate|codebase|legacy/i.test(lower)) {
+  } else if (isCodebaseModernization(lower)) {
     primaryIntent = "Codebase Modernization & Language Migration";
-  } else if (/e-?commerce|sell|online store|checkout/i.test(lower)) {
+  } else if (/\b(e-?commerce|sell|selling|online store|checkout)\b/i.test(lower)) {
     primaryIntent = "E-Commerce Storefront & Transaction Engine";
-  } else if (/automate|workflow|internal tool|dashboard/i.test(lower)) {
+  } else if (/\b(automate|automation|workflow|internal tool|dashboard)\b/i.test(lower)) {
     primaryIntent = "Automated Operational Workflow & Admin Portal";
-  } else if (/website|landing page|web platform/i.test(lower)) {
+  } else if (/\b(website|landing page|web platform)\b/i.test(lower)) {
     primaryIntent = "Custom Web Platform & Customer Portal";
   } else if (ctx.intent && ctx.intent !== "Start something new" && ctx.intent !== "Custom Solution") {
     primaryIntent = ctx.intent;
@@ -192,24 +227,43 @@ export function formatEnrichedProjectContext(
   // 4. Primary Goals (Exact Application Features & Capabilities)
   const primaryGoals = extractPrimaryGoalFeatures(ctx, answers);
 
-  // 5. Target Timeline Extraction
-  // 5. Target Timeline Extraction
+  // 5. Target Timeline
+  //
+  // `ctx.timeline` wins when it is there: the wizard distils it from the
+  // timeline half of the step-5 answer, so it is the value the visitor actually
+  // gave for this question. Scanning `answers` stays as the fallback for a
+  // record saved before the field existed, or for a free-chat session.
   let targetTimeline = "To be aligned upon technical discovery review";
-  for (const text of [...answers].reverse()) {
-    if (!text) continue;
-    if (/month|week|quarter|asap|urgent|flexible|year|immediately|soon|q1|q2|q3|q4/i.test(text)) {
-      targetTimeline = distillTimelineText(text);
-      break;
+  if (ctx.timeline) {
+    targetTimeline = distillTimelineText(ctx.timeline);
+  } else {
+    for (const text of [...answers].reverse()) {
+      if (!text) continue;
+      if (/\b(months?|weeks?|quarters?|asap|urgent|flexible|years?|immediately|soon|q[1-4])\b/i.test(text)) {
+        targetTimeline = distillTimelineText(text);
+        break;
+      }
     }
   }
 
-  // 6. Budget Allocation Extraction
+  // 6. Budget Allocation
+  //
+  // Same precedence, and here the fallback was actively wrong: it scanned
+  // `answers` front to back, and its pattern included `k\b`, which matches the
+  // final letter of "track", "work", "ask" and "week". A step-2 friction answer
+  // like "keeping track of orders is chaotic" therefore became the budget line
+  // in the blueprint, the lead email and the .docx. The scan now runs newest
+  // first, like the timeline above, so it lands on the step-5 answer.
   let budgetAllocation = "To be discussed directly with the ACEVA engineering team";
-  for (const text of answers) {
-    if (!text) continue;
-    if (/\$|budget|cost|dollar|k\b|discuss|limit|range|flexible|aceva/i.test(text)) {
-      budgetAllocation = distillBudgetText(text);
-      break;
+  if (ctx.budget) {
+    budgetAllocation = distillBudgetText(ctx.budget);
+  } else {
+    for (const text of [...answers].reverse()) {
+      if (!text) continue;
+      if (/\$|\b(budget|cost|costs|dollars?|usd|price|pricing|\d+\s*k|discuss|limit|range|flexible|aceva)\b/i.test(text)) {
+        budgetAllocation = distillBudgetText(text);
+        break;
+      }
     }
   }
 
@@ -224,8 +278,16 @@ export function formatEnrichedProjectContext(
 }
 
 /**
- * Generate concise, developer-focused, implementation-oriented modules based directly on discovered requirements.
- * Replaces vague corporate labels with explicit developer technical specifications.
+ * The recommended architecture for a discovered project.
+ *
+ * Single source of truth for the Stage 3 UI panel, the saved direction record,
+ * the lead email, the .docx blueprint and the PULSE ID lookup. It used to be two
+ * near-identical regex ladders — this one plus a `getConciseUIModules` for the
+ * UI — which drifted: the concise ladder had a dairy branch this one lacked and
+ * this one had a fintech branch the concise one lacked. A dairy project showed
+ * five dairy modules on screen while the client's emailed blueprint listed the
+ * generic web platform, and a fintech project got the reverse. One ladder means
+ * the screen and the deliverable cannot disagree.
  */
 export function getRecommendedModules(
   industry?: string,
@@ -245,31 +307,43 @@ export function getRecommendedModules(
     .join(" ")
     .toLowerCase();
 
-  const isMobile = /mobile|app|ios|android|native/i.test(combinedText);
-  const isRefactor = /java|kotlin|refactor|migrate|codebase|legacy|upgrade|rewrite/i.test(combinedText);
-  const isRestaurant = /restaurant|food|cafe|dining|kitchen|takeaway|bakery/i.test(combinedText);
-  const isHealthcare = /clinic|health|doctor|medical|telehealth|hospital|patient/i.test(combinedText);
-  const isCommerce = /e-?commerce|retail|shop|store|sell|checkout/i.test(combinedText);
-  const isRealEstate = /real estate|property|tenant|landlord|realtor|leasing/i.test(combinedText);
-  const isLogistics = /logistics|fleet|delivery|warehouse|freight|courier|transport/i.test(combinedText);
-  const isFinance = /finance|fintech|bank|loan|wallet|credit/i.test(combinedText);
+  const isMobile = /\b(mobile|apps?|application|applications|ios|android|native)\b/i.test(combinedText);
+  const isRefactor = isCodebaseModernization(combinedText);
+  const isRestaurant = /\b(restaurants?|food|cafe|dining|kitchen|takeaway|bakery)\b/i.test(combinedText);
+  const isDairy = /\b(dairy|farms?|milk|cattle|agriculture)\b/i.test(combinedText);
+  const isHealthcare = /\b(clinics?|health|healthcare|doctors?|medical|telehealth|hospital|patients?)\b/i.test(combinedText);
+  const isCommerce = /\b(e-?commerce|retail|shops?|stores?|sell|selling|checkout)\b/i.test(combinedText);
+  const isRealEstate = /\b(real estate|property|properties|tenants?|landlord|realtor|leasing)\b/i.test(combinedText);
+  const isLogistics = /\b(logistics|fleet|delivery|deliveries|warehouse|freight|courier|transport)\b/i.test(combinedText);
+  const isFinance = /\b(finance|financial|fintech|microfinance|bank|banking|loans?|wallet|credit)\b/i.test(combinedText);
 
   // 1. Refactoring & Code Modernization Projects (e.g. Java to Kotlin)
   if (isRefactor) {
     return [
       "Codebase Audit & Dependency Mapping — Automated AST analysis, legacy dependency inventory, and target framework compatibility matrix.",
-      "Automated Syntax & Language Migration Pipeline — Transpilation/refactoring pipeline, null-safety enforcement, coroutine async model, and code cleanup.",
+      "Automated Syntax & Language Migration Pipeline — Transpilation/refactoring pipeline, null-safety enforcement, async execution model, and code cleanup.",
       "API Contract & Interface Preservation Harness — Schema verification, REST/gRPC endpoint backward compatibility checks, and payload validation.",
       "Regression Test & Continuous Integration Suite — Unit/integration test migration, automated test coverage telemetry, and CI/CD build pipeline integration.",
       "Performance Telemetry & Runtime Execution Metrics — Comparative benchmark analysis, memory footprint profiling, and execution latency monitoring.",
     ];
   }
 
-  // 2. Restaurant & Food Service Operations
+  // 2. Dairy & Agricultural Operations
+  if (isDairy) {
+    return [
+      "Daily Yield & Milk Production Logging Vault — Per-animal and per-batch yield capture, shift logging, wastage records, and production history.",
+      "Distributor Routing & Delivery Tracking Module — Route assignment, distributor allocation, dispatch scheduling, and proof-of-delivery capture.",
+      "Direct Customer Ordering & Subscription Catalog — Recurring subscription plans, one-off ordering, delivery windows, and customer cart engine.",
+      "Automated Dispatch & Delivery Notification Service — Automated SMS/push dispatch alerts, delivery status updates, and missed-delivery escalation.",
+      "Farm Operations & Yield Analytics Console — Multi-location herd and inventory management, yield trend analytics, and operational reporting.",
+    ];
+  }
+
+  // 3. Restaurant & Food Service Operations
   if (isRestaurant) {
     return [
       isMobile
-        ? "Native Mobile Application (iOS & Android) — Cross-platform menu catalog, cart management, item customization, and instant checkout."
+        ? "Mobile Application (iOS & Android) — Menu catalog, cart management, item customization, and instant checkout."
         : "Digital Ordering & Menu Catalog Engine — Responsive web menu catalog, cart management, dietary tags, and direct online ordering.",
       "Kitchen Display System (KDS) & Order Pipeline — Real-time kitchen order queue, ticket status state machine, and prep timer controls.",
       "Order Tracking & Automated Customer Notifications — Real-time order progress tracking, SMS/push status alerts, and delivery ETA updates.",
@@ -278,31 +352,31 @@ export function getRecommendedModules(
     ];
   }
 
-  // 3. Healthcare & Telehealth
+  // 4. Healthcare & Telehealth
   if (isHealthcare) {
     return [
       "Patient Telehealth & Appointment Booking Portal — Patient registration, doctor availability calendar, online booking, and video consultation interface.",
       "Practitioner Schedule & Consultation Queue Manager — Doctor appointment calendar, patient queue control, and consultation notes repository.",
-      "HIPAA-Compliant Encrypted Health Records Vault — Secure patient record storage, digital prescription management, and audited access controls.",
+      "Encrypted Health Records & Prescription Vault — Secure patient record storage, digital prescription management, and audited access controls.",
       "Automated Patient Notification & Reminder Service — Automated SMS/email appointment reminders, pre-visit instructions, and follow-up alerts.",
       "Clinic Operations & Revenue Analytics Dashboard — Appointment throughput analytics, billing/claims tracking, and operational reporting.",
     ];
   }
 
-  // 4. E-Commerce & Retail
+  // 5. E-Commerce & Retail
   if (isCommerce) {
     return [
       isMobile
         ? "Mobile Shopping Application (iOS & Android) — Mobile product catalog, cart engine, biometric checkout, and push notification marketing."
         : "High-Conversion Custom Storefront — Responsive product catalog, dynamic search & filtering, cart engine, and optimized checkout flow.",
       "Multi-Warehouse Inventory & SKU Sync Engine — Real-time inventory tracking, low-stock alerts, multi-warehouse sync, and supplier management.",
-      "Payment Gateway & Financial Settlement Engine — Integrated payment gateways (Stripe/PayPal), multi-currency support, and refund processing.",
-      "Order Fulfillment & Shipping Logistics Tracker — Carrier API integration (FedEx/UPS/DHL), shipping label generation, and live package tracking.",
+      "Payment Gateway & Financial Settlement Engine — Integrated third-party payment gateway, multi-currency support, and refund processing.",
+      "Order Fulfillment & Shipping Logistics Tracker — Shipping carrier API integration, label generation, and live package tracking.",
       "Merchant Admin & Funnel Analytics Dashboard — Product management console, customer order management, conversion funnels, and revenue metrics.",
     ];
   }
 
-  // 5. Real Estate & Property Management
+  // 6. Real Estate & Property Management
   if (isRealEstate) {
     return [
       "Property Listing Portal & Showcase Engine — Interactive property listings, search filters, high-resolution media galleries, and virtual tour scheduling.",
@@ -313,7 +387,7 @@ export function getRecommendedModules(
     ];
   }
 
-  // 6. Logistics & Transport Fleet
+  // 7. Logistics & Transport Fleet
   if (isLogistics) {
     return [
       "Real-Time GPS Fleet & Dispatch Control Tower — Live vehicle location tracking, interactive map dispatch, job assignment, and route monitoring.",
@@ -324,7 +398,7 @@ export function getRecommendedModules(
     ];
   }
 
-  // 7. Financial Services & Fintech
+  // 8. Financial Services & Fintech
   if (isFinance) {
     return [
       "Digital Customer Onboarding & KYC Verification — Identity verification (ID scan/liveness test), document upload, and compliance audit trail.",
@@ -335,10 +409,10 @@ export function getRecommendedModules(
     ];
   }
 
-  // 8. General Mobile App Requirement
+  // 9. General Mobile App Requirement
   if (isMobile) {
     return [
-      "Cross-Platform Native Mobile Client (iOS & Android) — Responsive mobile user interface, offline data caching, and native device feature access.",
+      "Mobile Client Application (iOS & Android) — Responsive mobile user interface, offline data caching, and device feature access.",
       "Mobile App Backend & API Gateway — RESTful/GraphQL API layer, business logic processing, real-time data sync, and database access.",
       "User Authentication & Profile Management — Secure login (OAuth/JWT/Biometrics), user profile management, and role-based permissions.",
       "Push Notification & Messaging Service — Targeted push notification dispatcher, in-app messaging, and automated event triggers.",
@@ -346,136 +420,12 @@ export function getRecommendedModules(
     ];
   }
 
-  // 9. Standard Custom Web / Software Platform
+  // 10. Standard Custom Web / Software Platform
   return [
     "Core Web Application Interface & User Portal — Responsive web frontend, intuitive user interface, interactive workflow forms, and customer portal.",
     "Application API & Business Logic Server — RESTful/GraphQL backend services, business rules engine, micro-service architecture, and data persistence.",
     "Identity & Access Control (RBAC) Vault — User authentication (JWT/OAuth2), profile management, multi-tier staff permissions, and role access control.",
     "Notification & Automated Communication Engine — Transactional email dispatcher, SMS alert integration, and event-driven messaging service.",
     "Operational Admin Console & Reporting Dashboard — Multi-tenant admin management panel, system metrics monitoring, and operational BI reporting.",
-  ];
-}
-
-/**
- * Generate concise (1 to 1.5 line) module descriptions specifically for Stage 3 UI screen rendering.
- * Keeps UI modules clean and uncluttered while preserving deeply defined modules in the .docx file and saved records.
- */
-export function getConciseUIModules(
-  industry?: string,
-  ctx?: PulseContextData,
-  answers: string[] = []
-): string[] {
-  const combinedText = [
-    industry,
-    ctx?.intent,
-    ctx?.industry,
-    ctx?.business,
-    ctx?.current,
-    ctx?.scale,
-    ...answers,
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase();
-
-  const isMobile = /mobile|app|ios|android|native/i.test(combinedText);
-  const isRefactor = /java|kotlin|refactor|migrate|codebase|legacy|upgrade|rewrite/i.test(combinedText);
-  const isRestaurant = /restaurant|food|cafe|dining|kitchen|takeaway|bakery/i.test(combinedText);
-  const isDairy = /dairy|farm|milk|cattle|agriculture/i.test(combinedText);
-  const isHealthcare = /clinic|health|doctor|medical|telehealth|hospital|patient/i.test(combinedText);
-  const isCommerce = /e-?commerce|retail|shop|store|sell|checkout/i.test(combinedText);
-  const isRealEstate = /real estate|property|tenant|landlord|realtor|leasing/i.test(combinedText);
-  const isLogistics = /logistics|fleet|delivery|warehouse|freight|courier|transport/i.test(combinedText);
-
-  if (isRefactor) {
-    return [
-      "Codebase Audit — AST dependency analysis & framework compatibility matrix.",
-      "Language Migration — Code conversion, null-safety, & coroutine refactoring.",
-      "API Contract Harness — Schema verification & backward compatibility checks.",
-      "Regression Suite — Unit test migration & CI/CD build pipeline integration.",
-      "Telemetry Dashboard — Benchmark profiling & runtime execution metrics.",
-    ];
-  }
-
-  if (isDairy) {
-    return [
-      "Daily Yield Logging Vault — Milk production & batch yield tracking.",
-      "Distributor Logistics — Route dispatch & delivery tracking workflow.",
-      "Direct Ordering Catalog — Customer subscription & order cart engine.",
-      "Automated SMS Alerts — Dispatch notifications & delivery status updates.",
-      "Farm Management Console — Multi-location inventory & yield analytics.",
-    ];
-  }
-
-  if (isRestaurant) {
-    return [
-      isMobile
-        ? "Native Mobile Application — Menu catalog, cart engine, & instant checkout."
-        : "Digital Ordering Engine — Responsive web menu catalog & cart ordering.",
-      "Kitchen Display System (KDS) — Real-time kitchen queue & order prep timers.",
-      "Order Tracking & Alerts — Delivery progress & instant push notifications.",
-      "Customer Accounts — User login, saved addresses, & loyalty rewards.",
-      "Operational Dashboard — Multi-branch inventory & sales analytics.",
-    ];
-  }
-
-  if (isHealthcare) {
-    return [
-      "Patient Telehealth Portal — Doctor calendar, booking, & video room.",
-      "Practitioner Scheduler — Doctor calendar & patient queue control.",
-      "Encrypted Records Vault — Secure medical records & prescriptions.",
-      "Patient SMS Service — Automated appointment & pre-visit alerts.",
-      "Clinic Operations — Billing tracking & throughput analytics.",
-    ];
-  }
-
-  if (isCommerce) {
-    return [
-      isMobile
-        ? "Mobile Shopping App — Mobile product catalog, cart, & biometric checkout."
-        : "Custom Web Storefront — Product catalog, cart engine, & checkout.",
-      "Inventory SKU Sync — Multi-warehouse inventory & low-stock alerts.",
-      "Payment Settlement Engine — Gateway checkout & digital invoices.",
-      "Shipping Logistics Tracker — Carrier API integration & package tracking.",
-      "Merchant Admin Console — Catalog controls, order queue, & sales BI.",
-    ];
-  }
-
-  if (isRealEstate) {
-    return [
-      "Property Listing Portal — Property showcase, search filters, & tour booking.",
-      "Tenant Screening Workflow — Lease applications & background checks.",
-      "Automated Rent Gateway — Recurring rent auto-pay & invoice ledger.",
-      "Maintenance Dispatch System — Tenant ticketing & contractor dispatch.",
-      "Portfolio Yield Analytics — Occupancy metrics & landlord accounting.",
-    ];
-  }
-
-  if (isLogistics) {
-    return [
-      "GPS Fleet Control Tower — Vehicle location tracking & map dispatch.",
-      "Driver Mobile App — Job queue, navigation, & digital proof-of-delivery.",
-      "Route Optimization — Algorithmic route planning & fuel cost calculator.",
-      "Shipment Handoff Alerts — Tracking links & customer milestone confirmations.",
-      "Fleet Margin Dashboard — Vehicle maintenance logs & efficiency metrics.",
-    ];
-  }
-
-  if (isMobile) {
-    return [
-      "Native Mobile Client — Cross-platform UI, caching, & native device access.",
-      "Mobile Backend API — RESTful API layer, business logic, & data sync.",
-      "Access Control Vault — User authentication & role-based permissions.",
-      "Messaging Service — Targeted push notifications & in-app alerts.",
-      "Mobile Telemetry — Usage tracking, crash logs, & engagement metrics.",
-    ];
-  }
-
-  return [
-    "Responsive Web Client — Frontend UI & customer portal.",
-    "Application API Server — RESTful backend & business logic engine.",
-    "Access Control Vault — User authentication & role permissions.",
-    "Notification Engine — Automated email & SMS communication service.",
-    "Operational Admin Panel — System monitoring & management metrics.",
   ];
 }

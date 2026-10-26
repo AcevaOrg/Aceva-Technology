@@ -1,5 +1,5 @@
 import { generatePulseCompletion } from "../lib/pulse/llm";
-import { getDirection, saveDirection } from "../lib/pulse/directionStore";
+
 
 async function auditIntents() {
   console.log("=== AUDITING ALL 6 INTENT OPTIONS ===");
@@ -20,7 +20,7 @@ async function auditIntents() {
     console.log(`Input Prompt: "${opt.text}"`);
 
     try {
-      const response = await generatePulseCompletion(opt.text);
+      const { answer: response } = await generatePulseCompletion(opt.text);
       console.log(`PULSE Response Length: ${response.length} chars`);
       console.log(`PULSE Response Snippet:\n${response.slice(0, 250)}...\n`);
 

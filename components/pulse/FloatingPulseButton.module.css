@@ -36,20 +36,20 @@
 
 .button {
   position: relative;
-  width: 56px;
-  height: 56px;
-  border: none;
+  width: 58px;
+  height: 58px;
+  border: 1px solid rgba(127, 178, 255, 0.35);
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--royal), var(--electric));
+  background: linear-gradient(135deg, var(--royal, #1e4fd9), var(--electric, #3b7cff));
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  /* Soft ambient glow from the site's blue tokens */
+  /* Soft ambient glow using Aceva royal & electric blue tokens */
   box-shadow:
-    0 10px 28px rgba(30, 79, 217, 0.38),
-    0 0 22px rgba(59, 124, 255, 0.22);
+    0 10px 28px rgba(30, 79, 217, 0.42),
+    0 0 22px rgba(59, 124, 255, 0.28);
   /* One-time attention pulse on first load (2 cycles), then still */
   animation: floatingAttention 1.9s ease-in-out 700ms 2;
   transition:

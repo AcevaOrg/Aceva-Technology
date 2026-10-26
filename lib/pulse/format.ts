@@ -70,6 +70,16 @@ export function distillBudgetText(text: string): string {
   const rangeMatch = clean.match(/(\$?\d+k?)\s*(?:to|-|or)\s*(\$?\d+k?)/i);
   if (rangeMatch) return `${rangeMatch[1]} – ${rangeMatch[2]}`;
 
+  // A figure that is actually marked as money wins over the first number in the
+  // sentence. Step 5 asks for timeline and budget together, so the first number
+  // is usually the timeline: "Launch in 6 weeks, budget around $15k" distilled
+  // to "6" and that is what the blueprint, the lead email and the .docx showed
+  // as the budget.
+  const moneyMatch = clean.match(
+    /[$€£]\s?\d[\d,]*(?:\.\d+)?\s*[km]?|\b\d[\d,]*(?:\.\d+)?\s*(?:k|m|mil|million|thousand)\b/i,
+  );
+  if (moneyMatch) return moneyMatch[0].trim();
+
   const numMatch = clean.match(/\$?\d+[\d,]*k?/i);
   if (numMatch) return numMatch[0];
 

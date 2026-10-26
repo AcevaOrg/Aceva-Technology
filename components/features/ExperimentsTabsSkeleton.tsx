@@ -1,7 +1,6 @@
 "use client";
-
-import { useEffect, useRef, useState, type CSSProperties } from "react";
-import Skeleton, { SkeletonCard, SkeletonGrid, SkeletonText } from "@/components/ui/Skeleton";
+import { type CSSProperties } from "react";
+import Skeleton, { SkeletonCard, SkeletonGrid } from "@/components/ui/Skeleton";
 
 interface ExperimentsTabsSkeletonProps {
   /** Which panel to show skeleton for */
@@ -61,7 +60,7 @@ export function ExperimentTabBarSkeleton({ delay = 0, style }: { delay?: number;
 export function SitePanelSkeleton({ delay = 0, style }: { delay?: number; style?: CSSProperties }) {
   return (
     <div key="site" style={{ animation: "acBlurIn 480ms cubic-bezier(.16,1,.3,1) both", ...style }}>
-      <SkeletonGrid columns={3} minColumnWidth="280px" gap="14px" count={6} cardProps={{ variant: "flagship", showImage: true, delay }} />
+      <SkeletonGrid minColumnWidth="280px" gap="14px" count={6} cardProps={{ variant: "flagship", showImage: true, delay }} />
     </div>
   );
 }

@@ -23,9 +23,11 @@ function createChatRequest(body: unknown, headers: Record<string, string> = {}) 
 describe("Pulse Response Quality, Tone, & Accuracy Verification Suite", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGeneratePulseCompletion.mockResolvedValue(
-      "That sounds like a great project. What are the key features and target audience for your application?"
-    );
+    mockGeneratePulseCompletion.mockResolvedValue({
+      answer:
+        "That sounds like a great project. What are the key features and target audience for your application?",
+      isFallback: false,
+    });
   });
 
   it("1. Greetings & Casual Check-ins: Provides polite, natural greeting and invites project discovery (isValid: false)", async () => {
@@ -38,14 +40,21 @@ describe("Pulse Response Quality, Tone, & Accuracy Verification Suite", () => {
     }
   });
 
-  it("2. Company FAQ & Capabilities: Provides clear, professional description of ACEVA's services (isValid: false)", async () => {
+  it("2. Company FAQ & Capabilities: Answered from the knowledge base, not a canned blurb (isValid: false)", async () => {
+    // These used to return one hardcoded sentence about ACEVA regardless of what
+    // was asked — which did not even answer "Where is ACEVA located?". They now
+    // go through RAG so the reply comes from knowledge/, while still counting as
+    // non-progress because a company question is not a discovery answer.
     for (const msg of ["What does ACEVA do?", "Where is ACEVA located?", "What is ACEVA Technologies?"]) {
+      mockGeneratePulseCompletion.mockClear();
+
       const response = await POST(createChatRequest({ message: msg }));
       expect(response.status).toBe(200);
       const data = await response.json();
       expect(data.isValid).toBe(false);
-      expect(data.answer).toContain("ACEVA Technologies is a digital engineering agency");
-      expect(data.answer).toMatch(/web platforms|mobile apps|software systems/i);
+      expect(mockGeneratePulseCompletion).toHaveBeenCalledOnce();
+      expect(mockGeneratePulseCompletion.mock.calls[0][0]).toBe(msg);
+      expect(data.answer).not.toContain("I'm here to help map out your software project direction");
     }
   });
 

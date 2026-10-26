@@ -1,7 +1,6 @@
 "use client";
-
-import { useEffect, useRef, useState, type CSSProperties } from "react";
-import Skeleton, { SkeletonCard, SkeletonGrid } from "./Skeleton";
+import { type CSSProperties } from "react";
+import { SkeletonCard } from "./Skeleton";
 
 interface CardSkeletonProps {
   /** Variant matching the Card component variants */

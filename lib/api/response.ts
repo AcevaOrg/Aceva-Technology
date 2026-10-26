@@ -42,8 +42,8 @@ export interface ApiErrorOptions {
   message?: string;
   /** Field flags for VALIDATION_FAILED. */
   errors?: ApiFieldErrors;
-  /** Sets both the body field and the Retry-After header. */
-  retryAfterSeconds?: number;
+  /** Sets both the body's `retryAfter` and the Retry-After header, in seconds. */
+  retryAfter?: number;
   /** Extra response headers, e.g. `Allow` on a 405. */
   headers?: Record<string, string>;
   /** Overrides the status mapped from the code. Use sparingly. */
@@ -79,21 +79,22 @@ export class ApiError extends Error {
 export function apiError(code: ApiErrorCode, requestId: string, options: ApiErrorOptions = {}): NextResponse<ApiErrorBody> {
   const body: ApiErrorBody = {
     ok: false,
+    // `options.message` is the copy override; it is serialised as `error`.
+    error: options.message ?? API_ERROR_MESSAGES[code],
     code,
-    message: options.message ?? API_ERROR_MESSAGES[code],
     retryable: RETRYABLE_API_ERROR_CODES.has(code),
     requestId,
   };
   if (options.errors && Object.keys(options.errors).length > 0) body.errors = options.errors;
-  if (typeof options.retryAfterSeconds === "number") body.retryAfterSeconds = options.retryAfterSeconds;
+  if (typeof options.retryAfter === "number") body.retryAfter = Math.max(0, Math.ceil(options.retryAfter));
 
   const headers: Record<string, string> = {
     // An error must never be served from a shared cache to the next visitor.
     "Cache-Control": "no-store",
     ...options.headers,
   };
-  if (typeof options.retryAfterSeconds === "number") {
-    headers["Retry-After"] = String(Math.max(0, Math.ceil(options.retryAfterSeconds)));
+  if (typeof options.retryAfter === "number") {
+    headers["Retry-After"] = String(Math.max(0, Math.ceil(options.retryAfter)));
   }
 
   return NextResponse.json(body, { status: options.status ?? API_ERROR_STATUS[code], headers });
@@ -144,8 +145,11 @@ export function logRouteError(
  */
 export function withRouteErrorHandling(
   scope: string,
-  handler: (request: Request, requestId: string) => Promise<NextResponse>,
-): (request: Request) => Promise<NextResponse> {
+  // `Response`, not `NextResponse`: a streaming route returns a plain Response
+  // wrapping a ReadableStream. NextResponse extends Response, so every existing
+  // handler still satisfies this.
+  handler: (request: Request, requestId: string) => Promise<Response>,
+): (request: Request) => Promise<Response> {
   return async (request: Request) => {
     const requestId = newRequestId();
     try {

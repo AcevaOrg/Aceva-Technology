@@ -1,8 +1,7 @@
 "use client";
-
-import { useState, type ReactNode, useEffect, useRef } from "react";
+import { useState, type ReactNode, useRef } from "react";
 import styles from "./ExperimentsTabs.module.css";
-import ExperimentsTabsSkeleton, { SitePanelSkeleton, DashPanelSkeleton, MobPanelSkeleton, AutoPanelSkeleton, RescuePanelSkeleton } from "./ExperimentsTabsSkeleton";
+import { SitePanelSkeleton, DashPanelSkeleton, MobPanelSkeleton, AutoPanelSkeleton, RescuePanelSkeleton } from "./ExperimentsTabsSkeleton";
 
 export type ExperimentTabKey = "site" | "dash" | "mob" | "auto" | "rescue";
 
