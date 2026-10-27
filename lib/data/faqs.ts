@@ -38,7 +38,7 @@ export const FAQS: Faq[] = [
   },
   {
     q: "Can I see real client work?",
-    a: "Yes — our homepage includes feedback from clients we’ve worked with, alongside selected examples of what we build. Some projects stay private because of confidentiality, but where we have permission, we are happy to show the work, the problem it solved, and what we delivered.",
+    a: "Not yet on this site. The testimonials on our homepage and Testimonials page are demo examples that show how client feedback will appear, and the demonstrations on our Experiments page are not client projects. When we publish real client work we will name the client only with their permission, and we are happy to talk through relevant examples on a call.",
   },
   {
     q: "Do you have the capacity to handle my project?",
