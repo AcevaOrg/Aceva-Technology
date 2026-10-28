@@ -37,7 +37,8 @@
 }
 @media (max-width: 999px) {
   .button {
-    display: none;
+    right: 16px;
+    bottom: calc(88px + env(safe-area-inset-bottom, 0px));
   }
 }
 @media (prefers-reduced-motion: reduce) {
