@@ -12,6 +12,8 @@ export interface AutoStep {
   done?: boolean;
   nextLabel?: string;
   log: string;
+  /** Fixed fictional time of day, so the server and the browser render the same log. */
+  at: string;
 }
 
 export const AUTO_STEPS: AutoStep[] = [
@@ -26,6 +28,7 @@ export const AUTO_STEPS: AutoStep[] = [
     ],
     nextLabel: "Look up the record",
     log: "Case opened from inbound email. No system changes.",
+    at: "09:14:02",
   },
   {
     kicker: "STEP 2 — DATA LOOKUP",
@@ -38,6 +41,7 @@ export const AUTO_STEPS: AutoStep[] = [
     ],
     nextLabel: "Propose an action",
     log: "Billing, orders and payment provider read. Duplicate confirmed.",
+    at: "09:14:09",
   },
   {
     kicker: "STEP 3 — PROPOSED ACTION",
@@ -50,6 +54,7 @@ export const AUTO_STEPS: AutoStep[] = [
     ],
     approval: true,
     log: "Action proposed: refund $248.00. Awaiting human approval.",
+    at: "09:14:15",
   },
   {
     kicker: "STEP 4 — HUMAN APPROVAL",
@@ -62,6 +67,7 @@ export const AUTO_STEPS: AutoStep[] = [
     ],
     nextLabel: "Update the systems",
     log: "Approved by R. Okafor (Finance). Decision recorded.",
+    at: "09:16:41",
   },
   {
     kicker: "STEP 5 — SYSTEM UPDATE",
@@ -74,5 +80,6 @@ export const AUTO_STEPS: AutoStep[] = [
     ],
     done: true,
     log: "Refund issued. CRM updated. Customer notified. Case closed.",
+    at: "09:16:45",
   },
 ];
