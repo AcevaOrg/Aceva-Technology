@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
-import { ROUTES, contactRoute } from "@/lib/nav";
+import { contactRoute } from "@/lib/nav";
+import { experimentHref } from "@/lib/data/experiments";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import { RESCUE } from "./content";
 import ui from "./home.module.css";
@@ -47,7 +48,7 @@ export default function RescueSpotlight() {
                 Request a Rescue Sprint
                 <ArrowRightIcon width={16} height={16} strokeWidth={2.2} />
               </Link>
-              <Link href={ROUTES.work} className={`${ui.btn} ${ui.btnGhost}`}>
+              <Link href={experimentHref("rescue")} className={`${ui.btn} ${ui.btnGhost}`}>
                 See the full sample report
               </Link>
             </div>

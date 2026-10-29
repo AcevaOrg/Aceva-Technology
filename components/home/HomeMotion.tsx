@@ -10,11 +10,11 @@ import { useEffect } from "react";
  * by one shared IntersectionObserver. Nothing on screen is ever hidden, so there is no
  * flash, no invisible content without JavaScript, and nothing at all under reduced motion.
  */
-export default function HomeMotion() {
+export default function HomeMotion({ root: rootSelector = "[data-home-root]" }: { root?: string }) {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (!("IntersectionObserver" in window)) return;
-    const root = document.querySelector<HTMLElement>("[data-home-root]");
+    const root = document.querySelector<HTMLElement>(rootSelector);
     if (!root) return;
 
     const fold = window.innerHeight * 0.92;
@@ -57,7 +57,7 @@ export default function HomeMotion() {
         if (!el.hasAttribute("data-in")) el.removeAttribute("data-armed");
       }
     };
-  }, []);
+  }, [rootSelector]);
 
   return null;
 }

@@ -35,24 +35,28 @@ test("desktop more menu opens from the top-right icon and navigates", async ({ p
   await expect(page).toHaveURL(/\/company$/);
 });
 
-test("each experiment links back to the homepage", async ({ page }, testInfo) => {
+test("each experiment is reachable from the index and the page links back to the homepage", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop-chromium", "Desktop-only navigation check");
 
-  const experimentTabs = [
-    "Operations dashboard",
-    "Mobile journey",
-    "Automation with approval",
-    "Rescue Report",
+  const experiments = [
+    ["Operations dashboard", "operations-dashboard"],
+    ["Mobile journey", "mobile-journey"],
+    ["Automation with approval", "automation-with-approval"],
+    ["Rescue Report", "rescue-report"],
   ];
 
-  for (const tabName of experimentTabs) {
-    await page.goto("/experiments");
-    await page.getByRole("tab", { name: new RegExp(tabName) }).click();
-    const homeLink = page.getByRole("link", { name: "Back to the homepage" });
-    await expect(homeLink).toHaveAttribute("href", "/");
-    await homeLink.click();
-    await expect(page).toHaveURL(/\/$/);
+  await page.goto("/experiments");
+  const index = page.getByRole("navigation", { name: "Experiments" });
+  for (const [name, slug] of experiments) {
+    await index.getByRole("link", { name: new RegExp(name) }).click();
+    await expect(page).toHaveURL(new RegExp(`#${slug}$`));
+    await expect(page.locator(`#${slug}-title`)).toBeInViewport();
   }
+
+  const homeLink = page.getByRole("link", { name: "Back to the homepage" });
+  await expect(homeLink).toHaveAttribute("href", "/");
+  await homeLink.click();
+  await expect(page).toHaveURL(/\/$/);
 });
 
 test("a path row opens its first engagement and closes again", async ({ page }, testInfo) => {
