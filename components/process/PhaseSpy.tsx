@@ -51,7 +51,9 @@ export default function PhaseSpy() {
       root.style.setProperty("--pp", pp.toFixed(3));
       root.style.setProperty("--landed", String(landed));
       root.dataset.n = String(n);
-      if (!live) live = requestAnimationFrame(() => root.setAttribute("data-live", ""));
+      // Two frames: the first state must be painted before transitions are switched on, or the
+      // browser would animate from the no-JavaScript fallback (everything landed) to it.
+      if (!live) live = requestAnimationFrame(() => (live = requestAnimationFrame(() => root.setAttribute("data-live", ""))));
     };
 
     const schedule = () => {
@@ -70,8 +72,8 @@ export default function PhaseSpy() {
       }
     };
 
-    const io = new IntersectionObserver(([entry]) => {
-      listen(entry.isIntersecting);
+    const io = new IntersectionObserver((entries) => {
+      listen(entries[entries.length - 1].isIntersecting);
       update();
     });
     io.observe(root);

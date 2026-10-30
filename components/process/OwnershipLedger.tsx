@@ -7,8 +7,8 @@ import styles from "./process.module.css";
 const OWNERSHIP_LEDE = PROCESS_COMMITMENTS[1].body.split(". ").slice(0, 3).join(". ") + ".";
 
 /** "You — we are measured against them" → a badge ("You") and the qualifier. */
-function splitOwner(owner: string) {
-  const [who, ...rest] = owner.split(" — ");
+function splitHolder(held: string) {
+  const [who, ...rest] = held.split(" — ");
   return { who, rest: rest.join(" — "), you: who === "You" };
 }
 
@@ -37,36 +37,36 @@ export default function OwnershipLedger() {
 
         <div className={styles.ledgerWrap} data-reveal="up">
           <table className={styles.ledger} role="table">
-            <caption>Ownership on every engagement</caption>
+            <caption>Who holds what, and where this page says so</caption>
             <thead role="rowgroup">
               <tr role="row">
                 <th scope="col" role="columnheader">
                   What
                 </th>
                 <th scope="col" role="columnheader">
-                  Owned by
+                  Held by
                 </th>
                 <th scope="col" role="columnheader">
-                  When
+                  Stated in
                 </th>
               </tr>
             </thead>
             <tbody role="rowgroup">
               {OWNERSHIP_ROWS.map((row, r) => {
-                const owner = splitOwner(row.owner);
+                const holder = splitHolder(row.held);
                 return (
                   <tr key={row.item} role="row" style={{ "--r": r } as CSSProperties}>
                     <th scope="row" role="rowheader">
                       {row.item}
                     </th>
-                    <td role="cell" data-label="Owned by">
-                      <span className={styles.owner} data-owner={owner.you ? "you" : "aceva"}>
-                        <b>{owner.who}</b>
-                        {owner.rest}
+                    <td role="cell" data-label="Held by">
+                      <span className={styles.owner} data-owner={holder.you ? "you" : "aceva"}>
+                        <b>{holder.who}</b>
+                        {holder.rest}
                       </span>
                     </td>
-                    <td role="cell" data-label="When">
-                      {row.when}
+                    <td role="cell" data-label="Stated in">
+                      {row.statedIn}
                     </td>
                   </tr>
                 );

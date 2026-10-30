@@ -125,55 +125,67 @@ export function phaseByKey(key: PhaseKey): ProcessPhase {
 
 /* ---------- who owns what ---------- */
 
+/**
+ * A cross-reference, not new terms: each row says who holds something and points at the phase or
+ * rule on this page that already says so. No dates or timings beyond what that copy states.
+ */
 export interface OwnershipRow {
   item: string;
-  owner: string;
-  when: string;
+  /** "You" or "Aceva", optionally followed by " — " and a qualifier quoted from the copy. */
+  held: string;
+  /** Where on this page it is stated: a phase or a rule. */
+  statedIn: string;
   /** The existing sentence this row restates, so the table can never claim more than the copy. */
   source: string;
 }
 
+const phaseRef = (key: PhaseKey) => {
+  const phase = phaseByKey(key);
+  return `Phase ${phase.n} · ${phase.title}`;
+};
+const ruleRef = (i: number) => `Rule ${String(i + 1).padStart(2, "0")} · ${PROCESS_COMMITMENTS[i].title}`;
+
 export const OWNERSHIP_ROWS: readonly OwnershipRow[] = [
   {
-    item: "Code and repository",
-    owner: "You",
-    when: "From day one of Build",
+    item: "Your repository",
+    held: "You — from day one",
+    statedIn: phaseRef("build"),
     source: phaseByKey("build").receive[2],
   },
   {
-    item: "Domain, hosting and analytics",
-    owner: "You",
-    when: "At Launch, under accounts you control",
+    item: "Domain, hosting, repository and analytics",
+    held: "You — under accounts you control",
+    statedIn: phaseRef("launch"),
     source: phaseByKey("launch").receive[1],
   },
   {
-    item: "Your data",
-    owner: "You",
-    when: "Always",
+    item: "Your code, accounts and data",
+    held: "You",
+    statedIn: ruleRef(1),
     source: PROCESS_COMMITMENTS[1].body,
   },
   {
     item: "Acceptance criteria",
-    owner: "You — we are measured against them",
-    when: "Written in Design",
+    held: "You",
+    statedIn: phaseRef("design"),
     source: phaseByKey("design").receive[2],
   },
   {
     item: "Documentation",
-    owner: "You — structured for another team to pick up",
-    when: "Improve",
+    held: "You — structured for another team to pick up",
+    statedIn: phaseRef("improve"),
     source: phaseByKey("improve").receive[2],
   },
   {
     item: "Architecture, security and quality",
-    owner: "Aceva — a named senior engineer",
-    when: "Every change",
+    held: "Aceva — a senior engineer remains responsible",
+    statedIn: ruleRef(0),
     source: PROCESS_COMMITMENTS[0].body,
   },
   {
-    item: "Post-launch issues",
-    owner: "Aceva — named people",
-    when: "After Launch",
+    item: "Resolving post-launch issues",
+    held: "Aceva — named people",
+    statedIn: phaseRef("launch"),
     source: phaseByKey("launch").receive[2],
   },
 ];

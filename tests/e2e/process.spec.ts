@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 const PHASES = ["understand", "design", "build", "launch", "improve"];
-const SECTIONS = ["phases", "weekly-update", "ownership", "rules", "process-faq", "start"];
+const SECTIONS = ["phases", "weekly-update", "ownership", "rules", "process-faq", "first-step"];
 
 test("server HTML carries every phase and section, with nothing pre-hidden by motion", async ({ request }) => {
   const html = await (await request.get("/process")).text();
@@ -60,10 +60,10 @@ test("under reduced motion nothing is armed or animating", async ({ page }) => {
 
 test("the ownership ledger keeps its table semantics at every width", async ({ page }) => {
   await page.goto("/process#ownership");
-  const table = page.getByRole("table", { name: "Ownership on every engagement" });
+  const table = page.getByRole("table", { name: "Who holds what, and where this page says so" });
   await expect(table).toBeVisible();
   await expect(table.getByRole("row")).toHaveCount(8); // header + 7 rows
-  await expect(table.getByRole("rowheader", { name: "Code and repository" })).toBeVisible();
+  await expect(table.getByRole("rowheader", { name: "Your repository" })).toBeVisible();
 });
 
 test("FAQ answers open in place", async ({ page }) => {
@@ -75,8 +75,8 @@ test("FAQ answers open in place", async ({ page }) => {
 });
 
 test("the close offers the three starting points and the proof", async ({ page }) => {
-  await page.goto("/process#start");
-  const close = page.locator("#start");
+  await page.goto("/process#first-step");
+  const close = page.locator("#first-step");
   for (const situation of ["new", "improve", "help"]) {
     await expect(close.locator(`a[href="/contact?situation=${situation}"]`)).toHaveCount(1);
   }
