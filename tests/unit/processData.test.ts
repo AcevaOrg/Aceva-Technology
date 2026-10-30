@@ -52,7 +52,13 @@ describe("process data", () => {
   });
 
   it("only restates confirmed copy in the ownership table and the limits", () => {
-    for (const row of OWNERSHIP_ROWS) expect(CONFIRMED).toContain(row.source);
+    for (const row of OWNERSHIP_ROWS) {
+      expect(CONFIRMED).toContain(row.source);
+      // the qualifier after the badge is quoted, not paraphrased
+      const [who, qualifier] = row.held.split(" — ");
+      expect(["You", "Aceva"]).toContain(who);
+      if (qualifier) expect(CONFIRMED.toLowerCase()).toContain(qualifier.toLowerCase());
+    }
     for (const line of WONT_PROMISE) expect(CONFIRMED).toContain(line.text);
     expect(WONT_PROMISE.length).toBe(2 + CAPS.length);
   });
@@ -60,7 +66,7 @@ describe("process data", () => {
   it("never invents a duration, a day, a figure or a guarantee", () => {
     const shown = [
       PROCESS_INTRO,
-      ...OWNERSHIP_ROWS.flatMap((r) => [r.item, r.owner, r.when]),
+      ...OWNERSHIP_ROWS.flatMap((r) => [r.item, r.held, r.statedIn]),
       ...WONT_PROMISE.map((l) => l.label),
       JSON.stringify(SAMPLE_UPDATE),
     ].join("\n");
