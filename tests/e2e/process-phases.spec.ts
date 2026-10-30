@@ -33,7 +33,9 @@ test("phones get the sticky rail instead of the dossier", async ({ page }, testI
   await page.goto("/process#design");
   const rail = page.locator(`${TRAIL} > [aria-hidden="true"]`).first();
   await expect(rail).toBeVisible();
-  await expect(rail).toContainText("02 · Design");
+  // the rail holds every phase's label; only the active one is shown
+  await expect(rail.locator('[data-ph="2"]')).toBeVisible();
+  await expect(rail.locator('[data-ph="3"]')).toBeHidden();
   await expect(page.locator(`${TRAIL} > [aria-hidden="true"]`).last()).toBeHidden();
 });
 
