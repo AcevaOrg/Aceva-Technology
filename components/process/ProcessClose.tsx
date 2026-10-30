@@ -8,14 +8,14 @@ import styles from "./process.module.css";
 /** The first step, as one ink section that runs straight into the dark footer. */
 export default function ProcessClose() {
   return (
-    <section id="start" className={`${ui.ink} ${styles.close}`} aria-labelledby="start-title">
+    <section id="first-step" className={`${ui.ink} ${styles.close}`} aria-labelledby="first-step-title">
       <div className={ui.wrap}>
         <div className={styles.closeHead}>
           <p className={ui.eyebrow}>
             <span className={ui.slash} aria-hidden="true" />
             <b>Next</b> / Phase 01
           </p>
-          <h2 id="start-title" className={`${ui.h2} ${styles.h2}`}>
+          <h2 id="first-step-title" className={`${ui.h2} ${styles.h2}`}>
             Start with Understand.
           </h2>
           <p className={ui.lede}>
