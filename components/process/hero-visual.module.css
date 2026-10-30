@@ -1,0 +1,23 @@
+/* Baseline hero visual (replaced by each design direction). */
+
+.visual {
+  position: relative;
+  height: clamp(220px, 34vw, 480px);
+  pointer-events: none;
+}
+
+.beam {
+  position: absolute;
+  left: 50%;
+  top: -20%;
+  width: 2px;
+  height: 140%;
+  background: linear-gradient(180deg, transparent, rgba(143, 168, 255, 0.9) 45%, rgba(47, 80, 255, 0.9) 60%, transparent);
+  transform: rotate(26deg);
+}
+
+@media (max-width: 999px) {
+  .visual {
+    display: none;
+  }
+}

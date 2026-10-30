@@ -94,6 +94,14 @@ export const DELIVERABLES = PROCESS_PHASES.flatMap((phase) =>
   phase.receive.map((text, i) => ({ phase: phase.key, n: phase.n, index: i, text }))
 );
 
+/** How many deliverables you hold once each phase is done (3, 6, 9, 12, 15). */
+export const DELIVERED_BY: Record<PhaseKey, number> = Object.fromEntries(
+  PROCESS_PHASES.map((phase, i) => [
+    phase.key,
+    PROCESS_PHASES.slice(0, i + 1).reduce((sum, p) => sum + p.receive.length, 0),
+  ])
+) as Record<PhaseKey, number>;
+
 export const PROCESS_COMMITMENTS = [
   {
     title: "Senior review, always",
@@ -198,8 +206,8 @@ export const WONT_PROMISE: readonly { label: string; text: string }[] = [
 
 /* ---------- process FAQs ---------- */
 
+/** "How do we get started" is left out on purpose: the page's close quotes that answer. */
 export const PROCESS_FAQ_QUESTIONS = [
-  "How do we get started with Aceva?",
   "What is your typical project timeline?",
   "Do you offer fixed-price or dedicated-team engagements?",
   "Who owns the code, the accounts and the data?",

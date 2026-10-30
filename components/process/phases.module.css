@@ -1,0 +1,69 @@
+/* Baseline phases section (replaced by each design direction). */
+
+.h2 {
+  max-width: 18ch;
+  margin-bottom: clamp(40px, 5vw, 72px);
+}
+
+.list {
+  border-top: 1px solid var(--c-line-strong);
+}
+
+.phase {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px clamp(24px, 4vw, 64px);
+  padding: clamp(28px, 4vw, 52px) 0;
+  border-bottom: 1px solid var(--c-line);
+}
+
+@media (min-width: 900px) {
+  .phase {
+    grid-template-columns: auto minmax(0, 6fr) minmax(0, 5fr);
+  }
+}
+
+.num {
+  font-family: var(--h-display);
+  font-size: clamp(56px, 6vw, 92px);
+  font-weight: 500;
+  line-height: 0.8;
+  letter-spacing: -0.06em;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--c-line-strong);
+}
+
+.body {
+  display: grid;
+  gap: 12px;
+}
+
+.body h3 {
+  font-family: var(--h-display);
+  font-size: clamp(26px, 2.8vw, 38px);
+  letter-spacing: -0.03em;
+}
+
+.body p {
+  max-width: 48ch;
+  font-size: 16px;
+  line-height: 1.62;
+  color: var(--c-muted);
+}
+
+.receiveLabel {
+  margin-bottom: 10px;
+  font-family: var(--h-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+}
+
+.receive li {
+  padding: 11px 0;
+  border-top: 1px solid var(--c-line);
+  font-size: 15px;
+  line-height: 1.5;
+}

@@ -5,6 +5,7 @@ import { CAPS } from "@/lib/data/caps";
 import { FAQS } from "@/lib/data/faqs";
 import {
   DELIVERABLES,
+  DELIVERED_BY,
   OWNERSHIP_ROWS,
   PROCESS_COMMITMENTS,
   PROCESS_FAQS,
@@ -31,6 +32,7 @@ describe("process data", () => {
       expect(phase.receive).toHaveLength(3);
     }
     expect(DELIVERABLES).toHaveLength(15);
+    expect(DELIVERED_BY).toEqual({ understand: 3, design: 6, build: 9, launch: 12, improve: 15 });
   });
 
   it("keeps the homepage's delivery loop and commitments word for word", () => {
