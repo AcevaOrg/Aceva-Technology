@@ -1,58 +1,90 @@
-/* Baseline phases section (replaced by each design direction). */
+/*
+ * "The Loop" phases section. PhaseSpy writes --n, --ap, --pp, --landed and data-n / data-live on
+ * .loop; the ring (loop.module.css) and the rail read them. Every rule falls back to the finished
+ * loop, which is what renders without JavaScript and under reduced motion.
+ */
 
-.h2 {
-  max-width: 18ch;
-  margin-bottom: clamp(40px, 5vw, 72px);
+.section {
+  overflow: clip;
 }
 
-.list {
-  border-top: 1px solid var(--c-line-strong);
+.head {
+  display: grid;
+  gap: clamp(18px, 2.2vw, 26px);
+  max-width: 760px;
+  margin-bottom: clamp(40px, 5vw, 80px);
 }
+
+.head .h2 {
+  max-width: 14ch;
+}
+
+/* ---------- the articles ---------- */
 
 .phase {
+  --on: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 18px clamp(24px, 4vw, 64px);
-  padding: clamp(28px, 4vw, 52px) 0;
-  border-bottom: 1px solid var(--c-line);
+  gap: 14px;
+  align-content: start;
+  padding: clamp(28px, 3.4vw, 44px) 0 clamp(36px, 4.4vw, 60px);
+  border-top: 1px solid var(--c-line);
 }
 
-@media (min-width: 900px) {
-  .phase {
-    grid-template-columns: auto minmax(0, 6fr) minmax(0, 5fr);
-  }
+.loop[data-n="1"] .phase[data-k="1"],
+.loop[data-n="2"] .phase[data-k="2"],
+.loop[data-n="3"] .phase[data-k="3"],
+.loop[data-n="4"] .phase[data-k="4"],
+.loop[data-n="5"] .phase[data-k="5"] {
+  --on: 1;
+}
+
+.phaseLabel {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-family: var(--h-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--c-muted);
 }
 
 .num {
   font-family: var(--h-display);
-  font-size: clamp(56px, 6vw, 92px);
+  font-size: clamp(56px, 6vw, 96px);
   font-weight: 500;
   line-height: 0.8;
   letter-spacing: -0.06em;
-  color: transparent;
+  color: rgb(26 60 245 / var(--on));
   -webkit-text-stroke: 1px var(--c-line-strong);
 }
 
-.body {
-  display: grid;
-  gap: 12px;
+.loop[data-live] .num {
+  transition: color 0.45s var(--h-ease);
 }
 
-.body h3 {
+.phaseTitle {
   font-family: var(--h-display);
-  font-size: clamp(26px, 2.8vw, 38px);
-  letter-spacing: -0.03em;
+  font-size: clamp(30px, 3.2vw, 46px);
+  line-height: 1;
+  letter-spacing: -0.035em;
 }
 
-.body p {
-  max-width: 48ch;
-  font-size: 16px;
+.lead {
+  max-width: 50ch;
+  font-size: 16.5px;
   line-height: 1.62;
   color: var(--c-muted);
 }
 
+.receiveBlock {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+  max-width: 560px;
+}
+
 .receiveLabel {
-  margin-bottom: 10px;
   font-family: var(--h-mono);
   font-size: 10.5px;
   font-weight: 500;
@@ -62,8 +94,140 @@
 }
 
 .receive li {
-  padding: 11px 0;
+  position: relative;
+  padding: 12px 0 12px 26px;
   border-top: 1px solid var(--c-line);
-  font-size: 15px;
+  font-size: 15.5px;
   line-height: 1.5;
+}
+
+.receive li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 16px;
+  width: 9px;
+  height: 14px;
+  background: var(--c-accent);
+  clip-path: polygon(62% 0, 100% 0, 38% 100%, 0 100%);
+}
+
+/* ---------- phones and narrow screens: the sticky rail ---------- */
+
+.rail {
+  position: sticky;
+  top: 78px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 12px;
+  padding: 6px 16px 6px 6px;
+  border-radius: 999px;
+  background: rgba(10, 11, 14, 0.94);
+  box-shadow: 0 12px 30px -12px rgba(10, 11, 14, 0.5);
+  color: #f4f5f7;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.now {
+  flex: 1;
+  min-width: 0;
+}
+
+.now span {
+  display: none;
+  white-space: nowrap;
+}
+
+.now [data-ph="all"] {
+  display: inline;
+}
+
+.loop[data-n] .now [data-ph="all"] {
+  display: none;
+}
+
+.loop[data-n="0"] .now [data-ph="0"],
+.loop[data-n="1"] .now [data-ph="1"],
+.loop[data-n="2"] .now [data-ph="2"],
+.loop[data-n="3"] .now [data-ph="3"],
+.loop[data-n="4"] .now [data-ph="4"],
+.loop[data-n="5"] .now [data-ph="5"] {
+  display: inline;
+}
+
+.railCount {
+  font-family: var(--h-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: #9aa1b2;
+}
+
+.railCount b {
+  color: #f4f5f7;
+  font-weight: 500;
+}
+
+.railCount b::before {
+  counter-reset: ph var(--n, 5);
+  content: counter(ph);
+}
+
+.stage {
+  display: none;
+}
+
+/* deep links (/process#build) land below the header and the rail, not under them */
+@media (max-width: 1023px), (max-height: 599px) {
+  .phase {
+    scroll-margin-top: 64px;
+  }
+}
+
+/* ---------- wide screens: the sticky ring ---------- */
+
+@media (min-width: 1024px) and (min-height: 600px) {
+  .loop {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    column-gap: clamp(40px, 6vw, 110px);
+    align-items: start;
+  }
+
+  .rail {
+    display: none;
+  }
+
+  .stage {
+    display: block;
+    position: sticky;
+    top: max(calc(var(--p-dock) + 24px), calc(50svh - 280px));
+    padding: 5% 11%;
+  }
+
+  .phase {
+    min-height: 66svh;
+  }
+
+  .phase:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .phase:last-child {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .rail {
+    top: 74px;
+    font-size: 13px;
+  }
+
+  .num {
+    font-size: 52px;
+  }
 }

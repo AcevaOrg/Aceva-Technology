@@ -1,0 +1,516 @@
+/*
+ * "The Loop": the ring diagram (hero, sticky stage, mini badge) and Build's weekly loop.
+ * The stage reads PhaseSpy's variables from an ancestor:
+ *   main arc   = (n - 1 + ap) / 4   Understand → Improve, drawn as you read
+ *   close arc  = (n - 4) × ap       Improve → back to Understand, drawn while reading Improve
+ *   --reached  = n ≥ k              filled node
+ *   --on       = n = k              active node (set from data-n, since CSS can't compare numbers)
+ * Fallbacks are n = 5 and ap = 1: the whole loop drawn, which is what renders without JavaScript
+ * and under reduced motion. Keyframes live here because CSS Modules hash their names.
+ */
+
+.ring {
+  --ring-bg: var(--h-paper);
+  --ring-line: rgba(14, 15, 19, 0.14);
+  --ring-line-strong: rgba(14, 15, 19, 0.3);
+  --ring-fill: #0e0f13;
+  --ring-num: #4a4e58;
+  --ring-num-on: #fff;
+  --ring-accent: var(--h-blue);
+  --ring-close: var(--h-blue-hi);
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.hero {
+  --ring-bg: var(--h-ink);
+  --ring-line: rgba(255, 255, 255, 0.14);
+  --ring-line-strong: rgba(255, 255, 255, 0.3);
+  --ring-fill: #f4f5f7;
+  --ring-num: #9aa1b2;
+  --ring-num-on: #0e0f13;
+  --ring-accent: var(--h-ice);
+  --ring-close: var(--h-ice);
+}
+
+.spin {
+  position: absolute;
+  inset: 0;
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.track {
+  fill: none;
+  stroke: var(--ring-line);
+  stroke-width: 1.5;
+}
+
+.main,
+.close {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 100 100;
+}
+
+.main {
+  stroke: var(--ring-accent);
+  stroke-dashoffset: calc((1 - clamp(0, calc((var(--n, 5) - 1 + var(--ap, 1)) / 4), 1)) * 100);
+}
+
+.close {
+  stroke: var(--ring-close);
+  stroke-dashoffset: calc((1 - clamp(0, calc((var(--n, 5) - 4) * var(--ap, 1)), 1)) * 100);
+}
+
+.slash {
+  fill: var(--ring-accent);
+}
+
+.node {
+  --reached: clamp(0, calc(var(--n, 5) - var(--k) + 1), 1);
+  --on: 0;
+}
+
+[data-n="1"] .node[data-k="1"],
+[data-n="2"] .node[data-k="2"],
+[data-n="3"] .node[data-k="3"],
+[data-n="4"] .node[data-k="4"],
+[data-n="5"] .node[data-k="5"] {
+  --on: 1;
+}
+
+.halo {
+  fill: none;
+  stroke: var(--ring-accent);
+  stroke-width: 1.5;
+  opacity: var(--on);
+  transform: scale(calc(0.7 + var(--on) * 0.3));
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.nodeBase {
+  fill: var(--ring-bg);
+  stroke: var(--ring-line-strong);
+  stroke-width: 1.5;
+}
+
+.nodeFill {
+  fill: color-mix(in srgb, var(--ring-accent) calc(var(--on) * 100%), var(--ring-fill));
+  opacity: var(--reached);
+  transform: scale(calc(0.6 + var(--reached) * 0.4));
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.nodeNum {
+  font-family: var(--h-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  fill: color-mix(in srgb, var(--ring-num-on) calc(var(--reached) * 100%), var(--ring-num));
+}
+
+/* transitions only once PhaseSpy is live, so nothing animates on the first paint */
+[data-live] .halo,
+[data-live] .nodeFill {
+  transition:
+    opacity 0.45s var(--h-ease),
+    transform 0.6s cubic-bezier(0.3, 1.5, 0.5, 1),
+    fill 0.45s var(--h-ease);
+}
+
+/* ---------- labels around the ring ---------- */
+
+.label {
+  position: absolute;
+  font-family: var(--h-display);
+  font-size: clamp(13px, 1.15vw, 15px);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--c-fg) calc(var(--reached, 1) * 100%), var(--ring-num));
+  --reached: clamp(0, calc(var(--n, 5) - var(--k) + 1), 1);
+}
+
+.label[data-side="top"] {
+  transform: translate(-50%, -100%);
+}
+
+.label[data-side="right"] {
+  transform: translate(0, -50%);
+}
+
+.label[data-side="left"] {
+  transform: translate(-100%, -50%);
+}
+
+[data-n="1"] .label[data-k="1"],
+[data-n="2"] .label[data-k="2"],
+[data-n="3"] .label[data-k="3"],
+[data-n="4"] .label[data-k="4"],
+[data-n="5"] .label[data-k="5"] {
+  color: var(--ring-accent);
+}
+
+/* ---------- the stage's centre readout ---------- */
+
+.center {
+  position: absolute;
+  inset: 26%;
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.center > span {
+  display: none;
+  gap: 6px;
+  justify-items: center;
+}
+
+.center > [data-ph="all"] {
+  display: grid;
+}
+
+[data-n] .center > [data-ph="all"] {
+  display: none;
+}
+
+[data-n="0"] .center > [data-ph="0"],
+[data-n="1"] .center > [data-ph="1"],
+[data-n="2"] .center > [data-ph="2"],
+[data-n="3"] .center > [data-ph="3"],
+[data-n="4"] .center > [data-ph="4"],
+[data-n="5"] .center > [data-ph="5"] {
+  display: grid;
+  animation: readout 0.5s var(--h-ease) both;
+}
+
+@keyframes readout {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+}
+
+.center small {
+  font-family: var(--h-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.center b {
+  font-family: var(--h-display);
+  font-size: clamp(22px, 2.1vw, 30px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: var(--c-fg);
+}
+
+.center em {
+  margin-top: 4px;
+  font-size: 13px;
+  font-style: normal;
+  color: var(--ring-accent);
+}
+
+/* ---------- hero: draws itself in, then a light keeps travelling the loop ---------- */
+
+.hero .track,
+.hero .main,
+.hero .close {
+  animation: draw 1.4s var(--h-ease-io) 0.3s both;
+}
+
+.hero .close {
+  animation-delay: 1.3s;
+  animation-duration: 0.7s;
+}
+
+@keyframes draw {
+  from {
+    stroke-dashoffset: 100;
+  }
+}
+
+.hero .track {
+  stroke-dasharray: 100 100;
+}
+
+.hero .node {
+  animation: pop 0.6s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+  animation-delay: calc(0.35s + var(--k) * 0.18s);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+.hero .label {
+  animation: fadeIn 0.6s var(--h-ease) both;
+  animation-delay: calc(0.5s + var(--k) * 0.18s);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+.hero .slash {
+  animation: fadeIn 0.5s var(--h-ease) 1.8s both;
+}
+
+/* the orbiting light: a composited rotation of an HTML layer the size of the ring */
+.orbit {
+  position: absolute;
+  inset: 17.5%;
+  border-radius: 50%;
+  animation: orbit 12s linear infinite;
+  pointer-events: none;
+}
+
+.orbit::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: var(--h-ice);
+  box-shadow: 0 0 18px 5px rgba(143, 168, 255, 0.55);
+}
+
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- mini: the badge in the phone rail ---------- */
+
+.mini {
+  width: 44px;
+  flex: none;
+  --ring-bg: var(--h-ink);
+  --ring-line: rgba(255, 255, 255, 0.2);
+  --ring-line-strong: rgba(255, 255, 255, 0.3);
+  --ring-fill: #f4f5f7;
+  --ring-accent: var(--h-ice);
+  --ring-close: var(--h-ice);
+}
+
+.mini .track {
+  stroke-width: 10;
+}
+
+.mini .main,
+.mini .close {
+  stroke-width: 18;
+}
+
+.mini .slash,
+.mini .halo,
+.mini .nodeBase {
+  display: none;
+}
+
+.mini .nodeFill {
+  transform: scale(calc(var(--reached) * 1.1));
+}
+
+/* ---------- Build's weekly loop ---------- */
+
+.weekly {
+  margin-top: 18px;
+  padding: clamp(18px, 2.4vw, 26px);
+  border-radius: 20px;
+  background: var(--h-ink);
+  color: #f4f5f7;
+}
+
+.weeklyHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-family: var(--h-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--h-ice);
+}
+
+.weeklyHead span:last-child {
+  color: #9aa1b2;
+}
+
+.steps {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 26px;
+  counter-reset: step;
+}
+
+/* reading order 1 2 3 4, laid out clockwise: 1 2 / 4 3 */
+.steps li:nth-child(3) {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.steps li:nth-child(4) {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.steps li {
+  position: relative;
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  padding: 14px 14px 16px;
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  isolation: isolate;
+}
+
+/* the light moving round the loop: one card at a time, composited (opacity only) */
+.steps li::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(47, 80, 255, 0.55), rgba(26, 60, 245, 0.25));
+  box-shadow: inset 0 0 0 1px var(--h-ice);
+  opacity: 0;
+}
+
+.weekly:not([data-armed]) .steps li::before,
+.weekly[data-in] .steps li::before {
+  animation: station 5.6s var(--h-ease-io) infinite;
+  animation-delay: calc(var(--s) * 1.4s);
+}
+
+@keyframes station {
+  0%,
+  22% {
+    opacity: 1;
+  }
+  32%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* arrows between stations, following the loop */
+.steps li::after {
+  position: absolute;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--h-ice);
+}
+
+.steps li:nth-child(1)::after {
+  content: "→";
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.steps li:nth-child(2)::after {
+  content: "↓";
+  left: 50%;
+  bottom: -21px;
+  transform: translateX(-50%);
+}
+
+.steps li:nth-child(3)::after {
+  content: "←";
+  left: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.steps li:nth-child(4)::after {
+  content: "↑";
+  left: 50%;
+  top: -21px;
+  transform: translateX(-50%);
+}
+
+.stepN {
+  font-family: var(--h-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--h-ice);
+}
+
+.steps b {
+  font-family: var(--h-display);
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+.steps li > span:last-child {
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: #9aa1b2;
+}
+
+@media (max-width: 520px) {
+  .steps {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .steps li:nth-child(3),
+  .steps li:nth-child(4) {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .steps li:nth-child(1)::after,
+  .steps li:nth-child(2)::after,
+  .steps li:nth-child(3)::after {
+    content: "↓";
+    left: 50%;
+    right: auto;
+    top: auto;
+    bottom: -20px;
+    transform: translateX(-50%);
+  }
+
+  .steps li:nth-child(4)::after {
+    content: "↺";
+    left: auto;
+    right: 14px;
+    top: 14px;
+    transform: none;
+  }
+}
