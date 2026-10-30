@@ -3,6 +3,7 @@ import { PATHS, PATH_KEYS } from "@/lib/data/paths";
 import type { Review } from "@/components/features/ReviewCard";
 import reviewsData from "@/data/reviews.json";
 import { FINDINGS, ROADMAP, VERDICTS } from "@/lib/data/experiments";
+import { PROCESS_COMMITMENTS, PROCESS_PHASES } from "@/lib/data/process";
 
 /**
  * Homepage copy. Every line here is either existing Aceva copy (capabilities, paths,
@@ -83,28 +84,10 @@ export const RESCUE = {
 
 export const PRINCIPLE = "We will not compete by saying more. We will compete by proving more.";
 
-export const PROCESS_STEPS = [
-  { n: "01", title: "Understand", body: "Requirements, goals, constraints and feasibility before any code." },
-  { n: "02", title: "Design", body: "UX, interface and architecture planning with acceptance criteria." },
-  { n: "03", title: "Build", body: "Senior-reviewed sprints with weekly working demos." },
-  { n: "04", title: "Launch", body: "QA, security basics, deployment and analytics under your accounts." },
-  { n: "05", title: "Improve", body: "Monitoring, iteration and a modernization roadmap you can act on." },
-] as const;
+/** Derived from the same data as /process, so the homepage loop and the full page can never drift apart. */
+export const PROCESS_STEPS = PROCESS_PHASES.map(({ n, title, summary }) => ({ n, title, body: summary }));
 
-export const COMMITMENTS = [
-  {
-    title: "Senior review, always",
-    body: "AI is used for speed. A senior engineer remains responsible for architecture, security, and quality.",
-  },
-  {
-    title: "You own everything",
-    body: "Your code. Your accounts. Your data. No developer personally owns the domain, repository, or hosting for your business.",
-  },
-  {
-    title: "Weekly proof",
-    body: "Working progress, decisions, risks and tests every week — instead of hiding until the deadline.",
-  },
-] as const;
+export const COMMITMENTS = PROCESS_COMMITMENTS;
 
 export const SIGNATURES = [
   "AI-accelerated. Senior-reviewed.",
