@@ -1,23 +1,168 @@
-/* Baseline hero visual (replaced by each design direction). */
+/*
+ * "The Paper Trail" hero visual. Fifteen sheets are dealt along the 64° slash (dx = dy × tan 26°).
+ * Scrub writes --p (0 → 1) as the hero scrolls away; the fan's step shrinks with it, so the sheets
+ * close into a stack. Without JavaScript or with reduced motion --p is unset and the fan stays open.
+ */
 
 .visual {
   position: relative;
-  height: clamp(220px, 34vw, 480px);
+  height: clamp(440px, 40vw, 560px);
   pointer-events: none;
+}
+
+.fan {
+  position: absolute;
+  inset: 0;
+  --step: calc(24px - var(--p, 0) * 18px);
 }
 
 .beam {
   position: absolute;
-  left: 50%;
-  top: -20%;
+  left: 34%;
+  top: -24%;
   width: 2px;
-  height: 140%;
-  background: linear-gradient(180deg, transparent, rgba(143, 168, 255, 0.9) 45%, rgba(47, 80, 255, 0.9) 60%, transparent);
+  height: 150%;
   transform: rotate(26deg);
 }
 
+.glow {
+  position: absolute;
+  inset: 0 -60px;
+  background: linear-gradient(180deg, transparent, rgba(47, 80, 255, 0.3) 40%, rgba(143, 168, 255, 0.2) 60%, transparent);
+  filter: blur(28px);
+}
+
+.core {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent, rgba(143, 168, 255, 0.85) 45%, rgba(47, 80, 255, 0.85) 60%, transparent);
+}
+
+.sheet {
+  position: absolute;
+  left: 2%;
+  bottom: 4%;
+  z-index: calc(20 - var(--i));
+  width: min(280px, 62%);
+  transform: translate3d(calc(var(--i) * var(--step) * 0.4877), calc(var(--i) * var(--step) * -1), 0);
+  transition: transform 0.4s var(--h-ease);
+}
+
+/* each sheet is dealt in after the headline has risen */
+.sheetIn {
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px 16px;
+  border-radius: 12px;
+  background: var(--h-ink-2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 24px 50px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(0, 0, 0, 0.35);
+  /* opaque, so only each sheet's header shows above the one in front: a row of index tabs */
+  color: rgb(244 245 247 / calc(1 - var(--i) * 0.04));
+  animation: deal 0.8s var(--h-ease) both;
+  animation-delay: calc(0.35s + (14 - var(--i)) * 45ms);
+}
+
+.sheet[data-front] .sheetIn {
+  background: var(--h-paper);
+  border-color: transparent;
+  color: #0e0f13;
+}
+
+@keyframes deal {
+  from {
+    opacity: 0;
+    transform: translate3d(-36px, 70px, 0) rotate(-9deg);
+  }
+}
+
+.sheetHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--h-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9aa1b2;
+}
+
+.sheet[data-front] .sheetHead {
+  color: var(--h-blue);
+}
+
+.sheetHead i {
+  width: 7px;
+  height: 11px;
+  background: currentColor;
+  clip-path: polygon(62% 0, 100% 0, 38% 100%, 0 100%);
+}
+
+.sheetTitle {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-family: var(--h-display);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.lines {
+  display: grid;
+  gap: 6px;
+}
+
+.lines i {
+  height: 5px;
+  border-radius: 3px;
+  background: currentColor;
+  opacity: 0.12;
+}
+
+.lines i:nth-child(2) {
+  width: 82%;
+}
+
+.lines i:nth-child(3) {
+  width: 56%;
+}
+
+/* Below 1000px the copy stacks on top; a shorter fan sits beneath it. */
 @media (max-width: 999px) {
   .visual {
-    display: none;
+    height: 300px;
+    margin-top: -8px;
+  }
+
+  .fan {
+    --step: calc(13px - var(--p, 0) * 8px);
+  }
+
+  .sheet {
+    width: min(230px, 64%);
+  }
+
+  .beam {
+    left: 30%;
+  }
+}
+
+@media (max-width: 480px) {
+  .visual {
+    height: 260px;
+  }
+
+  .fan {
+    --step: calc(11px - var(--p, 0) * 7px);
+  }
+
+  .sheetTitle {
+    font-size: 13.5px;
   }
 }
