@@ -28,6 +28,8 @@ const first = NODES[0];
 const last = NODES[NODES.length - 1];
 const MAIN = `M ${first.x} ${first.y} A ${R} ${R} 0 1 1 ${last.x} ${last.y}`;
 const CLOSE = `M ${last.x} ${last.y} A ${R} ${R} 0 0 1 ${first.x} ${first.y}`;
+/* the full track as two half-circle arcs: pathLength is reliable on <path> in every browser */
+const TRACK = `M ${C} ${C - R} A ${R} ${R} 0 1 1 ${C} ${C + R} A ${R} ${R} 0 1 1 ${C} ${C - R}`;
 
 /* a small slash, leaning at the logo's 64°, centred on the closing arc */
 const mid = at(-126, R);
@@ -49,10 +51,10 @@ type Variant = "hero" | "stage" | "mini";
  */
 export default function LoopRing({ variant }: { variant: Variant }) {
   return (
-    <div className={`${styles.ring} ${styles[variant]}`} aria-hidden="true">
+    <div className={[styles.ring, styles[variant]].filter(Boolean).join(" ")} aria-hidden="true">
       <div className={styles.spin}>
         <svg viewBox="0 0 400 400" className={styles.svg}>
-          <circle cx={C} cy={C} r={R} pathLength={100} className={styles.track} />
+          <path d={TRACK} pathLength={100} className={styles.track} />
           <path d={MAIN} pathLength={100} className={styles.main} />
           <path d={CLOSE} pathLength={100} className={styles.close} />
           <polygon points={SLASH} className={styles.slash} />

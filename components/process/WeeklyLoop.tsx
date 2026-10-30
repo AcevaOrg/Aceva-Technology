@@ -10,7 +10,7 @@ export default function WeeklyLoop() {
         <span>Inside Build</span>
         <span>Every week</span>
       </p>
-      <ol className={styles.steps}>
+      <ol className={styles.steps} role="list">
         {WEEKLY_LOOP.map((step, s) => (
           <li key={step.label} style={{ "--s": s } as CSSProperties}>
             <span className={styles.stepN}>{String(s + 1).padStart(2, "0")}</span>

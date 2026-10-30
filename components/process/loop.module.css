@@ -62,12 +62,12 @@
 
 .main {
   stroke: var(--ring-accent);
-  stroke-dashoffset: calc((1 - clamp(0, calc((var(--n, 5) - 1 + var(--ap, 1)) / 4), 1)) * 100);
+  stroke-dashoffset: calc((1 - clamp(0, calc((var(--n, 5) - 1 + var(--ap, 1)) / 4), 1)) * 100px);
 }
 
 .close {
   stroke: var(--ring-close);
-  stroke-dashoffset: calc((1 - clamp(0, calc((var(--n, 5) - 4) * var(--ap, 1)), 1)) * 100);
+  stroke-dashoffset: calc((1 - clamp(0, calc((var(--n, 5) - 4) * var(--ap, 1)), 1)) * 100px);
 }
 
 .slash {
@@ -104,6 +104,7 @@
 }
 
 .nodeFill {
+  fill: var(--ring-fill);
   fill: color-mix(in srgb, var(--ring-accent) calc(var(--on) * 100%), var(--ring-fill));
   opacity: var(--reached);
   transform: scale(calc(0.6 + var(--reached) * 0.4));
@@ -116,6 +117,7 @@
   font-size: 13px;
   font-weight: 500;
   letter-spacing: 0.04em;
+  fill: var(--ring-num-on);
   fill: color-mix(in srgb, var(--ring-num-on) calc(var(--reached) * 100%), var(--ring-num));
 }
 
@@ -137,6 +139,7 @@
   font-weight: 500;
   letter-spacing: -0.01em;
   white-space: nowrap;
+  color: var(--c-fg);
   color: color-mix(in srgb, var(--c-fg) calc(var(--reached, 1) * 100%), var(--ring-num));
   --reached: clamp(0, calc(var(--n, 5) - var(--k) + 1), 1);
 }
@@ -242,7 +245,7 @@
 
 @keyframes draw {
   from {
-    stroke-dashoffset: 100;
+    stroke-dashoffset: 100px;
   }
 }
 
@@ -436,6 +439,7 @@
 
 .steps li:nth-child(1)::after {
   content: "→";
+  content: "→" / "";
   right: -20px;
   top: 50%;
   transform: translateY(-50%);
@@ -443,6 +447,7 @@
 
 .steps li:nth-child(2)::after {
   content: "↓";
+  content: "↓" / "";
   left: 50%;
   bottom: -21px;
   transform: translateX(-50%);
@@ -450,6 +455,7 @@
 
 .steps li:nth-child(3)::after {
   content: "←";
+  content: "←" / "";
   left: -20px;
   top: 50%;
   transform: translateY(-50%);
@@ -457,6 +463,7 @@
 
 .steps li:nth-child(4)::after {
   content: "↑";
+  content: "↑" / "";
   left: 50%;
   top: -21px;
   transform: translateX(-50%);
@@ -499,6 +506,7 @@
   .steps li:nth-child(2)::after,
   .steps li:nth-child(3)::after {
     content: "↓";
+    content: "↓" / "";
     left: 50%;
     right: auto;
     top: auto;
@@ -508,6 +516,7 @@
 
   .steps li:nth-child(4)::after {
     content: "↺";
+    content: "↺" / "";
     left: auto;
     right: 14px;
     top: 14px;
