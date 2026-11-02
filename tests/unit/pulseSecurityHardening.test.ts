@@ -418,12 +418,28 @@ describe("shared rate limiting", () => {
   });
 
   it("counts with one atomic upsert per hit, never a read-then-write", async () => {
+    // The store sweeps expired rows on about 1% of hits (Math.random() < 0.01).
+    // Pin the draw above that so this test is deterministic; the sweep has its
+    // own test below. Left random, this failed about once in a hundred runs.
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
     setRateLimitStoreForTests(new PostgresRateLimitStore());
     await enforceRateLimits("t", [rule("203.0.113.2")], { onStoreError: "deny" });
     const counted = fakeDb.state.statements.filter((s) => /pulse_rate_limits/.test(s) && !/CREATE TABLE/.test(s));
     expect(counted).toEqual([RATE_LIMIT_UPSERT_SQL.replace(/\s+/g, " ").trim()]);
     expect(RATE_LIMIT_UPSERT_SQL).toMatch(/ON CONFLICT \(bucket\) DO UPDATE/);
     expect(RATE_LIMIT_UPSERT_SQL).toMatch(/RETURNING hits/);
+  });
+
+  it("on the occasional sweep, deletes only expired rows and still counts with the one upsert", async () => {
+    vi.spyOn(Math, "random").mockReturnValue(0);
+    setRateLimitStoreForTests(new PostgresRateLimitStore());
+    await enforceRateLimits("t", [rule("203.0.113.4")], { onStoreError: "deny" });
+    await new Promise((resolve) => setTimeout(resolve, 0)); // the sweep is fire-and-forget
+    const statements = fakeDb.state.statements.filter((s) => /pulse_rate_limits/.test(s) && !/CREATE TABLE/.test(s));
+    expect(statements).toEqual([
+      RATE_LIMIT_UPSERT_SQL.replace(/\s+/g, " ").trim(),
+      "DELETE FROM pulse_rate_limits WHERE expires_at < now()",
+    ]);
   });
 
   it("stores only hashed keys, never the address, email or reference", async () => {
