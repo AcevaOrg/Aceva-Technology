@@ -15,11 +15,11 @@
   }
 }
 
-/* Mobile/tablet: above the fixed MobileCtaBar (12px + 52px + 12px + safe area) */
+/* Mobile/tablet: above the back-to-top button (44px at bottom: 88px), which is above the fixed MobileCtaBar */
 @media (max-width: 999px) {
   .root {
     right: 16px;
-    bottom: calc(88px + env(safe-area-inset-bottom));
+    bottom: calc(144px + env(safe-area-inset-bottom));
   }
 }
 
