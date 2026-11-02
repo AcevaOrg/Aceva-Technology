@@ -9,7 +9,9 @@ async function completeForm(page: import("@playwright/test").Page) {
   // assertions below looked broken when the application was behaving
   // correctly. "Where you are right now" and "Capability of interest" are
   // selects that already default to a valid option.
-  await page.getByLabel("Company").fill("Ellis & Co");
+  // By role: the site footer has a link list labelled "Company", so the label
+  // alone matches two elements in strict mode.
+  await page.getByRole("textbox", { name: "Company" }).fill("Ellis & Co");
   await page.getByLabel("Budget range").selectOption("small");
   await page.getByLabel("What is the problem, in your own words").fill("We need help rebuilding our customer portal this quarter.");
 }
