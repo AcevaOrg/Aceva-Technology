@@ -150,3 +150,7 @@ vite.config.ts.timestamp-*
 # local import source for scripts/import-directions.ts.
 knowledge/savedDirections.json
 .neon
+
+# Internal manager confirmation register for the Pulse knowledge base. The
+# repository is public, so it stays on the maintainers' machines only.
+knowledge/manager-confirmations.md

@@ -65,6 +65,18 @@ function sectionHasBody(section: string): boolean {
   return withoutHeading.length > 0;
 }
 
+/**
+ * A knowledge file whose frontmatter says `index: false` is written for the
+ * team, not for visitors, and is never chunked. knowledge/manager-confirmations.md
+ * is the case in point: a register of questions awaiting a manager's answer is
+ * dense with exactly the vocabulary visitors use ("refund", "warranty", "HR
+ * email"), so indexed it would outrank the sections that answer honestly, and
+ * it would put unconfirmed wording in front of the model as if it were a fact.
+ */
+function isIndexedKnowledgeFile(fileContent: string): boolean {
+  return matter(fileContent).data?.index !== false;
+}
+
 function computeHash(content: string, metadata: DocumentChunkMetadata): string {
   const payload = `${content.trim()}::${metadata.title}::${metadata.category}::${metadata.source}`;
   return crypto.createHash("sha256").update(payload).digest("hex");
@@ -133,8 +145,9 @@ async function runIngestion() {
     process.exit(1);
   }
 
-  const files = fs.readdirSync(KNOWLEDGE_DIR).filter((f) => f.endsWith(".md"));
-  console.log(`Found ${files.length} knowledge markdown files.`);
+  const markdown = fs.readdirSync(KNOWLEDGE_DIR).filter((f) => f.endsWith(".md"));
+  const files = markdown.filter((f) => isIndexedKnowledgeFile(fs.readFileSync(path.join(KNOWLEDGE_DIR, f), "utf-8")));
+  console.log(`Found ${markdown.length} knowledge markdown files (${markdown.length - files.length} marked index: false).`);
 
   // Load existing index for idempotency
   let existingIndex: VectorDatabaseIndex = {
@@ -176,8 +189,11 @@ async function runIngestion() {
         existing.embedding?.length &&
         existingIndex.embeddingModel === embeddingModel
       ) {
-        // Reuse existing embedding (Idempotent)
-        newChunksList.push(existing);
+        // Reuse the embedding, but always take the metadata from the file as it
+        // is now. The hash covers the text, title, category and source, not the
+        // url, so reusing the whole stored chunk kept a stale url after a
+        // frontmatter edit — and url is scored by the keyword ranker.
+        newChunksList.push({ ...existing, metadata: raw.metadata });
         reusedCount++;
       } else {
         // Generate new embedding

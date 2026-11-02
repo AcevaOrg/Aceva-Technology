@@ -22,3 +22,5 @@ Digital Experiences covers websites and digital platforms intended to help a bus
 This capability is relevant when a business needs a new digital presence or its current website is weak, slow, or confusing. ACEVA can demonstrate its approach through a premium website concept with mobile behavior, speed, and a working lead flow.
 
 ACEVA does not promise guaranteed sales or search rankings.
+
+Search engine optimisation (SEO) is not listed as a standalone service on the website. It was part of the scope on the two documented client websites (see `client-projects.md`), so SEO work can be included in a website engagement, but ACEVA does not promise search rankings, traffic or results, and no SEO outcome has been documented.

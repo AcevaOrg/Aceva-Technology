@@ -157,9 +157,129 @@ const DOMAIN_SYNONYMS: Record<string, string[]> = {
   framework: ["tech", "technology", "technologies", "stack", "framework", "architecture"],
   frameworks: ["tech", "technology", "technologies", "stack", "framework", "architecture"],
   pricing: ["pricing", "price", "cost", "engagement", "rate", "fee", "budget", "quote", "sprint"],
+  // "Just give me a ballpark quote" retrieved nothing from the pricing files:
+  // only "pricing" was a key, so a visitor who said quote, cost, price, rate
+  // or budget never reached the chunks that say no figure is published.
+  quote: ["pricing", "price", "cost", "quote", "rate", "fee", "budget"],
+  cost: ["pricing", "price", "cost", "quote", "rate", "fee", "budget"],
+  costs: ["pricing", "price", "cost", "quote", "rate", "fee", "budget"],
+  price: ["pricing", "price", "cost", "quote", "rate", "fee", "budget"],
+  prices: ["pricing", "price", "cost", "quote", "rate", "fee", "budget"],
+  rate: ["pricing", "price", "cost", "quote", "rate", "fee", "budget"],
+  rates: ["pricing", "price", "cost", "quote", "rate", "fee", "budget"],
+  budget: ["pricing", "price", "cost", "quote", "rate", "fee", "budget"],
+  charge: ["pricing", "price", "cost", "quote", "rate", "fee", "budget"],
+  // "Why should I pick you over Toptal?" is a question about how ACEVA
+  // competes, which website-content.md answers under "What ACEVA Competes On".
+  compare: ["competes", "compete", "positioning"],
+  comparison: ["competes", "compete", "positioning"],
+  versus: ["competes", "compete", "positioning"],
+  competitor: ["competes", "compete", "positioning"],
+  competitors: ["competes", "compete", "positioning"],
+  alternative: ["competes", "compete", "positioning"],
+  alternatives: ["competes", "compete", "positioning"],
+  freelancer: ["competes", "compete", "positioning"],
+  freelancers: ["competes", "compete", "positioning"],
+  agency: ["competes", "compete", "positioning"],
+  agencies: ["competes", "compete", "positioning"],
+  choose: ["competes", "compete", "positioning"],
+  choosing: ["competes", "compete", "positioning"],
+  toptal: ["competes", "compete", "positioning"],
+  fiverr: ["competes", "compete", "positioning"],
+  upwork: ["competes", "compete", "positioning"],
+  // "Where do you host the apps you build?" ranked how-aceva-helps first on the
+  // words "apps" and "build", the stack guide's "Cloud Hosting & DevOps
+  // Infrastructure" section never reached the model, and Pulse said it had no
+  // confirmed information about a documented fact (P3 evaluation, 30 October
+  // 2026). That section's heading is "Vercel & AWS / Railway", and expansion
+  // stops at the first synonym found anywhere, so the heading words lead.
+  host: ["vercel", "aws", "railway", "hosting", "deployment", "cloud"],
+  hosts: ["vercel", "aws", "railway", "hosting", "deployment", "cloud"],
+  hosted: ["vercel", "aws", "railway", "hosting", "deployment", "cloud"],
+  hosting: ["vercel", "aws", "railway", "hosting", "deployment", "cloud"],
+  deploy: ["deployment", "hosting", "vercel", "aws", "railway", "cloud"],
+  deployed: ["deployment", "hosting", "vercel", "aws", "railway", "cloud"],
+  deployment: ["deployment", "hosting", "vercel", "aws", "railway", "cloud"],
+  server: ["vercel", "aws", "railway", "hosting", "deployment", "cloud"],
+  servers: ["vercel", "aws", "railway", "hosting", "deployment", "cloud"],
+  // Refund and cancellation terms are unpublished; pricing-approach.md says so
+  // under "Payment and commercial terms", and that heading is what must be met.
+  refund: ["payment", "refund", "cancellation", "pricing"],
+  refunds: ["payment", "refund", "cancellation", "pricing"],
+  cancel: ["payment", "cancellation", "refund", "pricing"],
+  cancellation: ["payment", "cancellation", "refund", "pricing"],
   rescue: ["rescue", "recovery", "unstable", "audit", "legacy", "fix", "broken", "stuck"],
   career: ["career", "careers", "job", "jobs", "hiring", "openings", "team"],
   restaurant: ["restaurant", "food", "kitchen", "cafe", "menu", "ordering", "dining", "reservation"],
+  // "Which database would you recommend for a booking system?" retrieved five
+  // industry chunks and never the PostgreSQL section: "booking" and "system"
+  // matched the industry catalogue everywhere, while "database" only ever met
+  // body text. The stack guide names the products rather than the word, so the
+  // visitor's word has to reach those headings.
+  //
+  // Order matters: expansion stops at the first synonym that matches any
+  // field, and the heading check outranks body text. The product names come
+  // first so "database" meets the heading "PostgreSQL & Prisma ORM" rather
+  // than stopping at the word "database" in some other chunk's body.
+  database: ["postgresql", "postgres", "prisma", "database", "databases", "data"],
+  databases: ["postgresql", "postgres", "prisma", "database", "databases", "data"],
+  // "What would you recommend?" is a question about ACEVA's defaults, which is
+  // the word the stack guide uses ("relational data by default", "Expo by
+  // default"), so the visitor's verb has to meet the corpus's noun.
+  recommend: ["default", "defaults", "recommend", "recommended"],
+  recommended: ["default", "defaults", "recommend", "recommended"],
+  suggest: ["default", "defaults", "suggest", "recommend"],
+  // A platform the website never names is still a stack question. "Do you
+  // work with WordPress?" ranked the three client-work chunks first, purely
+  // because "work" met the heading "ACEVA Client Work", and the stack guide —
+  // which says those platforms are undocumented — never reached the model.
+  // "technology" leads so the stack guide's category and title both count.
+  wordpress: ["technology", "technologies", "stack", "framework", "wordpress"],
+  shopify: ["technology", "technologies", "stack", "framework", "shopify"],
+  wix: ["technology", "technologies", "stack", "framework", "wix"],
+  webflow: ["technology", "technologies", "stack", "framework", "webflow"],
+  laravel: ["technology", "technologies", "stack", "framework", "laravel"],
+  django: ["technology", "technologies", "stack", "framework", "django"],
+  rails: ["technology", "technologies", "stack", "framework", "rails"],
+  php: ["technology", "technologies", "stack", "framework", "php"],
+  squarespace: ["technology", "technologies", "stack", "framework", "squarespace"],
+  redis: ["technology", "technologies", "stack", "framework", "redis"],
+  lambda: ["technology", "technologies", "stack", "framework", "lambda"],
+  docker: ["technology", "technologies", "stack", "framework", "docker"],
+  kubernetes: ["technology", "technologies", "stack", "framework", "kubernetes"],
+  firebase: ["technology", "technologies", "stack", "framework", "firebase"],
+  mongodb: ["technology", "technologies", "stack", "framework", "mongodb"],
+  // Knowledge expansion (31 October 2026). Each key is a visitor's word that
+  // the answering section does not use itself; words that already appear in a
+  // heading ("hotfix", "offline", "severity", "OWASP") need no entry. The
+  // section's own heading word leads, for the same first-match reason as above.
+  old: ["legacy", "old", "outdated"],
+  outdated: ["legacy", "outdated", "old"],
+  upgrade: ["legacy", "migration", "upgrade", "modernization"],
+  upgrades: ["legacy", "migration", "upgrade", "modernization"],
+  upgrading: ["legacy", "migration", "upgrade", "modernization"],
+  assessment: ["audit", "assessment", "rescue"],
+  semantic: ["retrieval", "rag", "vector", "knowledge assistant"],
+  embedding: ["vector", "retrieval", "rag", "embedding"],
+  embeddings: ["vector", "retrieval", "rag", "embedding"],
+  warranty: ["warranty", "maintenance", "support", "post-launch"],
+  emergency: ["hotfix", "emergency"],
+  handover: ["handing over", "handover", "repositories", "ownership"],
+  handoff: ["handing over", "handover", "repositories", "ownership"],
+  credentials: ["credentials", "handing over"],
+  repo: ["repository", "repositories"],
+  repos: ["repository", "repositories"],
+  vulnerability: ["vulnerabilities", "security", "owasp"],
+  vulnerabilities: ["vulnerabilities", "security", "owasp"],
+  vulnerable: ["vulnerable", "vulnerabilities", "security"],
+  insecure: ["security", "vulnerabilities", "insecure"],
+  compliance: ["gdpr", "hipaa", "privacy regulations", "compliance"],
+  compliant: ["gdpr", "hipaa", "privacy regulations", "compliance"],
+  scale: ["scaling", "scale"],
+  feasible: ["feasibility", "feasible"],
+  train: ["maintain", "team", "train"],
+  training: ["maintain", "team", "training"],
+  onboard: ["maintain", "team", "onboard"],
 };
 
 /**
@@ -322,6 +442,9 @@ function needleTokens(phrase: string): string[] {
  * Term matching is word-boundary (see `fieldMatches`), so a query token only
  * scores against whole words in the chunk, with simple plural/-ing/-ed stem
  * variants treated as the same word.
+ *
+ * The score is uncapped. Callers cap it at 1.0 for the hybrid score and keep
+ * the uncapped value to break ties among capped scores.
  */
 function calculateTermRelevance(queryText: string, chunk: VectorDocumentChunk): number {
   const rawTerms = tokenize(queryText).filter((t) => t.length > 2 && !TERM_STOPWORDS.has(t));
@@ -375,7 +498,7 @@ function calculateTermRelevance(queryText: string, chunk: VectorDocumentChunk): 
     matches *= OVERVIEW_CHUNK_BOOST;
   }
 
-  return Math.min(1.0, matches / (rawTerms.length * 2.0));
+  return matches / (rawTerms.length * 2.0);
 }
 
 /**
@@ -402,10 +525,12 @@ export function findSimilarChunks(
   }
 
   const results: SimilaritySearchResult[] = [];
+  const tieBreak = new Map<VectorDocumentChunk, number>();
 
   for (const chunk of index.chunks) {
     if (!chunk.embedding || !chunk.embedding.length) continue;
-    const termScore = queryText ? calculateTermRelevance(queryText, chunk) : 0;
+    const rawTermScore = queryText ? calculateTermRelevance(queryText, chunk) : 0;
+    const termScore = Math.min(1.0, rawTermScore);
 
     let finalScore: number;
     if (keywordOnly) {
@@ -419,9 +544,12 @@ export function findSimilarChunks(
 
     if (finalScore >= minScore) {
       results.push({ chunk, score: finalScore });
+      tieBreak.set(chunk, rawTermScore);
     }
   }
 
-  results.sort((a, b) => b.score - a.score);
+  // Capped keyword scores tie often, and a tie used to fall back to file order.
+  // The uncapped keyword strength decides between equals instead.
+  results.sort((a, b) => b.score - a.score || (tieBreak.get(b.chunk) ?? 0) - (tieBreak.get(a.chunk) ?? 0));
   return results.slice(0, topK);
 }

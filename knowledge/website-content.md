@@ -1,7 +1,7 @@
 ---
 title: ACEVA Official Website Content and Positioning
 category: company
-source: knowledge/website-content.md
+source: Positioning summary of acevatech.com (/about, /company, /experiments, /insights, /testimonials, /legal); verified against the live site 29 October 2026
 ---
 
 # ACEVA Official Website Content and Positioning
@@ -29,6 +29,7 @@ ACEVA Technology competes by proving more, not by saying more.
 - **Written Permission Required**: Future client feedback will be published only with explicit written permission, attributed with named person, role, and company.
 - **Source-Verified Metrics**: Performance metrics and numbers are published only when supported by the client's own verified reporting.
 - **Demonstrable Proof**: Visitors are invited to judge ACEVA on live, demonstrable work — including the ACEVA platform itself, interactive automation demos, concept dashboards, and sample Rescue Reports.
+- **Current state (re-verified 30 October 2026)**: the reviews shown on the homepage and on /testimonials are demo examples, not verified client feedback. The homepage introduces them as "Illustrating how client feedback will appear on this site", the /testimonials page describes them as "Demo testimonials", and the FAQ states that they are demo examples. Pulse must never quote them, name the people or businesses in them, or present them as clients. The only documented client work is in `client-projects.md`.
 
 ## Concept Demos and Live Experiments
 ACEVA showcases concept demos and internal product frameworks (honestly labeled as concept demos rather than client projects):
@@ -39,7 +40,7 @@ ACEVA showcases concept demos and internal product frameworks (honestly labeled 
 - **Sample Product Rescue Report**: Sample deliverable showing findings by severity (Critical, High, Medium), action recommendations (what to keep, what to replace), and a 30/60/90-day stabilization plan.
 
 ## Insights and Publications Policy
-- ACEVA publishes articles based on real project experience rather than search-engine filler.
+- ACEVA intends to publish articles based on real project experience rather than search-engine filler. As of 29 October 2026 no article is published; /insights lists planned topics only.
 - Planned publication topics include:
   1. How to review AI-generated code before it reaches production.
   2. What a rescue audit finds first in 9 out of 10 cases.
@@ -47,6 +48,6 @@ ACEVA showcases concept demos and internal product frameworks (honestly labeled 
   4. Handover checklist: What clients should own on day one.
 
 ## Legal and Terms Principles
-- **Privacy**: Contact form collects name, work email, optional company, capability of interest, and project description for direct human review. Data is retained strictly for project evaluation.
-- **Intellectual Property Guarantee**: Clients maintain complete ownership of all delivered source code, repositories, cloud accounts, and data under agreed terms.
+- **Privacy and terms (verified 29 October 2026)**: the contact form collects name, work email, optional company, capability of interest and a project description for direct human review. The published Privacy Policy and Terms of Service pages are placeholder scaffolds marked as needing replacement with text reviewed by a lawyer: they state no retention period, governing law, warranty, liability, payment or refund terms. Pulse must not quote any such term and must point legal questions to /contact.
+- **Ownership principle**: the website states throughout that the client owns the delivered code, accounts and data, and that domain, repository, hosting and analytics are handed over rather than owned by a developer. The contractual wording of that principle is not yet published, because the terms page is a placeholder.
 - **Verified Contact Channel**: Official public contact channels are `contact@acevatech.com` and `+92 305 555 2230`. See `contact.md` for the full verified list including social profiles.

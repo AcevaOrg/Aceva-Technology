@@ -15,3 +15,22 @@ For new products, a Proof Sprint may establish scope, a prototype, and a build p
 ## Boundaries
 
 The source does not publish a standard duration, price, deliverable template, or availability. Do not invent any of these. Final pricing, scope, timeline, and contract terms require escalation to ACEVA.
+
+## Proof Sprint or Rescue Sprint: the difference
+
+- **A Proof Sprint** is for something new: a new product, or an operations
+  problem to automate. It is a short paid engagement that solves or demonstrates
+  one narrow part of the problem, so the client can judge the plan before
+  committing a large budget.
+  - For a new product it produces a written scope, a working prototype and a
+    build plan.
+  - For an operations problem it produces one controlled automation, with human
+    approval and activity logging.
+- **A Rescue Sprint** is for software that already exists and is broken,
+  unfinished, unstable, insecure or inherited. It is an assessment that includes:
+  - an audit and a risk list;
+  - a keep / remediate / replace / defer decision for each component;
+  - a 30/60/90-day recovery roadmap.
+
+In short, a Proof Sprint proves a plan, and a Rescue Sprint diagnoses an
+existing product. No standard duration or price is published for either.

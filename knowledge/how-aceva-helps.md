@@ -385,9 +385,9 @@ Examples of what ACEVA can build for startups:
 # Engagement Models
 
 ACEVA offers flexible engagement models:
-- **Fixed Scope** — A defined project with clear deliverables and a fixed price.
+- **Fixed Scope** — A defined outcome with written milestones and acceptance criteria.
 - **Dedicated Team** — An ongoing engineering team working as an extension of your business.
-- **Hourly Engagement** — Flexible hours for advisory, code reviews, or smaller tasks.
+- **Hourly Engagement** — Flexible hours for advisory, code reviews, or smaller tasks. This model is approved in ACEVA's internal FAQ only; the public website names fixed-scope and dedicated-team engagements, so describe hourly work as something the team confirms.
 
 ---
 

@@ -34,4 +34,4 @@ Provide monitoring and human-reaching alerts, a prioritized improvement list aft
 
 ## Timeline guidance
 
-Project timelines depend on scope. Do not invent timelines to win a meeting or guarantee a delivery date before scope and senior review.
+Project timelines depend on scope. The website's FAQ answer to "What is your typical project timeline?" is: it depends on scope, and ACEVA will not invent a number to win a meeting; what it commits to is a working demo every week, so the timeline is visible rather than promised. Do not invent timelines to win a meeting or guarantee a delivery date before scope and senior review. No typical duration for a project, a Proof Sprint or a Rescue Sprint is published (verified 29 October 2026).

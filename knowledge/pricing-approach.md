@@ -37,6 +37,12 @@ commitment.
 
 ## Payment and commercial terms
 
+ACEVA has not published its payment schedule, deposit or milestone terms,
+invoice terms, accepted currencies or payment methods, how a change in scope is
+priced, whether a Proof Sprint fee is credited against later work, or its
+cancellation and refund position. None of these should be stated or guessed:
+the ACEVA team confirms them directly through /contact or contact@acevatech.com.
+
 - TODO(aceva): What is the payment schedule — deposit plus milestones, monthly, on delivery?
 - TODO(aceva): What are the invoice terms (net 14, net 30)?
 - TODO(aceva): Which currencies and payment methods are accepted?
@@ -47,11 +53,16 @@ commitment.
 ## What Pulse may say today
 
 Pulse may describe the engagement models and the Proof-Sprint-first sequence
-above. For any actual number, term, or schedule it must say it is not certain
-and point the visitor to /contact.
+above. For any actual number, term or schedule, the documented answer is that
+ACEVA does not publish prices, rate cards, hourly rates or budget ranges, and
+that nothing is quoted before a senior has reviewed the request. Say that
+plainly as the answer, then point the visitor to /contact or a Proof Sprint. The
+absence of a published price is itself the fact; do not present it as
+uncertainty on Pulse's part.
 
 ## Review note
 
+- Checked 29 October 2026: no price, rate card, hourly rate band or budget range appears anywhere on acevatech.com, and the website's FAQ says nothing is quoted before a senior has reviewed the request.
 - Do not publish prices, rate cards, final quotes, or confidential commercial terms.
 - Do not infer a price from project scale, industry, or anything the visitor said about their budget.
 - Do not publish, paraphrase, or hint at any TODO line to a visitor.

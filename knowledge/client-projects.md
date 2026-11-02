@@ -20,7 +20,7 @@ On both sites ACEVA delivered design, development, content, SEO, and ongoing mai
 
 The restaurant's own website, live at `https://angelindianrestaurantnyc.com/`.
 
-Angel Indian Restaurant is an Indian restaurant at 75-18 37th Avenue, Jackson Heights, Queens, New York. Amrit Pal Singh is its owner and head chef.
+Angel Indian Restaurant is an Indian restaurant in Jackson Heights, Queens, New York. Amrit Pal Singh is its owner and head chef. For the street address, point visitors to the restaurant's own website rather than quoting one.
 
 The site has pages for the menu, the restaurant's story, a gallery presented as "the experience", private dining, visiting, press, and questions and answers, plus a privacy and terms page.
 
@@ -78,4 +78,5 @@ The footer credit reads "Designed & crafted by Aceva Tech", and a panel on the s
 - The company name is **ACEVA Technology**, singular, confirmed by the team on 11 October 2026. It matches acevatech.com's header, footer and copyright line, and every other file under `knowledge/`. "ACEVA Technologies" and "Aceva Tech" are not the company name: the first appeared once in a canned reply in `lib/pulse/scope.ts` and is now covered by a test, and the second is the shorthand the client chose for their own footer credits, quoted above as-is because that is what those sites actually say.
 - There is no public case-study or work page on acevatech.com, confirmed by the team on 11 October 2026 as not planned yet. That is why this file's `url` is the homepage rather than a page of its own; point it at a real route if one is added.
 - `faq.md` previously stated that ACEVA claimed no real client work and carried an approved fallback saying there were no verified portfolio examples. Both were updated when this file was added; if this file is removed, restore them.
+- Re-verification attempted on 29 October 2026: both client sites were unreachable from the audit machine (connection refused), so every fact above still stands as read on 10 October 2026 and was not re-checked. Third-party listings read that day (Hell Gate, NYC Tourism) give the restaurant's address as 74-14 37th Road rather than the 75-18 37th Avenue the site itself showed on 10 October, and one names angelindianny.com as the restaurant's website. Those conflicts are why the street address was removed from the visitor-facing text above. TODO(aceva): confirm the restaurant's current address and whether angelindianny.com is a second domain for the same client site.
 - Re-run `npm run ingest` after editing this file.

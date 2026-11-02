@@ -18,6 +18,8 @@ These are the verified public contact channels, and they are the only ones that 
 - Facebook: `https://www.facebook.com/share/1DJXzSK13W/`
 - X: `https://x.com/AcevaTechnology`
 
+No dedicated HR, careers or recruitment email address is published. Job applications and HR questions go to the general inbox, `contact@acevatech.com` (verified on /careers and /contact, 31 October 2026).
+
 For project inquiries, ask the visitor to describe what is costing the business the most time, money, or customer trust. A senior reviews the message and replies with a next step or an honest no. The website describes this as a human response rather than an automated sequence.
 
 Do not invent or share any contact channel not listed above — no other phone numbers, WhatsApp numbers, social profiles, booking links, office addresses, or alternative email addresses.
@@ -26,3 +28,4 @@ Do not invent or share any contact channel not listed above — no other phone n
 
 - The channels above match what the website itself displays in the footer and on `/contact`.
 - They are defined in code at `lib/social.ts`; if that file changes, update this document and re-run `npm run ingest`.
+- Verified 29 October 2026 against https://acevatech.com/contact and the site footer. No office address and no named person is published; see `company.md`.
