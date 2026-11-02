@@ -35,6 +35,8 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   SERVICE_UNAVAILABLE: 503,
   UPSTREAM_ERROR: 502,
   INTERNAL_ERROR: 500,
+  // Deliberately unavailable rather than broken; FEATURE_DISABLED is not retryable.
+  FEATURE_DISABLED: 503,
 };
 
 export interface ApiErrorOptions {

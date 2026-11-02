@@ -13,7 +13,7 @@ vi.mock("resend", () => ({ Resend: class { emails = { send: async () => ({ error
 import { POST as chatPost } from "@/app/api/chat/route";
 import { POST as savePost } from "@/app/api/pulse/save-direction/route";
 import { POST as contactPost } from "@/app/api/contact/route";
-import { describeApiError, isApiErrorBody, API_ERROR_CODES } from "@/lib/api/errorCodes";
+import { describeApiError, isApiErrorBody, shouldRefreshPulseTurnstile, API_ERROR_CODES } from "@/lib/api/errorCodes";
 import { resetRateLimitStore, RATE_LIMIT_RULES } from "@/lib/rateLimit";
 
 function request(url: string, body: unknown, headers: Record<string, string> = {}) {
@@ -214,5 +214,24 @@ describe("describeApiError", () => {
 
   it("never returns an empty string", () => {
     expect(describeApiError({ ok: false, code: "RATE_LIMITED" }).length).toBeGreaterThan(0);
+  });
+});
+
+describe("shouldRefreshPulseTurnstile", () => {
+  const body = (code: string) => ({ ok: false, code, error: "x", requestId: "r" });
+
+  it("keeps the token for a validation failure, which the routes report before verifying it", () => {
+    expect(shouldRefreshPulseTurnstile(body("VALIDATION_FAILED"))).toBe(false);
+  });
+
+  it("refreshes after failures that can follow verification, which leave a spent single-use token", () => {
+    for (const code of ["DISPOSABLE_EMAIL", "RATE_LIMITED", "SERVICE_UNAVAILABLE", "INTERNAL_ERROR", "TURNSTILE_EXPIRED", "TURNSTILE_INVALID"]) {
+      expect(shouldRefreshPulseTurnstile(body(code)), code).toBe(true);
+    }
+  });
+
+  it("refreshes when the response could not be read or the request failed", () => {
+    expect(shouldRefreshPulseTurnstile(null)).toBe(true);
+    expect(shouldRefreshPulseTurnstile({ unexpected: true })).toBe(true);
   });
 });

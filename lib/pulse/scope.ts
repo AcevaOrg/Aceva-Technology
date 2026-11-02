@@ -124,7 +124,56 @@ const ACEVA_DOMAIN_TERMS = [
   "angel restaurant",
   "amrit",
   "chefamritpalsingh",
+  // Delivery, security and AI topics the knowledge base now answers (knowledge
+  // expansion, 31 October 2026). Without them a paraphrase such as "How do you
+  // handle scope changes?" or "Which vector database do you use?" carried no
+  // ACEVA term and depended on the vector floor. Matching is substring-based,
+  // so each term is long enough not to fire inside an unrelated word ("rag"
+  // would match "storage").
+  "legacy",
+  "moderniz",
+  "modernis",
+  "migration",
+  "vector database",
+  "vector db",
+  "pgvector",
+  "pinecone",
+  "qdrant",
+  "knowledge assistant",
+  "retrieval",
+  "owasp",
+  "sql injection",
+  "xss",
+  "csrf",
+  "gdpr",
+  "ccpa",
+  "hipaa",
+  "hotfix",
+  "app store",
+  "play store",
+  "offline",
+  "sprint",
+  "audit",
+  "warranty",
+  "maintenance",
+  "scope change",
+  "feature request",
+  "change order",
+  "repository",
+  "repositories",
+  "source code",
+  "handover",
+  "human resources",
+  "hr email",
+  "recruit",
 ];
+
+/** Terms of business a visitor may ask ACEVA about. Used only with ADDRESSED_TO_ACEVA. */
+const COMMERCIAL_POLICY_TERMS =
+  /\b(refunds?|cancel(?:s|led|ling|lation)?|payments?|pay|invoices?|invoicing|deposits?|warrant(?:y|ies)|contracts?|discounts?|prices?|pricing|costs?|charges?|fees?|quotes?|budgets?|hosts?|hosting|hosted|maintenance|support|confidential(?:ity)?|retention|retain|intellectual property|ownership|privacy|terms)\b/i;
+
+/** The question is put to ACEVA ("do you", "your terms"), not about the world in general. */
+const ADDRESSED_TO_ACEVA = /\b(you|your|yours|u)\b/i;
 
 // Specific Software & Agency Project Service Intent
 const SOFTWARE_SERVICE_INTENT = [
@@ -164,7 +213,7 @@ const SOFTWARE_SERVICE_INTENT = [
 // Out-of-scope trigger patterns (Trivia, general programming, math, recipes, sports, astronomy, general trivia, etc.)
 const OUT_OF_SCOPE_PATTERNS = [
   // General programming & coding exercises unrelated to ACEVA
-  /\b(what|explain|how)\s+(is|to|does)\s+(python|java|c\+\+|c#|rust|go|php|ruby|swift|kotlin|sql|html|css|bash|regex)\b/i,
+  /\b(what|explain|how)\s+(is|to|does)\s+(python|java|c\+\+|c#|rust|go|php|ruby|swift|kotlin|sql(?!\s+injection)|html|css|bash|regex)\b/i,
   /\bwrite\s+(a|an)?\s*(python|java|c\+\+|c#|rust|go|php|ruby|swift|kotlin|sql|html|css|bash|script|program|code|function|class|loop)/i,
   /\bhow\s+to\s+(write|code|implement|sort|reverse|solve|zip)\s+(in|a)\s*(python|java|javascript|c\+\+|leetcode|bash)/i,
   /\b(write|create)\s+a\s+snake\s+game/i,
@@ -248,11 +297,21 @@ const ACEVA_FAQ_PATTERNS = [
   /\b(how|what|who|why|where)\b.*?\b(aceva|seva|pulse)\b/i,
 ];
 
+/**
+ * A question put to ACEVA about itself: its name, people, location, services or
+ * the assistant. Such a question is always in scope and never junk, because
+ * company.md, contact.md and faq.md say what may be answered and what must be
+ * deferred. The trivia patterns are still applied to everything else.
+ */
+function isAboutAceva(message: string): boolean {
+  return /\b(aceva|pulse)\b/i.test(message) || ACEVA_FAQ_PATTERNS.some((pattern) => pattern.test(message));
+}
+
 // General Tech History, Trivia, Comparison, Meta, or Educational Questions (MUST NOT advance project progress)
 const GENERAL_TECH_TRIVIA_PATTERNS = [
   /\b(java\s*\d*|python|c\+\+|c#|rust|go|php|ruby|swift|kotlin|sql|html|css|bash|react|angular|vue|node|perl|pascal|cobol)\s+(is|vs|versus|better|faster|older|newer|worse|compared|famous|popular)\b/i,
   /\bwhat\s+(is|does|did)\s+(java|python|c\+\+|c#|rust|go|php|ruby|swift|kotlin|react|node|javascript|typescript|perl|pascal|cobol|an? operating system|a database|a server|an api|a compiler)\s*(do|mean|used)?/i,
-  /\b(explain|difference|comparison)\s+(between|of)?\s+(java|python|react|node|sql|ruby|php|c\+\+|rust|operating systems|databases)/i,
+  /\b(explain|difference|comparison)\s+(between|of)?\s+(java|python|react|node|sql(?!\s+injection)|ruby|php|c\+\+|rust|operating systems|databases)/i,
   /\bwhy\s+(was|is|did|were)\s+(ruby|python|java|php|javascript|c\+\+|perl|pascal|cobol|scala|haskell|rust|go|swift|kotlin)\b/i,
   /\bwhy\s+(was|is)\s+.*?\s+(famous|popular|used|created)\b/i,
   /\b(famous|popular)\s+in\s+the\s+(\d{4}s|\d{2}s)\b/i,
@@ -448,7 +507,7 @@ export function getCasualOrFAQResponse(userMessage: string): string | null {
 
   // General Tech History, Science, Geography, History, Stock Market & General Knowledge Questions
   if (GENERAL_TECH_TRIVIA_PATTERNS.some((p) => p.test(clean)) || OUT_OF_SCOPE_PATTERNS.some((p) => p.test(clean))) {
-    return "That's an interesting question! However, PULSE is specifically designed to help map out your software project, refactoring needs, or application requirements with ACEVA. Tell me what software product or digital system you'd like to build!";
+    return "I can't help with that one, but I can with anything about ACEVA or your own project. What are you trying to build, improve or automate?";
   }
 
   // Fallback for any non-discovery query
@@ -539,7 +598,7 @@ export function isGibberishInput(userMessage: string): boolean {
  * Natural response for gibberish or nonsense input without advancing progress.
  */
 export function getGibberishOrNonsenseResponse(): string {
-  return "I didn't quite catch that. Please enter a clear project description or specific question about your software requirements so I can help map out your project direction.";
+  return "I didn't quite catch that. Tell me what you'd like to build, improve or automate — a sentence is enough — or ask me anything about ACEVA.";
 }
 
 /**
@@ -554,12 +613,36 @@ export function isExplicitProjectScopeInput(userMessage: string): boolean {
 /**
  * Check if the input is raw, unclear, or gibberish.
  */
+/**
+ * A short message that points back at something said before: "Can you do
+ * that?", "How long would it take?". Mid-conversation it is a follow-up, and
+ * the model resolves the reference from the history (prompt rule 13). It was
+ * classed as an incoherent question and refused as out of scope, even with a
+ * conversation under way (P3 evaluation, 30 October 2026).
+ */
+export function isFollowUpReference(userMessage: string): boolean {
+  const clean = userMessage.trim();
+  if (!clean || isGibberishInput(clean)) return false;
+  const words = clean.split(/\s+/).length;
+  return words <= 10 && /\b(that|it|this|those|these|them|one)\b/i.test(clean);
+}
+
+/** The reply to a back-reference with nothing to refer back to. */
+export const CLARIFY_REFERENCE_REPLY =
+  "I'm not sure what you're referring to yet. What would you like ACEVA to build, improve or automate? A sentence about your business and the problem is enough to start.";
+
 export function isInvalidOrUnclearInput(userMessage: string): boolean {
   const clean = userMessage.trim();
   if (!clean) return true;
 
   if (isGibberishInput(clean)) return true;
   if (isIncoherentQuestion(clean)) return true;
+
+  // A question about ACEVA itself is never junk, whatever shape it takes. "Who
+  // is the CEO of ACEVA?" matched the trivia pattern for "<title> of" and was
+  // answered with the out-of-scope rejection, although company.md documents
+  // exactly what to say (leadership is not published yet).
+  if (isAboutAceva(clean)) return false;
 
   // Out of scope pattern match (general knowledge trivia, math, recipes, etc.)
   const isOOS = OUT_OF_SCOPE_PATTERNS.some((pattern) => pattern.test(clean));
@@ -602,13 +685,27 @@ export async function isQuestionInScope(
   // rejection. A message with real intent stays in scope; the model is told to
   // answer the project half, and the aside simply goes unanswered.
   const matchesOOS = OUT_OF_SCOPE_PATTERNS.some((pattern) => pattern.test(clean));
-  if (matchesOOS && !isProjectDiscoveryInput(clean)) {
+  if (matchesOOS && !isProjectDiscoveryInput(clean) && !isAboutAceva(clean)) {
     return false;
   }
 
-  // 2. Direct ACEVA keyword match -> High confidence RELEVANT
+  // 2. Direct ACEVA keyword match, or a question about ACEVA itself -> High
+  // confidence RELEVANT. The FAQ shapes ("where are you located?") used to be
+  // consulted only once a conversation was under way, so as a first message
+  // they fell through to the vector check, which scored company.md below the
+  // 0.20 floor and rejected a question the knowledge base answers.
   const hasAcevaTerm = ACEVA_DOMAIN_TERMS.some((term) => lower.includes(term));
-  if (hasAcevaTerm) {
+  if (hasAcevaTerm || isAboutAceva(clean)) {
+    return true;
+  }
+
+  // 2b. A commercial-policy question put to ACEVA. "Do you give refunds if I
+  // cancel?" carries no ACEVA term and scored under the vector floor, so a
+  // question pricing-approach.md exists to answer (by deferring honestly) got
+  // the out-of-scope rejection instead (P3 quality evaluation, 30 October
+  // 2026). It needs both a policy word and second-person address, so "what's
+  // the cost of living in Karachi?" still goes to the vector check.
+  if (COMMERCIAL_POLICY_TERMS.test(clean) && ADDRESSED_TO_ACEVA.test(clean)) {
     return true;
   }
 
@@ -624,7 +721,7 @@ export async function isQuestionInScope(
     (projectContext && Object.keys(projectContext).length > 0)
   );
   if (isOngoingConversation) {
-    if (isGibberishInput(clean) || isIncoherentQuestion(clean) || isGreetingInput(clean)) {
+    if (isGibberishInput(clean) || (isIncoherentQuestion(clean) && !isFollowUpReference(clean)) || isGreetingInput(clean)) {
       return false;
     }
     if (GENERAL_TECH_TRIVIA_PATTERNS.some((p) => p.test(clean))) {
@@ -659,6 +756,20 @@ export async function isQuestionInScope(
 
   if (topScore >= 0.20) {
     return true;
+  }
+
+  // The hybrid score is half keyword relevance, and a misspelt message has
+  // none: "wat servcies do u offr?" scored 0.200 hybrid against 0.399 cosine
+  // and was refused as out of scope. The embedding alone reads through typos,
+  // so it gets a second look at a higher floor. Measured on this corpus the
+  // clearly off-topic messages top out near 0.25 cosine ("Can you fix my
+  // washing machine?" 0.241, "best pizza in Karachi" 0.196) while misspelt
+  // in-scope ones sit at 0.32-0.42, so 0.30 separates the two.
+  if (queryEmb) {
+    const cosineOnly = findSimilarChunks(queryEmb, 1, 0.0, "")[0]?.score || 0;
+    if (cosineOnly >= 0.30) {
+      return true;
+    }
   }
 
   return false;

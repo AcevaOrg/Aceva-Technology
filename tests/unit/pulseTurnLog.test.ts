@@ -14,6 +14,15 @@ import {
   logChatTurn,
   recordChatTurn,
 } from "@/lib/pulse/turnLog";
+import { clearEnvCache } from "@/lib/pulse/env";
+/** A placeholder production target the database guard accepts; never a real host. */
+function approvedProductionTarget(): void {
+  vi.stubEnv("DATABASE_URL", "postgresql://mock:mock@mock.invalid/mock");
+  vi.stubEnv("VERCEL_ENV", "production");
+  vi.stubEnv("PULSE_DB_ENDPOINT", "mock");
+  clearEnvCache();
+}
+
 const NUL = String.fromCharCode(0);
 const BEL = String.fromCharCode(7);
 const ESC = String.fromCharCode(27);
@@ -214,6 +223,7 @@ describe("database isolation, proven against a mocked driver", () => {
     sqlMock.mockClear();
     vi.stubEnv("VITEST", "");
     vi.stubEnv("NODE_ENV", "production");
+    approvedProductionTarget();
     try {
       expect(isTurnLogSuppressed()).toBe(false);
 
@@ -238,6 +248,7 @@ describe("database isolation, proven against a mocked driver", () => {
     sqlMock.mockClear();
     vi.stubEnv("VITEST", "");
     vi.stubEnv("NODE_ENV", "production");
+    approvedProductionTarget();
     try {
       await recordChatTurn({
         sessionId: "sess" + NUL + "ion",

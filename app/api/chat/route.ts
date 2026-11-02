@@ -4,8 +4,14 @@ import {
   getDiscoveryQuestion,
   getDiscoveryHelper,
   getDiscoveryField,
-  FINAL_DISCOVERY_STEP,
+  DISCOVERY_STEP_COUNT,
 } from "@/lib/pulse/discoverySteps";
+import {
+  MAX_DISCOVERY_REASKS,
+  coveredDiscoverySteps,
+  nextOpenDiscoveryStep,
+  readCoveredSteps,
+} from "@/lib/pulse/discoveryCoverage";
 import { API_ERROR_MESSAGES, type ApiErrorCode } from "@/lib/api/errorCodes";
 import { logChatTurn } from "@/lib/pulse/turnLog";
 import {
@@ -17,10 +23,12 @@ import {
   isAssistantIdentityQuery,
   getGibberishOrNonsenseResponse,
   GREETING_REJECTION,
+  isFollowUpReference,
 } from "@/lib/pulse/scope";
 import {
   detectActiveQuestionTarget,
   validateAnswerAgainstQuestion,
+  isSubstantiveAnswer,
 } from "@/lib/pulse/answerValidator";
 import {
   withRouteErrorHandling,
@@ -40,6 +48,18 @@ import {
   checkRateLimit,
   cleanupRateLimitStore,
 } from "@/lib/rateLimit";
+import { PULSE_ID_MENTION } from "@/lib/pulse/pulseId";
+import { getTrustedClientIp } from "@/lib/security/clientIp";
+import { enforceRateLimits, MINUTE_MS } from "@/lib/security/sharedRateLimit";
+
+/**
+ * PULSE ID lookups get their own limit, shared across instances, per trusted
+ * client address and per browser session. The reply is fixed text today, but
+ * this is the brake on enumeration if lookup details are ever switched on. A
+ * store outage falls back to a stricter in-process limit rather than refusing
+ * chat outright.
+ */
+const LOOKUP_LIMIT = { limit: 10, windowMs: 10 * MINUTE_MS };
 
 const MAX_BODY_BYTES = 16_384;
 const MAX_MESSAGE_CHARS = 1_000;
@@ -139,6 +159,42 @@ function readProjectContext(value: unknown): Record<string, unknown> | undefined
   return Object.keys(context).length > 0 ? context : undefined;
 }
 
+/** The discovery step whose answer fills each context field. Unlisted fields are always kept. */
+const CONTEXT_FIELD_STEP: Record<string, number> = {
+  current: 1,
+  friction: 1,
+  scale: 2,
+  market: 2,
+  goals: 3,
+  timeline: 4,
+  budget: 4,
+};
+
+/**
+ * Drops context fields for questions the visitor has not answered yet.
+ *
+ * The browser pre-fills friction and goals with an industry's typical values
+ * ("High appointment no-shows") as soon as it recognises the industry. Sent to
+ * the model as "what the visitor told the wizard", those guesses were quoted
+ * back as if the visitor had said them, and made the question about them look
+ * already answered. A field is kept once its step has been asked or the
+ * visitor's own words have covered it.
+ */
+function pruneUnansweredContext(
+  context: Record<string, unknown> | undefined,
+  step: number,
+  covered: ReadonlySet<number>
+): Record<string, unknown> | undefined {
+  if (!context) return undefined;
+  const kept = Object.fromEntries(
+    Object.entries(context).filter(([key]) => {
+      const fieldStep = CONTEXT_FIELD_STEP[key];
+      return fieldStep === undefined || fieldStep <= step || covered.has(fieldStep);
+    })
+  );
+  return Object.keys(kept).length > 0 ? kept : undefined;
+}
+
 /* ------------------------------------------------------------------ *
  * Server-sent events                                                  *
  * ------------------------------------------------------------------ */
@@ -146,7 +202,7 @@ function readProjectContext(value: unknown): Record<string, unknown> | undefined
 /** One frame of the stream. The client switches on `type`. */
 type StreamFrame =
   | { type: "delta"; text: string }
-  | { type: "done"; answer: string; isValid: boolean }
+  | { type: "done"; answer: string; isValid: boolean; nextStep?: number; reasked?: boolean }
   | { type: "error"; error: string; code: ApiErrorCode };
 
 function sseFrame(frame: StreamFrame): string {
@@ -246,9 +302,34 @@ export const POST = withRouteErrorHandling("chat", async (request, requestId) =>
   // ties a visitor's turns together for drop-off analysis without naming them.
   const sessionId = readString(body.sessionId, 64) || "anonymous";
   const step = typeof body.step === "number" && Number.isInteger(body.step) ? body.step : undefined;
+
+  if (PULSE_ID_MENTION.test(message)) {
+    await enforceRateLimits(
+      "pulse-lookup",
+      [
+        { dimension: "ip", value: getTrustedClientIp(request), ...LOOKUP_LIMIT },
+        // A missing session id is skipped rather than pooled into one bucket.
+        { dimension: "session", value: readString(body.sessionId, 64), ...LOOKUP_LIMIT },
+      ],
+      { onStoreError: "local" }
+    );
+  }
   const intent = typeof context?.intent === "string" ? context.intent : undefined;
 
   const streaming = wantsStream(request);
+
+  /**
+   * At most one analytics row per request. The streamed path used to log twice
+   * when a visitor disconnected after the answer was settled: sending the final
+   * frame then threw, and the error branch logged the same request again as a
+   * failure. The turn log is also idempotent per request id in the database.
+   */
+  let turnLogged = false;
+  const logTurnOnce = (turn: Parameters<typeof logChatTurn>[0]) => {
+    if (turnLogged) return;
+    turnLogged = true;
+    logChatTurn(turn);
+  };
 
   /**
    * Answers that are already known in full.
@@ -258,7 +339,7 @@ export const POST = withRouteErrorHandling("chat", async (request, requestId) =>
    * none of these is a discovery answer.
    */
   const cannedReply = (answer: string) => {
-    logChatTurn({
+    logTurnOnce({
       sessionId,
       requestId,
       question: message,
@@ -296,7 +377,10 @@ export const POST = withRouteErrorHandling("chat", async (request, requestId) =>
   // what this would cost?", "CRM" and "Something like Uber but for laundry" all
   // got the same "I'm here to help map out…" deflection and the knowledge base
   // was never consulted. Those now continue to RAG and the LLM.
-  const isClearJunk = !isProjectDiscoveryInput(message) && isInvalidOrUnclearInput(message);
+  // A short back-reference ("Can you do that?") mid-conversation is a
+  // follow-up for the model to resolve from the history, not junk.
+  const isFollowUp = Boolean(history?.length) && isFollowUpReference(message);
+  const isClearJunk = !isProjectDiscoveryInput(message) && isInvalidOrUnclearInput(message) && !isFollowUp;
   if (isGreetingInput(message) || isAssistantIdentityQuery(message) || isClearJunk) {
     return cannedReply(getCasualOrFAQResponse(message) ?? GREETING_REJECTION);
   }
@@ -305,9 +389,39 @@ export const POST = withRouteErrorHandling("chat", async (request, requestId) =>
   // `step` is passed through so the field comes from the question on screen
   // rather than from keyword-matching Pulse's own last message.
   const targetField = detectActiveQuestionTarget(history, context, step);
-  const answerValidation = validateAnswerAgainstQuestion(message, targetField);
-  // The timeline/budget question is the 5th and final discovery step; a valid
-  // answer to it ends questioning, so Pulse must close with a statement.
+  const fieldValidation = validateAnswerAgainstQuestion(message, targetField);
+
+  // 6a. Discovery bookkeeping, only while the wizard is showing a question.
+  //
+  // Discovery used to have no limit: an answer the field check rejected was
+  // re-asked as many times as it took, and a repeated answer stalled the step
+  // outright. Now each project gets MAX_DISCOVERY_REASKS clarifications in
+  // total; once spent, any genuine reply is accepted and discovery moves on.
+  const wizardStep = getDiscoveryField(step) !== undefined ? (step as number) : undefined;
+  const reasksUsed =
+    typeof body.reasks === "number" && Number.isInteger(body.reasks) && body.reasks > 0 ? body.reasks : 0;
+  const reaskSpent = reasksUsed >= MAX_DISCOVERY_REASKS;
+  const substantive = isSubstantiveAnswer(message);
+  // The browser compares against the answers it has recorded, which the
+  // history window may no longer hold.
+  const repeatsEarlierAnswer = wizardStep !== undefined && body.repeat === true;
+
+  let answerIsValid = fieldValidation.isValid && !(repeatsEarlierAnswer && !reaskSpent);
+  if (!answerIsValid && wizardStep !== undefined && reaskSpent && substantive) answerIsValid = true;
+  const answerValidation = { isValid: answerIsValid };
+  // A genuine reply that still missed the question spends the clarification.
+  const reask = wizardStep !== undefined && !answerIsValid && substantive;
+
+  // Steps the visitor's own words have already answered are skipped, so
+  // "we have two branches" in the first answer is never asked for again.
+  const covered = new Set([...readCoveredSteps(body.covered), ...coveredDiscoverySteps(message)]);
+  const nextStep =
+    wizardStep !== undefined && answerIsValid ? nextOpenDiscoveryStep(wizardStep, covered) : undefined;
+  const modelContext = wizardStep !== undefined ? pruneUnansweredContext(context, wizardStep, covered) : context;
+
+  // An answer that leaves nothing to ask ends questioning, so Pulse must close
+  // with a statement. Usually that is the 5th step (timeline/budget), but it
+  // is earlier when the remaining steps were already answered.
   //
   // When the client tells us which step it is showing, that is what decides it.
   // Inferring it from `targetField` alone closed discovery early: the heuristic
@@ -316,9 +430,12 @@ export const POST = withRouteErrorHandling("chat", async (request, requestId) =>
   // step. Free chat has no step, so there it still falls back to the field.
   const isFinalDiscoveryAnswer =
     answerValidation.isValid &&
-    (getDiscoveryField(step) !== undefined
-      ? step === FINAL_DISCOVERY_STEP
+    (wizardStep !== undefined
+      ? (nextStep ?? 0) >= DISCOVERY_STEP_COUNT
       : targetField === "timeline" || targetField === "budget");
+  const nextQuestion =
+    nextStep !== undefined && !isFinalDiscoveryAnswer ? getDiscoveryQuestion(nextStep) : undefined;
+  const nextQuestionHelper = nextQuestion ? getDiscoveryHelper(nextStep) : undefined;
 
   /**
    * A canned fallback — a rejection, a PULSE ID lookup, or a provider failure —
@@ -338,7 +455,7 @@ export const POST = withRouteErrorHandling("chat", async (request, requestId) =>
         ? enforceClosingStatement(completion.answer)
         : completion.answer;
 
-    logChatTurn({
+    logTurnOnce({
       sessionId,
       requestId,
       question: message,
@@ -352,17 +469,47 @@ export const POST = withRouteErrorHandling("chat", async (request, requestId) =>
       errorCode,
     });
 
-    return { answer, isValid };
+    // `nextStep` tells the browser which question to show next (it may skip
+    // steps already answered); `reasked` tells it the one clarification is spent.
+    return {
+      answer,
+      isValid,
+      ...(isValid && nextStep !== undefined ? { nextStep } : {}),
+      ...(reask && !completion.isFallback ? { reasked: true } : {}),
+    };
   };
 
   // 7a. Buffered path — the default, and what every non-streaming caller gets.
   if (!streaming) {
     const startedAt = Date.now();
-    const completion = await generatePulseCompletion(message, history, context, requestId, {
-      closingStatement: isFinalDiscoveryAnswer,
-      activeQuestion,
-      activeQuestionHelper,
-    });
+    let completion: Awaited<ReturnType<typeof generatePulseCompletion>>;
+    try {
+      completion = await generatePulseCompletion(message, history, modelContext, requestId, {
+        closingStatement: isFinalDiscoveryAnswer,
+        activeQuestion,
+        activeQuestionHelper,
+        reask,
+        nextQuestion,
+        nextQuestionHelper,
+      });
+    } catch (error) {
+      // Counted as a failed turn, as the streamed path does, then handled by
+      // the route's error wrapper as before.
+      logTurnOnce({
+        sessionId,
+        requestId,
+        question: message,
+        intent,
+        step,
+        targetField,
+        isValid: false,
+        isFallback: true,
+        streamed: false,
+        latencyMs: Date.now() - startedAt,
+        errorCode: "INTERNAL_ERROR",
+      });
+      throw error;
+    }
     return apiSuccess(settle(completion, Date.now() - startedAt));
   }
 
@@ -376,15 +523,27 @@ export const POST = withRouteErrorHandling("chat", async (request, requestId) =>
   const encoder = new TextEncoder();
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
-      const send = (frame: StreamFrame) => controller.enqueue(encoder.encode(sseFrame(frame)));
+      // A visitor who closes the tab cancels the stream, and enqueue then
+      // throws. The turn is still settled and logged once; there is simply no
+      // one left to deliver frames to.
+      const send = (frame: StreamFrame) => {
+        try {
+          controller.enqueue(encoder.encode(sseFrame(frame)));
+        } catch {
+          // Stream cancelled by the client.
+        }
+      };
 
       const startedAt = Date.now();
 
       try {
-        const completion = await generatePulseCompletion(message, history, context, requestId, {
+        const completion = await generatePulseCompletion(message, history, modelContext, requestId, {
           closingStatement: isFinalDiscoveryAnswer,
           activeQuestion,
           activeQuestionHelper,
+          reask,
+          nextQuestion,
+          nextQuestionHelper,
           signal: request.signal,
           onToken: (delta) => send({ type: "delta", text: delta }),
         });
@@ -397,7 +556,7 @@ export const POST = withRouteErrorHandling("chat", async (request, requestId) =>
         // The response is already committed with a 200, so a failure here has
         // to travel in-band rather than as an HTTP status.
         logRouteError("chat", requestId, error, { phase: "stream" });
-        logChatTurn({
+        logTurnOnce({
           sessionId,
           requestId,
           question: message,
@@ -416,7 +575,11 @@ export const POST = withRouteErrorHandling("chat", async (request, requestId) =>
           code: "INTERNAL_ERROR",
         });
       } finally {
-        controller.close();
+        try {
+          controller.close();
+        } catch {
+          // Already closed by a client cancel.
+        }
       }
     },
   });

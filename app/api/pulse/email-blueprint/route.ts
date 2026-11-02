@@ -1,3 +1,4 @@
+import { after } from "next/server";
 import { Resend } from "resend";
 import {
   withRouteErrorHandling,
@@ -6,128 +7,136 @@ import {
   assertSameOrigin,
   assertJsonContentType,
   readJsonObjectBody,
-  readString,
   sanitizeHeaderValue,
-  logRouteError,
   methodNotAllowedHandler,
   optionsHandler,
 } from "@/lib/api/response";
-import { getClientIp, checkRateLimit, cleanupRateLimitStore } from "@/lib/rateLimit";
-import { getDirection, type SavedDirection } from "@/lib/pulse/directionStore";
-import { renderBlueprintEmail } from "@/lib/pulse/blueprintEmail";
+import { getDirection } from "@/lib/pulse/directionStore";
+import { renderVerificationEmail, validateRecipient } from "@/lib/pulse/blueprintEmail";
+import { getVerificationStore, newVerificationToken, verificationTtlMinutes } from "@/lib/pulse/emailVerification";
+import { checkPulseId } from "@/lib/pulse/pulseId";
+import { PULSE_FEATURES } from "@/lib/pulse/features";
+import { getTrustedClientIp } from "@/lib/security/clientIp";
+import { enforceRateLimits, HOUR_MS } from "@/lib/security/sharedRateLimit";
+import { readTurnstileToken, verifyPulseTurnstile } from "@/lib/security/turnstile";
 
-const MAX_BODY_BYTES = 4_096;
+/**
+ * Step 1 of emailing a blueprint: ask for a confirmation link.
+ *
+ * Still switched off (lib/pulse/features.ts). When enabled, this route never
+ * emails the blueprint itself. It emails a single-use link, and only to the
+ * address the direction was saved with, never to an address from the request;
+ * the blueprint goes out only after that link is opened (./confirm).
+ *
+ * Anti-enumeration: every well-formed request gets the same answer, whether
+ * or not the reference exists and the address matches, and the lookup and the
+ * send run after the response, so timing does not tell either.
+ *
+ * Limits: shared across instances, per client address, per address asked for
+ * and per reference; refused if the shared store is down. Turnstile action
+ * "pulse_email". Malformed, legacy (guessable), future-dated and expired
+ * references are refused before anything else is looked at.
+ */
 
-/** A PULSE reference code: PLS-YYMMDD-NNN. */
-const PULSE_ID_PATTERN = /^PLS-\d{6}-\d{3}$/;
+const MAX_BODY_BYTES = 2_048;
+const ALLOWED_FIELDS = new Set(["pulseId", "contact", "turnstileToken", "cf-turnstile-response"]);
 
-/** The single generic refusal. See the note on ownership below. */
-const GENERIC_REFUSAL =
-  "We could not send that blueprint. Please check the reference ID and the email address you saved it with.";
+const REQUEST_LIMITS = {
+  perIp: { limit: 5, windowMs: HOUR_MS },
+  perEmail: { limit: 3, windowMs: HOUR_MS },
+  perReference: { limit: 3, windowMs: HOUR_MS },
+};
 
-function isEmailAddress(value: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+/** The same words for every accepted request. */
+export const VERIFICATION_REQUESTED_MESSAGE =
+  "If those details match a saved direction, we've emailed a confirmation link to that address. It expires shortly and works once.";
+
+const BAD_REQUEST = "Please check the reference ID and email address.";
+
+/** Runs after the response where the platform allows it; inline elsewhere (scripts, tests). */
+async function afterResponse(work: () => Promise<void>): Promise<void> {
+  const task = work().catch((error: unknown) => {
+    console.error("[pulse-email-blueprint] background send failed", {
+      reason: error instanceof Error ? error.name : "unknown error",
+    });
+  });
+  try {
+    after(task);
+  } catch {
+    await task;
+  }
 }
 
 export const POST = withRouteErrorHandling("pulse-email-blueprint", async (request, requestId) => {
-  const ip = getClientIp(request);
-  const rateLimit = checkRateLimit("pulse-email-blueprint", ip);
-  if (!rateLimit.allowed) {
-    throw new ApiError("RATE_LIMITED", { retryAfter: rateLimit.retryAfter }, { ip });
+  // Security containment, 30 October 2026: refused before anything else, so
+  // the answer is identical for every request while the feature is off.
+  if (!PULSE_FEATURES.blueprintEmail) {
+    throw new ApiError("FEATURE_DISABLED", {}, { reason: "blueprint-email-disabled" });
   }
-  if (Math.random() < 0.05) cleanupRateLimitStore();
+
+  const ip = getTrustedClientIp(request);
+  await enforceRateLimits("pulse-email-request", [{ dimension: "ip", value: ip, ...REQUEST_LIMITS.perIp }], {
+    onStoreError: "deny",
+  });
 
   assertSameOrigin(request);
   assertJsonContentType(request);
   const body = await readJsonObjectBody(request, { maxBytes: MAX_BODY_BYTES });
-
-  const pulseId = readString(body.pulseId, 100).toUpperCase();
-  const contact = readString(body.contact, 200);
-
-  if (!PULSE_ID_PATTERN.test(pulseId) || !contact) {
-    throw new ApiError("VALIDATION_FAILED", { message: GENERIC_REFUSAL }, { requestId, reason: "bad-input" });
+  if (Object.keys(body).some((key) => !ALLOWED_FIELDS.has(key))) {
+    throw new ApiError("VALIDATION_FAILED", { message: BAD_REQUEST }, { reason: "unexpected-field" });
   }
 
-  let direction: SavedDirection | null;
-  try {
-    direction = await getDirection(pulseId);
-  } catch (error) {
-    logRouteError("pulse-email-blueprint", requestId, error, { pulseId });
-    throw new ApiError(
-      "SERVICE_UNAVAILABLE",
-      { message: "We could not reach your saved direction just now. Please try again in a moment." },
-      { pulseId, reason: "direction-store-read-failed" },
-    );
-  }
-
-  // Ownership. A PULSE ID is short and guessable, so without proof that the
-  // caller already knows the address the direction was saved under, this
-  // endpoint would be a way to mail an arbitrary stranger on demand. The
-  // refusal is identical whether the id is unknown or the address is wrong, so
-  // it cannot be used to discover which ids exist or who owns them.
-  const owner = direction?.lead.contact.trim().toLowerCase() ?? "";
-  if (!direction || owner !== contact.trim().toLowerCase()) {
+  const reference = checkPulseId(body.pulseId);
+  const recipient = validateRecipient(body.contact);
+  if (!reference.ok || !recipient) {
     throw new ApiError(
       "VALIDATION_FAILED",
-      { message: GENERIC_REFUSAL },
-      { pulseId, reason: direction ? "contact-mismatch" : "unknown-pulse-id" },
+      { message: BAD_REQUEST },
+      { reason: reference.ok ? "bad-recipient" : `reference-${reference.reason}` }
     );
   }
 
-  // The direction may have been saved against a phone number.
-  if (!isEmailAddress(owner)) {
-    throw new ApiError(
-      "VALIDATION_FAILED",
-      { message: "This direction was saved with a phone number, so there is no address to email it to." },
-      { pulseId, reason: "contact-not-an-email" },
-    );
-  }
+  const turnstileFailure = await verifyPulseTurnstile(readTurnstileToken(body), { action: "pulse_email", ip, requestId });
+  if (turnstileFailure) throw new ApiError(turnstileFailure, {}, { reason: "turnstile" });
+
+  await enforceRateLimits(
+    "pulse-email-request",
+    [
+      { dimension: "email", value: recipient, ...REQUEST_LIMITS.perEmail },
+      { dimension: "pulse-id", value: reference.id, ...REQUEST_LIMITS.perReference },
+    ],
+    { onStoreError: "deny" }
+  );
 
   const apiKey = process.env.RESEND_API_KEY;
-  const fromEmail = process.env.CONTACT_FROM_EMAIL || "ACEVA PULSE <onboarding@resend.dev>";
+  const fromEmail = process.env.CONTACT_FROM_EMAIL;
 
-  if (!apiKey) {
-    console.error(`[pulse-email-blueprint][${requestId}] RESEND_API_KEY not set`);
-    throw new ApiError(
-      "SERVICE_UNAVAILABLE",
-      { message: "Email delivery is not configured right now. Please try again later." },
-      { pulseId, reason: "missing-resend-key" },
-    );
-  }
+  await afterResponse(async () => {
+    const direction = await getDirection(reference.id);
+    // The stored address, validated again; the request's copy is only used to compare.
+    const stored = validateRecipient(direction?.lead.contact);
+    if (!direction || !stored || stored !== recipient) return;
 
-  const { subject, text } = renderBlueprintEmail(direction);
+    if (!apiKey || !fromEmail) {
+      console.error(`[pulse-email-blueprint][${requestId}] email not configured`);
+      return;
+    }
 
-  try {
-    const resend = new Resend(apiKey);
-    const { error } = await resend.emails.send({
+    const ttlMinutes = verificationTtlMinutes();
+    const { token, tokenHash } = newVerificationToken();
+    await getVerificationStore().create(tokenHash, reference.id, new Date(Date.now() + ttlMinutes * 60_000));
+
+    const { subject, text } = renderVerificationEmail({ pulseId: reference.id, token, ttlMinutes });
+    const { error } = await new Resend(apiKey).emails.send({
       from: fromEmail,
-      to: direction.lead.contact,
+      to: stored,
       subject: sanitizeHeaderValue(subject),
       text,
     });
+    if (error) console.error(`[pulse-email-blueprint][${requestId}] Resend rejection`, { name: error.name });
+  });
 
-    if (error) {
-      // Only the provider's error name is logged; its message can carry detail.
-      console.error(`[pulse-email-blueprint][${requestId}] Resend rejection`, { name: error.name });
-      throw new ApiError(
-        "UPSTREAM_ERROR",
-        { message: "We could not send that email just now. Please try again in a moment." },
-        { pulseId, reason: "resend-rejected" },
-      );
-    }
-  } catch (error) {
-    if (error instanceof ApiError) throw error;
-    logRouteError("pulse-email-blueprint", requestId, error, { pulseId });
-    throw new ApiError(
-      "UPSTREAM_ERROR",
-      { message: "We could not send that email just now. Please try again in a moment." },
-      { pulseId, reason: "resend-threw" },
-    );
-  }
-
-  // The address is deliberately not echoed back: the caller already knows it,
-  // and a response that confirmed it would turn a guessed id into a disclosure.
-  return apiSuccess({ pulseId });
+  return apiSuccess({ message: VERIFICATION_REQUESTED_MESSAGE }, { status: 202 });
 });
 
 export const GET = methodNotAllowedHandler(["POST"]);

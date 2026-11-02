@@ -9,6 +9,13 @@ import {
   PulseState,
 } from "./types";
 import { describeApiError } from "@/lib/api/errorCodes";
+import { DISCOVERY_STEP_COUNT } from "@/lib/pulse/discoverySteps";
+import {
+  MAX_DISCOVERY_REASKS,
+  coveredDiscoverySteps,
+  isRepeatedDiscoveryAnswer,
+  readCoveredSteps,
+} from "@/lib/pulse/discoveryCoverage";
 
 const STORAGE_KEY = "aceva-pulse-v2";
 const SESSION_KEY = "aceva-pulse-session";
@@ -113,31 +120,42 @@ export function pulseReducer(state: PulseState, action: PulseAction): PulseState
         };
       }
 
-      const normalise = (value: string) =>
-        value.trim().toLowerCase().replace(/^(as i said|like i said|as mentioned|again|to repeat)\s*,?\s*/i, "");
-      const normNew = normalise(action.value);
-
       // Exact match only. The previous `prev.includes(normNew)` meant any short
       // answer was swallowed by a longer earlier one — answering "web" after
       // "I need a web app for my restaurant" counted as a repeat, so the step
       // never advanced and the visitor was stuck re-answering.
-      const isDuplicate = state.answers.some((prev) => normalise(prev) === normNew);
-
-      if (isDuplicate) {
+      //
+      // A repeat holds the step only while the one clarification is unspent,
+      // and spends it, so repeating can never stall discovery for good. The
+      // server already refuses a flagged repeat on the same terms.
+      const reasks = state.reasks ?? 0;
+      if (isRepeatedDiscoveryAnswer(action.value, state.answers) && reasks < MAX_DISCOVERY_REASKS) {
         return {
           ...state,
           context: { ...state.context, ...action.inferred },
+          reasks: reasks + 1,
         };
       }
+
+      // The server names the next step, which skips any the visitor has
+      // already answered. Never backwards, never past the end.
+      const nextStep =
+        typeof action.nextStep === "number" && Number.isInteger(action.nextStep) && action.nextStep > state.step
+          ? Math.min(action.nextStep, DISCOVERY_STEP_COUNT)
+          : state.step + 1;
 
       return {
         ...state,
         answers: [...state.answers, action.value],
         answerMarks: [...(state.answerMarks ?? []), state.turnStart ?? state.messages.length],
         context: { ...state.context, ...action.inferred },
-        step: state.step + 1,
+        step: nextStep,
+        coveredSteps: readCoveredSteps([...(state.coveredSteps ?? []), ...(action.covered ?? [])]),
       };
     }
+
+    case "RECORD_REASK":
+      return { ...state, reasks: (state.reasks ?? 0) + 1 };
 
     case "SEND_MESSAGE": {
       const newMessage = {
@@ -304,7 +322,11 @@ interface PulseContextType {
   dispatch: React.Dispatch<PulseAction>;
   openPulse: () => void;
   closePulse: () => void;
-  sendChatMessage: (text: string, inferredContext?: Partial<PulseState["context"]>) => Promise<void>;
+  sendChatMessage: (
+    text: string,
+    inferredContext?: Partial<PulseState["context"]>,
+    options?: { step?: number }
+  ) => Promise<void>;
   /** Aborts the in-flight turn, keeping whatever tokens already arrived. */
   stopStreaming: () => void;
   /** Re-sends the turn that failed, without duplicating the user's bubble. */
@@ -314,7 +336,7 @@ interface PulseContextType {
 /** One frame of the /api/chat event stream. Mirrors the route's union. */
 type StreamFrame =
   | { type: "delta"; text: string }
-  | { type: "done"; answer: string; isValid: boolean }
+  | { type: "done"; answer: string; isValid: boolean; nextStep?: number; reasked?: boolean }
   | { type: "error"; error: string; code: string };
 
 /**
@@ -371,7 +393,13 @@ export async function* readSseFrames(
 export function buildChatRequestBody(
   text: string,
   state: PulseState,
-  inferredContext?: Partial<PulseContextData>
+  inferredContext?: Partial<PulseContextData>,
+  /**
+   * The step this message answers when `state` cannot know it yet: the first
+   * message typed on the intent screen is sent in the same tick that starts
+   * discovery, so `state.stage` still reads "intent".
+   */
+  stepOverride?: number
 ) {
   return {
     message: text,
@@ -390,7 +418,12 @@ export function buildChatRequestBody(
     // detectActiveQuestionTarget needs in order to validate the right field.
     context: { ...state.context, ...inferredContext },
     // Lets the route pin the model to the question already on screen.
-    step: state.stage === "discovery" ? state.step : undefined,
+    step: stepOverride ?? (state.stage === "discovery" ? state.step : undefined),
+    // What discovery already knows, so no question is asked twice and the
+    // one clarification is not spent again.
+    covered: state.coveredSteps ?? [],
+    reasks: state.reasks ?? 0,
+    repeat: state.stage === "discovery" && isRepeatedDiscoveryAnswer(text, state.answers),
   };
 }
 
@@ -490,6 +523,12 @@ export function parseStoredSession(
 
   if (typeof stored.id === "string") session.id = stored.id;
 
+  const coveredSteps = readCoveredSteps(stored.coveredSteps);
+  if (coveredSteps.length > 0) session.coveredSteps = coveredSteps;
+  if (typeof stored.reasks === "number" && Number.isInteger(stored.reasks) && stored.reasks >= 0) {
+    session.reasks = stored.reasks;
+  }
+
   return session;
 }
 
@@ -536,10 +575,22 @@ export function PulseProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     try {
-      const { stage, step, answers, answerMarks, context, messages, lead, id } = state;
+      const { stage, step, answers, answerMarks, context, messages, lead, id, coveredSteps, reasks } = state;
       localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ stage, step, answers, answerMarks, context, messages, lead, id, savedAt: Date.now() })
+        JSON.stringify({
+          stage,
+          step,
+          answers,
+          answerMarks,
+          context,
+          messages,
+          lead,
+          id,
+          coveredSteps,
+          reasks,
+          savedAt: Date.now(),
+        })
       );
     } catch {
       // Ignore storage errors
@@ -559,7 +610,7 @@ export function PulseProvider({ children }: { children: React.ReactNode }) {
   const sendChatMessage = async (
     text: string,
     inferredContext?: Partial<PulseState["context"]>,
-    options?: { isRetry?: boolean }
+    options?: { isRetry?: boolean; step?: number }
   ) => {
     // A retry re-uses the bubble the first attempt already added.
     if (!options?.isRetry) dispatch({ type: "SEND_MESSAGE", text });
@@ -576,6 +627,21 @@ export function PulseProvider({ children }: { children: React.ReactNode }) {
       dispatch({ type: "SET_RETRY", retry: { text, inferred: inferredContext } });
     };
 
+    /** Records the answer (advancing to the step the server named) or the spent clarification. */
+    const settleTurn = (result: { isValid?: boolean; nextStep?: unknown; reasked?: unknown }) => {
+      if (result.isValid) {
+        dispatch({
+          type: "RECORD_VALID_ANSWER",
+          value: text,
+          inferred: inferredContext,
+          nextStep: typeof result.nextStep === "number" ? result.nextStep : undefined,
+          covered: coveredDiscoverySteps(text),
+        });
+      } else if (result.reasked === true) {
+        dispatch({ type: "RECORD_REASK" });
+      }
+    };
+
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
@@ -585,7 +651,7 @@ export function PulseProvider({ children }: { children: React.ReactNode }) {
           // is the fallback this whole path degrades to.
           Accept: "text/event-stream, application/json",
         },
-        body: JSON.stringify(buildChatRequestBody(text, state, inferredContext)),
+        body: JSON.stringify(buildChatRequestBody(text, state, inferredContext, options?.step)),
         signal: controller.signal,
       });
 
@@ -601,9 +667,7 @@ export function PulseProvider({ children }: { children: React.ReactNode }) {
 
         if (res.ok && data?.answer) {
           dispatch({ type: "ADD_PULSE_RESPONSE", text: data.answer });
-          if (data.isValid) {
-            dispatch({ type: "RECORD_VALID_ANSWER", value: text, inferred: inferredContext });
-          }
+          settleTurn(data);
           return;
         }
 
@@ -617,14 +681,14 @@ export function PulseProvider({ children }: { children: React.ReactNode }) {
       // ---- Streaming path.
       dispatch({ type: "PULSE_STREAM_START" });
 
-      let settled: { answer: string; isValid: boolean } | null = null;
+      let settled: { answer: string; isValid: boolean; nextStep?: number; reasked?: boolean } | null = null;
       let streamError: string | null = null;
 
       for await (const frame of readSseFrames(res.body as ReadableStream<Uint8Array>)) {
         if (frame.type === "delta") {
           dispatch({ type: "PULSE_STREAM_DELTA", text: frame.text });
         } else if (frame.type === "done") {
-          settled = { answer: frame.answer, isValid: frame.isValid };
+          settled = { answer: frame.answer, isValid: frame.isValid, nextStep: frame.nextStep, reasked: frame.reasked };
         } else if (frame.type === "error") {
           streamError = frame.error;
         }
@@ -633,9 +697,7 @@ export function PulseProvider({ children }: { children: React.ReactNode }) {
       if (settled) {
         // Reconcile to the authoritative text; usually identical to the tokens.
         dispatch({ type: "PULSE_STREAM_END", text: settled.answer });
-        if (settled.isValid) {
-          dispatch({ type: "RECORD_VALID_ANSWER", value: text, inferred: inferredContext });
-        }
+        settleTurn(settled);
         return;
       }
 

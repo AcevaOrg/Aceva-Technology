@@ -149,6 +149,30 @@ describe("the grounding rules are constructed into every request", () => {
     const messages = mockOpenAiCreate.mock.calls[0][0].messages as { role: string; content: string }[];
     expect(messages[1].content).toContain("ACTIVE DISCOVERY QUESTION");
   });
+
+  it("asks the next question, not a narrower version of the one just answered", async () => {
+    await capturedSystemPrompt({
+      activeQuestion: "Where do things feel slow or manual today?",
+      nextQuestion: "What does your operation look like today?",
+    });
+    const messages = mockOpenAiCreate.mock.calls[0][0].messages as { role: string; content: string }[];
+    expect(messages[1].content).toContain("DISCOVERY STEP COMPLETE");
+    expect(messages[1].content).toContain("What does your operation look like today?");
+    expect(messages[1].content).toMatch(/Do NOT ask anything more about the question they just answered/);
+    expect(messages[1].content).not.toContain("narrower");
+  });
+
+  it("marks the one permitted re-ask", async () => {
+    await capturedSystemPrompt({ activeQuestion: "What is your target launch timeline and budget window?", reask: true });
+    const messages = mockOpenAiCreate.mock.calls[0][0].messages as { role: string; content: string }[];
+    expect(messages[1].content).toMatch(/only time it may be asked again/);
+  });
+
+  it("forbids asking for anything already answered", async () => {
+    await capturedSystemPrompt({ activeQuestion: "Tell us about your business or project.", nextQuestion: "Where do things feel slow or manual today?" });
+    const messages = mockOpenAiCreate.mock.calls[0][0].messages as { role: string; content: string }[];
+    expect(messages[1].content).toMatch(/NEVER ask for something the visitor has already told you/);
+  });
 });
 
 describe("G2: a grounded answer is given directly, with no contradictory disclaimer", () => {

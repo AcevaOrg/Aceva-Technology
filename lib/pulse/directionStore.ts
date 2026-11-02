@@ -1,5 +1,4 @@
-import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
-import { getDatabaseUrl } from "./env";
+import { getSql, tagOperation, withTimeout } from "./db";
 
 export interface SavedDirection {
   pulseId: string;
@@ -41,17 +40,7 @@ interface DirectionRow {
   created_at: string | Date;
 }
 
-let sqlClient: NeonQueryFunction<false, false> | null = null;
 let schemaReady: Promise<void> | null = null;
-
-function getSql(): NeonQueryFunction<false, false> {
-  const connectionString = getDatabaseUrl();
-  if (!connectionString) {
-    throw new Error("DATABASE_URL is not set — the Pulse direction store is unavailable.");
-  }
-  if (!sqlClient) sqlClient = neon(connectionString);
-  return sqlClient;
-}
 
 /**
  * Creates the table on first use. The resolved promise is cached so the DDL
@@ -62,7 +51,8 @@ function getSql(): NeonQueryFunction<false, false> {
 export async function ensureDirectionsTable(): Promise<void> {
   if (!schemaReady) {
     const sql = getSql();
-    schemaReady = sql`
+    schemaReady = withTimeout(
+      sql`
       CREATE TABLE IF NOT EXISTS directions (
         pulse_id            TEXT PRIMARY KEY,
         lead                JSONB NOT NULL,
@@ -71,7 +61,9 @@ export async function ensureDirectionsTable(): Promise<void> {
         recommended_modules JSONB,
         created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
       )
-    `
+    `,
+      "directions DDL"
+    )
       .then(() => undefined)
       .catch((error: unknown) => {
         schemaReady = null;
@@ -86,6 +78,9 @@ export async function ensureDirectionsTable(): Promise<void> {
  * no longer clobber each other the way the previous load-modify-write JSON file
  * store did. `created_at` is omitted from the UPDATE list so re-saving an
  * existing PULSE ID preserves its original submission time.
+ *
+ * Operator use only (scripts/import-directions.ts). It overwrites on conflict,
+ * so no route may call it; the save route uses `createDirection`.
  */
 export async function saveDirection(direction: SavedDirection): Promise<void> {
   await ensureDirectionsTable();
@@ -109,16 +104,53 @@ export async function saveDirection(direction: SavedDirection): Promise<void> {
   `;
 }
 
+/**
+ * Inserts a new direction and never updates an existing one.
+ *
+ * The save route used to upsert under a reference the browser chose, guarded by
+ * a separate read-then-write ownership check that two concurrent requests could
+ * both pass. References are now generated on the server and this insert is the
+ * only write: `ON CONFLICT DO NOTHING` makes a clash a no-op that returns false,
+ * atomically, so no submission can overwrite another visitor's record. The
+ * caller generates a fresh reference and tries again.
+ */
+export async function createDirection(direction: SavedDirection): Promise<boolean> {
+  // Each step is tagged so a failure log names the operation that broke.
+  await tagOperation("prepare-table", () => ensureDirectionsTable());
+
+  const rows = (await tagOperation("insert", () => withTimeout(
+    getSql()`
+    INSERT INTO directions (pulse_id, lead, context, answers, recommended_modules, created_at)
+    VALUES (
+      ${direction.pulseId},
+      ${JSON.stringify(direction.lead)}::jsonb,
+      ${direction.context ? JSON.stringify(direction.context) : null}::jsonb,
+      ${direction.answers ? JSON.stringify(direction.answers) : null}::jsonb,
+      ${direction.recommendedModules ? JSON.stringify(direction.recommendedModules) : null}::jsonb,
+      ${direction.createdAt}::timestamptz
+    )
+    ON CONFLICT (pulse_id) DO NOTHING
+    RETURNING pulse_id
+  `,
+    "direction insert"
+  ))) as { pulse_id: string }[];
+
+  return rows.length === 1;
+}
+
 export async function getDirection(pulseId: string): Promise<SavedDirection | null> {
   await ensureDirectionsTable();
   const sql = getSql();
 
-  const rows = (await sql`
+  const rows = (await withTimeout(
+    sql`
     SELECT pulse_id, lead, context, answers, recommended_modules, created_at
     FROM directions
     WHERE pulse_id = ${pulseId.trim().toUpperCase()}
     LIMIT 1
-  `) as DirectionRow[];
+  `,
+    "direction read"
+  )) as DirectionRow[];
 
   const row = rows[0];
   if (!row) return null;

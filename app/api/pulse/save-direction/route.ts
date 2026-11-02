@@ -7,199 +7,183 @@ import {
   assertSameOrigin,
   assertJsonContentType,
   readJsonObjectBody,
-  readString,
-  readEnum,
-  logRouteError,
   methodNotAllowedHandler,
   optionsHandler,
+  sanitizeHeaderValue,
 } from "@/lib/api/response";
-import { getClientIp, checkRateLimit, cleanupRateLimitStore } from "@/lib/rateLimit";
 import { isDisposableEmail } from "@/lib/spamFilter";
-import { getDirection, saveDirection, type SavedDirection } from "@/lib/pulse/directionStore";
-import { sanitizeHeaderValue } from "@/lib/api/response";
+import { createDirection } from "@/lib/pulse/directionStore";
+import { describeDatabaseError } from "@/lib/pulse/db";
+import { generatePulseId } from "@/lib/pulse/pulseId";
+import { LEAD_LIMITS, validateLeadSubmission } from "@/lib/pulse/leadValidation";
+import { getRecommendedModules } from "@/lib/pulse/modules";
+import { getTrustedClientIp } from "@/lib/security/clientIp";
+import { enforceRateLimits, HOUR_MS, MINUTE_MS } from "@/lib/security/sharedRateLimit";
+import { readTurnstileToken, verifyPulseTurnstile } from "@/lib/security/turnstile";
 
-const MAX_BODY_BYTES = 16_384;
+/**
+ * Saves a visitor's project direction and notifies the team.
+ *
+ * Hardened on 30 October 2026 (P1):
+ *  - The PULSE reference is generated here with a CSPRNG. Any reference the
+ *    browser sends is ignored, so IDs cannot be pre-claimed, future-dated or
+ *    chosen to collide (red-team R2, R3).
+ *  - The write is insert-only (`createDirection`), so no submission, duplicate
+ *    or concurrent, can overwrite another record. The old read-then-upsert
+ *    ownership check, which two racing requests could both pass, is gone.
+ *  - Every field is type-checked and length-limited, and unexpected top-level
+ *    fields are refused (R4; limits in lib/pulse/leadValidation.ts).
+ *  - Cloudflare Turnstile is verified on the server for action "pulse_save".
+ *  - Rate limits are shared across instances and counted per client address
+ *    and per contact (R5); if the shared store is down the save is refused.
+ *  - The recommended modules are recomputed from the context, so the stored
+ *    and emailed list never carries browser-supplied text.
+ *  - The team notification defangs links in visitor text, and no log line
+ *    carries the visitor's contact details.
+ */
 
-/** A PULSE reference code: PLS-YYMMDD-NNN. Anything else is rejected outright. */
-const PULSE_ID_PATTERN = /^PLS-\d{6}-\d{3}$/;
+const SAVE_LIMITS = {
+  perIp: { limit: 5, windowMs: 10 * MINUTE_MS },
+  perContact: { limit: 3, windowMs: HOUR_MS },
+};
 
-type ContactMethod = "Email" | "Phone" | "Text";
+/** Fresh references tried before giving up. A clash needs ~2^20 saves on one day to become likely. */
+const MAX_ID_ATTEMPTS = 3;
+
+const SAVE_FAILED =
+  "We could not save your project direction just now. Please try again in a moment.";
+
+/**
+ * Visitor text for ACEVA's own inbox: one line, bounded, with links made
+ * unclickable ("hxxps[://]evil[.]example") so a lead cannot phish the team.
+ */
+function forTeam(value: string | undefined, fallback: string): string {
+  if (!value) return fallback;
+  return value
+    .replace(/[\u0000-\u001F\u007F]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 600)
+    .replace(/\b(h)tt(ps?):\/\//gi, "$1xx$2[://]")
+    .replace(/\bwww\./gi, "www[.]")
+    .replace(/\.(com|net|org|io|co|app|dev|xyz|info|biz|me|ly|example)\b/gi, "[.]$1") || fallback;
+}
 
 export const POST = withRouteErrorHandling("pulse-save-direction", async (request, requestId) => {
-  // 1. Rate limiting
-  const ip = getClientIp(request);
-  const rateLimit = checkRateLimit("pulse-save-direction", ip);
-  if (!rateLimit.allowed) {
-    throw new ApiError("RATE_LIMITED", { retryAfter: rateLimit.retryAfter }, { ip });
-  }
-  if (Math.random() < 0.05) cleanupRateLimitStore();
+  const ip = getTrustedClientIp(request);
 
-  // 2. Reject cross-origin and non-JSON callers before touching the body.
-  //
-  // This was the only write route without the origin guard — /api/chat,
-  // /api/contact and /api/pulse/email-blueprint all had it. Without it a page
-  // on any other origin could post a lead to this endpoint, which stores the
-  // visitor's name and contact details and sends mail to the team.
+  // 1. Shared per-address limit, before any body is read.
+  await enforceRateLimits("pulse-save", [{ dimension: "ip", value: ip, ...SAVE_LIMITS.perIp }], {
+    onStoreError: "deny",
+  });
+
+  // 2. Same origin, JSON only, bounded body.
   assertSameOrigin(request);
   assertJsonContentType(request);
+  const body = await readJsonObjectBody(request, { maxBytes: LEAD_LIMITS.bodyBytes });
 
-  // 3. Read bounded body
-  const body = await readJsonObjectBody(request, { maxBytes: MAX_BODY_BYTES });
-
-  // 4. Validate required fields — no internal detail in error responses
-  const pulseId = readString(body.pulseId, 100).toUpperCase();
-  if (!PULSE_ID_PATTERN.test(pulseId)) {
-    console.warn(`[pulse-save-direction][${requestId}] missing or malformed pulseId`);
+  // 3. Strict validation. Field flags only; no values echoed or logged.
+  const validation = validateLeadSubmission(body);
+  if (!validation.ok) {
     throw new ApiError(
       "VALIDATION_FAILED",
-      { message: "Please check your details — some required fields are missing or incorrect." },
-      { field: "pulseId" }, // server log only
+      { message: "Please check your details — some required fields are missing or incorrect.", errors: validation.errors },
+      { fields: Object.keys(validation.errors) }
     );
   }
+  const { lead, context, answers, contactIsEmail } = validation.value;
 
-  const leadRaw = body.lead;
-  if (!leadRaw || typeof leadRaw !== "object" || Array.isArray(leadRaw)) {
-    throw new ApiError(
-      "VALIDATION_FAILED",
-      { message: "Please check your details — some required fields are missing or incorrect." },
-      { field: "lead" },
-    );
-  }
-  const leadObj = leadRaw as Record<string, unknown>;
-  const name    = readString(leadObj.name,    200);
-  const contact = readString(leadObj.contact, 200);
-  const method  = readEnum<ContactMethod>(leadObj.method, ["Email", "Phone", "Text"], "Email");
+  // 4. Turnstile, server-side.
+  const turnstileFailure = await verifyPulseTurnstile(readTurnstileToken(body), {
+    action: "pulse_save",
+    ip,
+    requestId,
+  });
+  if (turnstileFailure) throw new ApiError(turnstileFailure, {}, { reason: "turnstile" });
 
-  if (!name || !contact) {
-    throw new ApiError(
-      "VALIDATION_FAILED",
-      { message: "Please check your details — some required fields are missing or incorrect." },
-      { missingFields: [!name ? "name" : null, !contact ? "contact" : null].filter(Boolean) },
-    );
-  }
-
-  // 5. Disposable email guard
-  const isEmail = contact.includes("@") && contact.includes(".");
-  if (isEmail && isDisposableEmail(contact.toLowerCase())) {
+  // 5. Disposable addresses.
+  if (contactIsEmail && isDisposableEmail(lead.contact.toLowerCase())) {
     throw new ApiError(
       "DISPOSABLE_EMAIL",
       { message: "Please use your real work email address so we can reply to you." },
-      { contact },
+      { reason: "disposable-email" }
     );
   }
 
-  // 5b. A PULSE ID already in use may only be re-saved by the same lead. The ids
-  // are short and guessable, so without this check anyone could overwrite another
-  // visitor's stored direction by posting their own details under its reference.
-  // Both outcomes return the same generic validation failure, so a caller cannot
-  // use this endpoint to discover which ids exist.
-  let existing: SavedDirection | null;
+  // 6. Shared per-contact limit, so one address cannot be flooded from many clients.
+  await enforceRateLimits(
+    "pulse-save",
+    [{ dimension: "email", value: lead.contact.toLowerCase(), ...SAVE_LIMITS.perContact }],
+    { onStoreError: "deny" }
+  );
+
+  // 7. Insert under a fresh server-generated reference. Insert-only: a clash
+  //    returns false and a new reference is drawn; nothing is ever overwritten.
+  const recommendedModules = getRecommendedModules(context?.industry, context, answers);
+  const createdAt = new Date().toISOString();
+  let pulseId: string | null = null;
+
   try {
-    existing = await getDirection(pulseId);
+    for (let attempt = 1; attempt <= MAX_ID_ATTEMPTS && !pulseId; attempt++) {
+      const candidate = generatePulseId();
+      const inserted = await createDirection({
+        pulseId: candidate,
+        lead,
+        context,
+        answers,
+        recommendedModules,
+        createdAt,
+      });
+      if (inserted) pulseId = candidate;
+    }
   } catch (error) {
-    logRouteError("pulse-save-direction", requestId, error, { pulseId, reason: "ownership-check-read-failed" });
-    throw new ApiError(
-      "SERVICE_UNAVAILABLE",
-      { message: "We could not save your project direction just now. Please try again in a moment." },
-      { pulseId, reason: "ownership-check-read-failed" },
-    );
-  }
-
-  if (existing && existing.lead.contact.trim().toLowerCase() !== contact.toLowerCase()) {
-    throw new ApiError(
-      "VALIDATION_FAILED",
-      { message: "Please check your details — some required fields are missing or incorrect." },
-      { pulseId, reason: "pulse-id-owned-by-another-lead" },
-    );
-  }
-
-  // 6. Extract optional context fields
-  const contextRaw = body.context && typeof body.context === "object" && !Array.isArray(body.context)
-    ? (body.context as Record<string, unknown>)
-    : undefined;
-
-  const context = contextRaw
-    ? {
-        intent:   readString(contextRaw.intent,   500),
-        industry: readString(contextRaw.industry, 200),
-        business: readString(contextRaw.business, 500),
-        current:  readString(contextRaw.current,  500),
-        scale:    readString(contextRaw.scale,    200),
-        market:   readString(contextRaw.market,   200),
-        friction: Array.isArray(contextRaw.friction)
-          ? (contextRaw.friction as unknown[]).filter((v): v is string => typeof v === "string").slice(0, 10)
-          : [],
-        goals: Array.isArray(contextRaw.goals)
-          ? (contextRaw.goals as unknown[]).filter((v): v is string => typeof v === "string").slice(0, 10)
-          : [],
-        timeline: readString(contextRaw.timeline, 200),
-        budget:   readString(contextRaw.budget,   200),
-      }
-    : undefined;
-
-  const recommendedModules = Array.isArray(body.recommendedModules)
-    ? (body.recommendedModules as unknown[]).filter((v): v is string => typeof v === "string").slice(0, 20)
-    : undefined;
-
-  const answers = Array.isArray(body.answers)
-    ? (body.answers as unknown[]).filter((v): v is string => typeof v === "string").slice(0, 50)
-    : undefined;
-
-  // 7. Persist to direction store. A failed write must never be reported as a
-  // success: the visitor would leave with a PULSE ID that resolves to nothing
-  // and the team would never receive the lead, so stop before the email.
-  try {
-    await saveDirection({
-      pulseId,
-      lead: { name, contact, method },
-      context,
-      answers,
-      recommendedModules,
-      createdAt: new Date().toISOString(),
+    // Operation, failure category and SQLSTATE only: never the driver message,
+    // which can quote submitted values or the database host.
+    const failure = describeDatabaseError(error);
+    console.error(`[pulse-save-direction][${requestId}] direction store failed`, failure);
+    throw new ApiError("SERVICE_UNAVAILABLE", { message: SAVE_FAILED }, {
+      reason: "direction-store-write-failed",
+      operation: failure.operation,
+      category: failure.category,
+      ...(failure.code ? { sqlstate: failure.code } : {}),
     });
-  } catch (error) {
-    logRouteError("pulse-save-direction", requestId, error, { pulseId });
-    throw new ApiError(
-      "SERVICE_UNAVAILABLE",
-      { message: "We could not save your project direction just now. Please try again in a moment." },
-      { pulseId, reason: "direction-store-write-failed" },
-    );
   }
 
-  // 8. Send email (non-blocking on failure — direction is already saved)
-  const apiKey   = process.env.RESEND_API_KEY;
-  const toEmail  = process.env.CONTACT_TO_EMAIL  || CONTACT_EMAIL;
+  if (!pulseId) {
+    console.error(`[pulse-save-direction][${requestId}] no free reference after ${MAX_ID_ATTEMPTS} attempts`);
+    throw new ApiError("SERVICE_UNAVAILABLE", { message: SAVE_FAILED }, { reason: "reference-attempts-exhausted" });
+  }
+
+  // 8. Notify the team. Failure here does not fail the save.
+  const apiKey = process.env.RESEND_API_KEY;
+  const toEmail = process.env.CONTACT_TO_EMAIL || CONTACT_EMAIL;
   const fromEmail = process.env.CONTACT_FROM_EMAIL || "ACEVA PULSE <onboarding@resend.dev>";
 
   if (apiKey) {
     const emailLines: string[] = [
       `=== ACEVA PULSE PROJECT DIRECTION SUBMISSION ===`,
       `PULSE Reference ID: ${pulseId}`,
-      `Date & Time: ${new Date().toISOString()}`,
+      `Date & Time: ${createdAt}`,
       ``,
       `--- VISITOR CONTACT DETAILS ---`,
-      `Name: ${name}`,
-      `Contact: ${contact}`,
-      `Preferred Method: ${method}`,
+      `Name: ${forTeam(lead.name, "Not specified")}`,
+      `Contact: ${forTeam(lead.contact, "Not specified")}`,
+      `Preferred Method: ${lead.method}`,
       ``,
-      `--- MAPPED PROJECT CONTEXT ---`,
-      `Primary Intent: ${context?.intent || "Not specified"}`,
-      `Industry Focus: ${context?.industry || "General Business"}`,
-      `Business Details: ${context?.business || "Not specified"}`,
-      `Current System State: ${context?.current || "Not specified"}`,
-      `Friction Points: ${context?.friction?.join(", ") || "None listed"}`,
-      `Target Goals: ${Array.isArray(context?.goals) ? context.goals.join(", ") : "None listed"}`,
-      `Operation Scale: ${context?.scale || "Not specified"}`,
-      `Market: ${context?.market || "Not specified"}`,
-      `Timeline: ${context?.timeline || "Flexible"}`,
-      // Scale, market and budget were collected by the wizard but left out of
-      // this email, so the qualification fields the team acts on never arrived.
-      `Budget: ${context?.budget || "To be discussed"}`,
+      `--- MAPPED PROJECT CONTEXT (visitor text; links defanged) ---`,
+      `Primary Intent: ${forTeam(context?.intent, "Not specified")}`,
+      `Industry Focus: ${forTeam(context?.industry, "General Business")}`,
+      `Business Details: ${forTeam(context?.business, "Not specified")}`,
+      `Current System State: ${forTeam(context?.current, "Not specified")}`,
+      `Friction Points: ${forTeam(context?.friction?.join(", "), "None listed")}`,
+      `Target Goals: ${forTeam(context?.goals?.join(", "), "None listed")}`,
+      `Operation Scale: ${forTeam(context?.scale, "Not specified")}`,
+      `Market: ${forTeam(context?.market, "Not specified")}`,
+      `Timeline: ${forTeam(context?.timeline, "Flexible")}`,
+      `Budget: ${forTeam(context?.budget, "To be discussed")}`,
       ``,
       `--- RECOMMENDED SYSTEM ARCHITECTURE ---`,
-      ...(recommendedModules && recommendedModules.length > 0
-        ? recommendedModules.map((mod, i) => `  ${i + 1}. ${mod}`)
-        : [`  - Custom ACEVA Digital System Solution`]),
+      ...recommendedModules.map((mod, i) => `  ${i + 1}. ${mod}`),
       ``,
       `==================================================`,
       `Submitted via official PULSE AI Assistant on ACEVA Technology platform.`,
@@ -210,16 +194,12 @@ export const POST = withRouteErrorHandling("pulse-save-direction", async (reques
       const { error } = await resend.emails.send({
         from: fromEmail,
         to: toEmail,
-        replyTo: isEmail ? contact : undefined,
-        subject: sanitizeHeaderValue(`[PULSE Lead] New Project Direction from ${name}`),
+        replyTo: contactIsEmail ? lead.contact : undefined,
+        subject: sanitizeHeaderValue(`[PULSE Lead] New Project Direction from ${forTeam(lead.name, "a visitor")}`),
         text: emailLines.join("\n"),
       });
       if (error) {
-        // Email failure is logged but does not fail the request — direction is already saved.
-        console.error(`[pulse-save-direction][${requestId}] Resend rejection`, {
-          name: error.name,
-          // message intentionally omitted — may contain API detail
-        });
+        console.error(`[pulse-save-direction][${requestId}] Resend rejection`, { name: error.name });
       }
     } catch {
       console.error(`[pulse-save-direction][${requestId}] Exception sending email`);
@@ -231,6 +211,6 @@ export const POST = withRouteErrorHandling("pulse-save-direction", async (reques
   return apiSuccess({ pulseId });
 });
 
-export const GET  = methodNotAllowedHandler(["POST"]);
+export const GET = methodNotAllowedHandler(["POST"]);
 export const HEAD = methodNotAllowedHandler(["POST"]);
 export const OPTIONS = optionsHandler(["POST"]);

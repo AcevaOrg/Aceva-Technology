@@ -28,7 +28,7 @@ vi.mock("@/lib/pulse/embeddings", async (importOriginal) => ({
   generateEmbedding: async () => null,
 }));
 
-import { generatePulseCompletion, keepCompetitiveChunks, diversifySources } from "@/lib/pulse/llm";
+import { generatePulseCompletion, keepCompetitiveChunks, diversifySources, PULSE_ID_LOOKUP_REPLY } from "@/lib/pulse/llm";
 import { clearEnvCache } from "@/lib/pulse/env";
 import { OUT_OF_SCOPE_REJECTION } from "@/lib/pulse/scope";
 import { saveDirection } from "@/lib/pulse/directionStore";
@@ -52,7 +52,9 @@ describe("PULSE LLM Provider", () => {
     expect(mockOpenAiCreate).toHaveBeenCalledOnce();
   });
 
-  it("resolves saved PULSE ID lookup without calling OpenAI", async () => {
+  it("answers a PULSE ID with the fixed privacy reply, without calling OpenAI", async () => {
+    // Lookup details are switched off (security containment, 30 October 2026):
+    // a saved direction is never shown in chat, found or not.
     await saveDirection({
       pulseId: "PLS-260826-883",
       lead: { name: "Test Lead", contact: "test@example.com", method: "Email" },
@@ -62,14 +64,14 @@ describe("PULSE LLM Provider", () => {
     });
 
     const result = await generatePulseCompletion("Tell me about PLS-260826-883");
-    expect(result.answer).toContain("PLS-260826-883");
-    expect(result.answer).toContain("Restaurant");
+    expect(result.answer).toBe(PULSE_ID_LOOKUP_REPLY);
+    expect(result.answer).not.toContain("Restaurant");
     // A lookup is not an answer to a discovery question.
     expect(result.isFallback).toBe(true);
     expect(mockOpenAiCreate).not.toHaveBeenCalled();
   });
 
-  it("never discloses the saved lead name or contact for a PULSE ID", async () => {
+  it("never discloses the saved lead, context or modules for a PULSE ID", async () => {
     await saveDirection({
       pulseId: "PLS-260826-884",
       lead: { name: "Jordan Ellis", contact: "jordan@example.com", method: "Email" },
@@ -80,13 +82,12 @@ describe("PULSE LLM Provider", () => {
 
     const result = await generatePulseCompletion("PLS-260826-884");
 
-    // The project context is still returned — only the lead identity is withheld.
-    expect(result.answer).toContain("PLS-260826-884");
-    expect(result.answer).toContain("Dispatch control tower");
+    expect(result.answer).toBe(PULSE_ID_LOOKUP_REPLY);
+    expect(result.answer).not.toContain("PLS-260826-884");
+    expect(result.answer).not.toContain("Dispatch control tower");
+    expect(result.answer).not.toContain("Logistics");
     expect(result.answer).not.toContain("Jordan Ellis");
     expect(result.answer).not.toContain("jordan@example.com");
-    expect(result.answer).not.toMatch(/client name/i);
-    expect(result.answer).not.toMatch(/contact info/i);
     expect(mockOpenAiCreate).not.toHaveBeenCalled();
   });
 

@@ -129,6 +129,47 @@ const CASES: EvalCase[] = [
     reject: /\bnet\s*\d+\b|\b\d{1,3}\s*%\s*(deposit|upfront|on signing)\b|payable within/i,
     regression: "payment terms are an unfilled TODO(aceva), so any stated schedule is fabricated",
   },
+  // ---- response style (rules 10-15), measured the same way ----
+  {
+    rule: "Style 12 — a documented limit is stated as the answer, not behind a hedge",
+    question: "Can you guarantee launch in 4 weeks?",
+    expect: /guarantee|depends on scope|senior review|working demo every week/i,
+    // The policy IS documented (process.md, faq.md), so an uncertainty line
+    // standing in front of it is the failure, exactly as for G2.
+    reject: (answer) => hedgePrecedesAnswer(answer, /guarantee|depends on scope|senior review/i),
+    regression:
+      'opened with "I don\'t have confirmed information about that yet" and then explained that ACEVA does not guarantee dates',
+  },
+  {
+    rule: "Scope — a question about ACEVA's own leadership reaches the knowledge base",
+    question: "Who is the CEO of ACEVA?",
+    expect: /not (yet )?(published|named|listed|public)|no (founder|ceo|leadership)|leadership|profiles|\/contact/i,
+    // Naming anyone is a fabrication: company.md records that nobody is named
+    // on the website and that Pulse must not guess.
+    reject: /\b(ceo|founder|director)\b[^.]{0,30}\bis\s+[A-Z][a-z]+\s+[A-Z][a-z]+/,
+    regression: 'answered with the out-of-scope rejection because "CEO of" matched the trivia pattern for "<title> of <place>"',
+  },
+  {
+    rule: "Style 10/11 — a capabilities answer leads with the list and does not borrow industry detail",
+    question: "What services do you offer?",
+    expect: /Digital Experiences[\s\S]*Custom Software[\s\S]*Mobile Products[\s\S]*Intelligence & Automation[\s\S]*Product Rescue/i,
+    // The failure seen in the baseline: "Custom Software: tailored solutions
+    // for legal, professional services, salons, spas and restaurants" —
+    // industry-section detail presented as the capability's description.
+    reject: /^(great|thanks|that's|it sounds|certainly|absolutely)|custom software[^.\n]{0,80}(salon|spa|legal|restaurant)/i,
+    regression: "described Custom Software with industry-catalogue examples and opened with filler",
+  },
+  {
+    rule: "RT-A8 — a technology missing from the documented stack is answered with the stack",
+    question: "Do you use Redis and AWS Lambda in your builds?",
+    expect: /postgres|prisma|vercel|railway|next\.?js/i,
+    // The documented stack is the answer; an uncertainty line in front of it
+    // is the hedge-first failure the red team recorded.
+    reject: (answer) =>
+      hedgePrecedesAnswer(answer, /postgres|prisma|vercel|railway|next\.?js/i) ||
+      /\b(yes|we do)\b[^.]{0,40}(redis|lambda)/i.test(answer),
+    regression: 'opened with "I don\'t have confirmed information about that yet" before naming the documented stack',
+  },
 ];
 
 /**

@@ -30,6 +30,9 @@ export const API_ERROR_CODES = [
   "SERVICE_UNAVAILABLE",
   "UPSTREAM_ERROR",
   "INTERNAL_ERROR",
+  // A feature switched off on purpose (lib/pulse/features.ts). Not retryable:
+  // the same request will keep failing until a code change turns it back on.
+  "FEATURE_DISABLED",
 ] as const;
 
 export type ApiErrorCode = (typeof API_ERROR_CODES)[number];
@@ -107,6 +110,9 @@ export const API_ERROR_MESSAGES: Record<ApiErrorCode, string> = {
   // Shown when an unexpected error occurs on our side.
   INTERNAL_ERROR:
     "Something went wrong on our end. Please try again, or email us at contact@acevatech.com.",
+  // Shown when a feature has been switched off, e.g. emailing a Pulse blueprint.
+  FEATURE_DISABLED:
+    "This option is switched off for now. Download your blueprint instead, or quote your PULSE ID when you contact us at contact@acevatech.com.",
 };
 
 /**
@@ -145,6 +151,22 @@ export function isApiErrorBody(value: unknown): value is ApiErrorBody {
 /** `true` when the frontend should reset its Turnstile widget before retrying. */
 export function shouldResetTurnstile(value: unknown): boolean {
   return isApiErrorBody(value) && TURNSTILE_ERROR_CODES.has(value.code);
+}
+
+/**
+ * `true` when a failed Pulse save or email request may have spent its
+ * Turnstile token, so the widget must issue a fresh one before a retry.
+ *
+ * Cloudflare tokens are single-use, and the Pulse routes verify them before
+ * their later checks (disposable email, per-contact limit, the database). A
+ * failure after verification therefore leaves the browser holding a spent
+ * token, and the visitor's retry failed once more on Turnstile. Only a
+ * validation failure is reported before verification, so that is the one
+ * case where the token is kept. Pass `null` for a network error: the request
+ * may have reached the server, so the token is refreshed.
+ */
+export function shouldRefreshPulseTurnstile(value: unknown): boolean {
+  return !(isApiErrorBody(value) && value.code === "VALIDATION_FAILED");
 }
 
 /**

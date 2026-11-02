@@ -3,14 +3,15 @@
  *
  *   npm run import:directions
  *
- * Idempotent: saveDirection upserts on pulse_id, so re-running refreshes rows
- * rather than duplicating them. knowledge/savedDirections.json is read only and
+ * Idempotent and insert-only: createDirection skips a pulse_id that already
+ * exists, so re-running neither duplicates nor overwrites a stored lead
+ * (changed 30 October 2026; it used to upsert and refresh existing rows). knowledge/savedDirections.json is read only and
  * left on disk untouched — it is no longer tracked in git, so keep a local copy
  * until the import is confirmed.
  */
 import fs from "fs";
 import path from "path";
-import { ensureDirectionsTable, saveDirection, type SavedDirection } from "../lib/pulse/directionStore";
+import { createDirection, ensureDirectionsTable, type SavedDirection } from "../lib/pulse/directionStore";
 import { getDatabaseUrl } from "../lib/pulse/env";
 
 const SOURCE_FILE = path.join(process.cwd(), "knowledge", "savedDirections.json");
@@ -32,6 +33,7 @@ async function main(): Promise<void> {
   await ensureDirectionsTable();
 
   let imported = 0;
+  let skipped = 0;
   const failures: string[] = [];
 
   for (const record of records) {
@@ -41,17 +43,19 @@ async function main(): Promise<void> {
     }
 
     try {
-      await saveDirection({
+      const inserted = await createDirection({
         ...record,
+        pulseId: record.pulseId.trim().toUpperCase(),
         createdAt: record.createdAt || new Date().toISOString(),
       });
-      imported += 1;
+      if (inserted) imported += 1;
+      else skipped += 1;
     } catch (error: unknown) {
       failures.push(`${record.pulseId} — ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
-  console.log(`[import-directions] imported ${imported}/${records.length} directions.`);
+  console.log(`[import-directions] imported ${imported}/${records.length} directions; ${skipped} already present and left unchanged.`);
 
   if (failures.length > 0) {
     console.error(`[import-directions] ${failures.length} record(s) failed:`);
