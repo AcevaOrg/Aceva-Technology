@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { pageMetadata } from "@/lib/seo";
 import { ROUTES } from "@/lib/nav";
 import { CONTACT_EMAIL } from "@/lib/social";
@@ -149,16 +150,19 @@ export default function CareersPage() {
                 </p>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-start" }}>
-                <a
-                  href={`mailto:${CONTACT_EMAIL}`}
+                <Link
+                  href={ROUTES.contact}
                   className="ac-btn-primary"
                   style={{ padding: "15px 24px", borderRadius: 11, minHeight: 50 }}
                 >
                   Send your work
-                </a>
+                </Link>
                 <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, letterSpacing: ".1em", color: "#4b4f5b", margin: 0 }}>
                   APPLICATIONS ARE CURRENTLY RECEIVED THROUGH OUR GENERAL INBOX
                 </p>
+                <a href={`mailto:${CONTACT_EMAIL}`} style={{ fontSize: 14, color: "var(--ice)" }}>
+                  {CONTACT_EMAIL}
+                </a>
               </div>
             </Card>
           </Reveal>

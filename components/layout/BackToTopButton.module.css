@@ -37,7 +37,9 @@
 }
 @media (max-width: 999px) {
   .button {
-    display: none;
+    /* Sits below the Pulse button, centred on it (Pulse is 58px wide at right: 16px) */
+    right: 23px;
+    bottom: calc(88px + env(safe-area-inset-bottom, 0px));
   }
 }
 @media (prefers-reduced-motion: reduce) {

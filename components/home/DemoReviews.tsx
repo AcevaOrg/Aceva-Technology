@@ -27,7 +27,6 @@ export default function DemoReviews() {
           </div>
           <div className={ui.headAside} data-reveal="up" style={{ "--d": "90ms" } as CSSProperties}>
             <p className={styles.notice}>
-              <span className={styles.noticeTag}>Demo testimonials</span>
               Illustrating how client feedback will appear on this site.
             </p>
             <Link href={ROUTES.testimonials} className={ui.textLink}>

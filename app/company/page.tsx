@@ -111,7 +111,7 @@ export default function CompanyPage() {
             ))}
             <Reveal>
               <Card variant="ghost" style={{ padding: 24 }}>
-                <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10.5, letterSpacing: ".14em", color: "var(--muted)", margin: "0 0 12px" }}>
+                <p style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 10.5, letterSpacing: ".14em", color: "var(--electric)", margin: "0 0 12px" }}>
                   JUNIOR ENGINEERS
                 </p>
                 <h3 className="ac-heading-sm" style={{ fontFamily: "var(--font-space-grotesk)", fontSize: 18, fontWeight: 500, lineHeight: "normal", margin: 0 }}>Growing under named mentors</h3>

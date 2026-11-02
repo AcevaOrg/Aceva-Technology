@@ -270,7 +270,7 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
                     fontFamily: "var(--font-jetbrains-mono)",
                     fontSize: 11,
                     letterSpacing: ".18em",
-                    color: "var(--muted)",
+                    color: "var(--electric)",
                     margin: "0 0 14px",
                   }}
                 >
@@ -309,7 +309,7 @@ export default async function CapabilityPage({ params }: CapabilityPageProps) {
                         fontFamily: "var(--font-jetbrains-mono)",
                         fontSize: 11,
                         letterSpacing: ".18em",
-                        color: "var(--muted)",
+                        color: "var(--electric)",
                         margin: "0 0 16px",
                       }}
                     >

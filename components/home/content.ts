@@ -2,6 +2,7 @@ import { CAPS, type CapabilityKey } from "@/lib/data/caps";
 import { PATHS, PATH_KEYS } from "@/lib/data/paths";
 import type { Review } from "@/components/features/ReviewCard";
 import reviewsData from "@/data/reviews.json";
+import { FINDINGS, ROADMAP, VERDICTS } from "@/lib/data/experiments";
 
 /**
  * Homepage copy. Every line here is either existing Aceva copy (capabilities, paths,
@@ -70,20 +71,15 @@ export const RESCUE = {
   sales: rescue.sales,
   sprintTitle: rescue.engagement?.title ?? "Rescue Sprint",
   sprintSteps: rescue.engagement?.items ?? [],
-  /** Mirrors the fictional Kestrel Booking sample on /experiments. */
-  reportRows: [
-    { area: "Authentication", finding: "Session tokens never expire; password reset can be replayed.", verdict: "Replace", severity: "Critical" },
-    { area: "Deployment", finding: "Production is deployed from a laptop; no rollback path exists.", verdict: "Replace", severity: "Critical" },
-    { area: "AI-generated code", finding: "Payment logic was generated and never reviewed; no tests.", verdict: "Remediate", severity: "High" },
-    { area: "Performance", finding: "Booking list loads all records before rendering.", verdict: "Remediate", severity: "High" },
-    { area: "Data model", finding: "Schema is sound; naming is inconsistent and undocumented.", verdict: "Keep", severity: "Medium" },
-  ],
-  roadmap: [
-    { when: "First 30 days", body: "Stop the bleeding: auth replaced, deployment pipeline in place, error monitoring on, backups verified." },
-    { when: "Days 30–60", body: "Stabilize: payment path reviewed and tested, booking list paginated, documentation written for the kept schema." },
-    { when: "Days 60–90", body: "Modernize with intent: the roadmap for what to rebuild, in what order, and what it buys the business." },
-  ],
-} as const;
+  /** Derived from the same data as /experiments, so the two can never drift apart. */
+  reportRows: FINDINGS.filter((f) => f.featured).map((f) => ({
+    area: f.area,
+    finding: f.finding,
+    verdict: VERDICTS[f.verdict].label,
+    severity: f.severity.charAt(0) + f.severity.slice(1).toLowerCase(),
+  })),
+  roadmap: ROADMAP,
+};
 
 export const PRINCIPLE = "We will not compete by saying more. We will compete by proving more.";
 

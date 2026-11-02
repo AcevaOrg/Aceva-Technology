@@ -1,11 +1,20 @@
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { ROUTES } from "@/lib/nav";
+import { experimentHref, type ExperimentKey } from "@/lib/data/experiments";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import PulseTile from "./PulseTile";
 import { PROOF_ITEMS, type ProofKind } from "./content";
 import ui from "./home.module.css";
 import styles from "./proof.module.css";
+
+const KIND_TO_EXPERIMENT: Record<ProofKind, ExperimentKey> = {
+  site: "site",
+  dashboard: "dashboard",
+  mobile: "mobile",
+  automation: "automation",
+  report: "rescue",
+};
 
 const BARS = [38, 54, 46, 70, 62, 84, 58, 76];
 
@@ -97,7 +106,7 @@ export default function ProofSection() {
           {PROOF_ITEMS.map((item, n) => (
             <Link
               key={item.kind}
-              href={ROUTES.work}
+              href={experimentHref(KIND_TO_EXPERIMENT[item.kind])}
               className={`${styles.tile} ${styles[item.kind]}`}
               data-reveal="up"
               style={{ "--d": `${(n % 3) * 80}ms` } as CSSProperties}
