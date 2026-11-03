@@ -38,6 +38,7 @@ export default function FloatingPulseButton() {
         className={styles.button}
         onClick={openPulse}
         aria-label="Ask Aceva Pulse"
+        data-testid="pulse-launcher"
       >
         <span className={styles.iconWrap}>
           <svg

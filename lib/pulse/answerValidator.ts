@@ -101,6 +101,21 @@ export function detectActiveQuestionTarget(
 }
 
 /**
+ * A genuine reply to a discovery question, whatever field it answers: not
+ * junk, not a greeting, and not a question or FAQ of the visitor's own.
+ *
+ * Used where the field-specific checks below would otherwise loop. Once the
+ * one clarification has been spent, a reply like this is accepted as the
+ * answer, so a visitor is never asked the same question a third time.
+ */
+export function isSubstantiveAnswer(message: string): boolean {
+  const clean = message.trim();
+  if (!clean || clean.endsWith("?")) return false;
+  if (isGibberishInput(clean) || isIncoherentQuestion(clean) || isGreetingInput(clean)) return false;
+  return !isCasualOrFAQOrGeneralQuery(clean);
+}
+
+/**
  * Validates a user's answer against the target discovery question field.
  * Returns isValid: true ONLY when the message contains meaningful intent AND provides a relevant answer to the current question.
  */

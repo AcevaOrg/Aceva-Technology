@@ -56,7 +56,7 @@ vi.mock("@/lib/pulse/vectorStore", async (importOriginal) => ({
   findSimilarChunks,
 }));
 
-import { generatePulseCompletion } from "@/lib/pulse/llm";
+import { currentDateLine, generatePulseCompletion } from "@/lib/pulse/llm";
 import { clearEnvCache } from "@/lib/pulse/env";
 import { loadVectorIndex } from "@/lib/pulse/vectorStore";
 // Pure helpers, imported from the eval directory rather than its suite file:
@@ -131,6 +131,21 @@ describe("the grounding rules are constructed into every request", () => {
     }
   });
 
+  it("tells the model today's date, so ACEVA's age is computed rather than guessed", async () => {
+    // "how old is aceva" drew "just over a year old" on 3 November 2026 for a
+    // company founded in August 2026.
+    expect(currentDateLine(new Date(Date.UTC(2026, 10, 3, 12)))).toContain("Today's date is 3 November 2026.");
+    findSimilarChunks.mockReturnValue([
+      chunk("company-chunk-6", "When ACEVA was founded", "ACEVA was founded in August 2026."),
+    ]);
+    expect(await capturedSystemPrompt()).toContain(currentDateLine());
+  });
+
+  it("leaves the date out when the context has no founding date", async () => {
+    // Sent on every turn it changed discovery replies (two questions in one).
+    expect(await capturedSystemPrompt()).not.toContain("Today's date is");
+  });
+
   it("keeps them when the final-step closing statement is requested", async () => {
     // Closing mode appends a second system message. It must not displace the
     // grounding rules — a reply that ends discovery is still a factual claim.
@@ -148,6 +163,30 @@ describe("the grounding rules are constructed into every request", () => {
     expect(prompt).toContain("GROUNDING RULES");
     const messages = mockOpenAiCreate.mock.calls[0][0].messages as { role: string; content: string }[];
     expect(messages[1].content).toContain("ACTIVE DISCOVERY QUESTION");
+  });
+
+  it("asks the next question, not a narrower version of the one just answered", async () => {
+    await capturedSystemPrompt({
+      activeQuestion: "Where do things feel slow or manual today?",
+      nextQuestion: "What does your operation look like today?",
+    });
+    const messages = mockOpenAiCreate.mock.calls[0][0].messages as { role: string; content: string }[];
+    expect(messages[1].content).toContain("DISCOVERY STEP COMPLETE");
+    expect(messages[1].content).toContain("What does your operation look like today?");
+    expect(messages[1].content).toMatch(/Do NOT ask anything more about the question they just answered/);
+    expect(messages[1].content).not.toContain("narrower");
+  });
+
+  it("marks the one permitted re-ask", async () => {
+    await capturedSystemPrompt({ activeQuestion: "What is your target launch timeline and budget window?", reask: true });
+    const messages = mockOpenAiCreate.mock.calls[0][0].messages as { role: string; content: string }[];
+    expect(messages[1].content).toMatch(/only time it may be asked again/);
+  });
+
+  it("forbids asking for anything already answered", async () => {
+    await capturedSystemPrompt({ activeQuestion: "Tell us about your business or project.", nextQuestion: "Where do things feel slow or manual today?" });
+    const messages = mockOpenAiCreate.mock.calls[0][0].messages as { role: string; content: string }[];
+    expect(messages[1].content).toMatch(/NEVER ask for something the visitor has already told you/);
   });
 });
 

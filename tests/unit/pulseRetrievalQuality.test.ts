@@ -101,7 +101,12 @@ const CASES: RetrievalCase[] = [
   // ---- support ----
   { category: "support", question: "What happens after launch if we find a bug?", expectedSource: "process-deliverables-and-guarantees" },
   { category: "support", question: "Do you offer ongoing maintenance and monitoring?", expectedSource: "process-deliverables-and-guarantees" },
-  { category: "support", question: "Do we get administrative access to our own hosting and repositories?", expectedSource: "faq" },
+  // Was faq.md until 31 October 2026. secure-development.md now has a section
+  // titled "Repositories and source code" that answers this with the same
+  // published facts (repository access from day one, company-controlled and
+  // handed over) and more specifically, so it ranks first; faq.md still reaches
+  // the model fourth, through diversifySources.
+  { category: "support", question: "Do we get administrative access to our own hosting and repositories?", expectedSource: "secure-development" },
 
   // ---- industries ----
   { category: "industries", question: "Do you build software for dairy farms?", expectedSource: "how-aceva-helps", verbatimTerm: "Dairy Farms" },

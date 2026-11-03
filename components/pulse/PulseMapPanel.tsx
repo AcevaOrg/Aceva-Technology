@@ -90,7 +90,8 @@ export function getSequentialNodeValue(nodeIndex: number, state: PulseState): st
   // Determine maximum unlocked sequential stages based on actual valid answers provided
   const maxAllowedStageCount = isDirectionActive
     ? 6
-    : Math.min(6, (hasIntent ? 1 : 0) + validDiscoveryAnswers.length);
+    // Skipped steps unlock their node too: their field was filled from an earlier answer.
+    : Math.min(6, (hasIntent ? 1 : 0) + Math.max(validDiscoveryAnswers.length, state.stage === "discovery" ? state.step : 0));
 
   // If nodeIndex is beyond current sequential unlocking, strictly return null (AWAITING CONTEXT)
   if (nodeIndex >= maxAllowedStageCount) {

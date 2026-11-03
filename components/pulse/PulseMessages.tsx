@@ -9,7 +9,11 @@ import { downloadPulseBlueprintDocx } from "@/lib/pulse/docxGenerator";
 import { getRecommendedModules, formatEnrichedProjectContext } from "@/lib/pulse/modules";
 import { cleanUserMappedValue, distillTimelineText, distillBudgetText } from "@/lib/pulse/format";
 import { DISCOVERY_STEPS } from "@/lib/pulse/discoverySteps";
-import { describeApiError } from "@/lib/api/errorCodes";
+import { describeApiError, resolveApiFieldErrors, shouldRefreshPulseTurnstile } from "@/lib/api/errorCodes";
+import { clauseForDiscoveryStep, coveredDiscoverySteps } from "@/lib/pulse/discoveryCoverage";
+import { PULSE_FEATURES } from "@/lib/pulse/features";
+import { fitSubmissionToLimits } from "@/lib/pulse/leadValidation";
+import PulseTurnstile, { PULSE_TURNSTILE_SITE_KEY } from "./PulseTurnstile";
 
 interface PulseMessagesProps {
   state: PulseState;
@@ -131,6 +135,12 @@ export const EXPLORE_OPTIONS: readonly { label: string; hint: string; intent: Pu
 // Defined in lib/pulse/discoverySteps so the chat route can pin the same
 // question the heading is showing.
 const WIZARD_STEPS = DISCOVERY_STEPS;
+
+/** Shown in place of step 1's heading after the visitor's own question is answered. */
+export const QUESTION_FIRST_HEADING = {
+  title: "Ask anything about ACEVA.",
+  helper: "When you're ready, tell us about your business or project: what you do or want to build, and who it's for.",
+} as const;
 
 export const INDUSTRY_RULES = [
   { test: /\b(restaurants?|cafe|cafes|food|dining|kitchen|bakery|catering|takeaway|fast food)\b/i, industry: "Hospitality & Restaurant", business: "Restaurant operation", friction: ["Manual order taking", "Lack of direct online ordering"], goals: ["Direct online ordering", "Faster kitchen throughput"] },
@@ -273,6 +283,28 @@ export function inferContextFromText(
 }
 
 /**
+ * `inferContextFromText` for the step on screen, plus every later step the
+ * same answer already covers. Those steps are skipped, so this is the only
+ * chance to record what the visitor said about them; each one is filled from
+ * the sentences that answer it, never from the whole message.
+ */
+export function inferContextForAnswer(
+  text: string,
+  stepIndex: number,
+  existing?: PulseContextData
+): Record<string, unknown> {
+  const update = inferContextFromText(text, stepIndex, existing);
+  for (const step of coveredDiscoverySteps(text)) {
+    if (step <= stepIndex) continue;
+    Object.assign(
+      update,
+      inferContextFromText(clauseForDiscoveryStep(text, step), step, { ...existing, ...update })
+    );
+  }
+  return update;
+}
+
+/**
  * Stop while a turn is in flight, Retry once one has failed.
  *
  * Stop stays available for the whole turn, not just once tokens start, because
@@ -313,6 +345,10 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
   const [contactInfo, setContactInfo] = useState("");
   const [contactMethod, setContactMethod] = useState<"Email" | "Phone" | "Text">("Email");
   const [submittingLead, setSubmittingLead] = useState(false);
+  const [leadTurnstileToken, setLeadTurnstileToken] = useState("");
+  const [leadTurnstileKey, setLeadTurnstileKey] = useState(0);
+  const [emailTurnstileToken, setEmailTurnstileToken] = useState("");
+  const [emailTurnstileKey, setEmailTurnstileKey] = useState(0);
   const [submitError, setSubmitError] = useState("");
   const [copiedId, setCopiedId] = useState(false);
   const [copyError, setCopyError] = useState("");
@@ -397,8 +433,8 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
             buttonText="MAP THIS ↗"
             onSubmit={(text) => {
               dispatch({ type: "INTENT", value: inferIntentFromText(text) });
-              const inferred = inferContextFromText(text, 0, state.context);
-              sendChatMessage(text, inferred);
+              const inferred = inferContextForAnswer(text, 0, state.context);
+              sendChatMessage(text, inferred, { step: 0 });
             }}
           />
 
@@ -461,8 +497,8 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
           buttonText="MAP THIS VISION ↗"
           onSubmit={(text) => {
             dispatch({ type: "INTENT", value: inferIntentFromText(text) });
-            const inferred = inferContextFromText(text, 0, state.context);
-            sendChatMessage(text, inferred);
+            const inferred = inferContextForAnswer(text, 0, state.context);
+            sendChatMessage(text, inferred, { step: 0 });
           }}
         />
 
@@ -494,7 +530,7 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
                   type="text"
                   value={lookupPulseId}
                   onChange={(e) => setLookupPulseId(e.target.value)}
-                  placeholder="Enter reference ID (e.g. PLS-260829-123)"
+                  placeholder="Enter reference ID (e.g. PLS-261102-7KQ2-M9XD)"
                   aria-label="Enter reference PULSE ID"
                 />
                 <button type="submit" disabled={!lookupPulseId.trim()}>
@@ -516,7 +552,13 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
           <p className={styles.stepLabel}>06 / SYNTHESIS</p>
 
           {state.messages.length > 0 && (
-            <div ref={chatListRef} className={styles.chatList}>
+            <div ref={chatListRef}
+              className={styles.chatList}
+              role="log"
+              aria-label="Conversation with Pulse"
+              aria-live="polite"
+              aria-busy={Boolean(state.loading)}
+            >
               {state.messages.map((m) => (
                 <div
                   key={m.id}
@@ -529,7 +571,7 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
               ))}
               {state.loading && !state.streaming && (
                 <div className={`${styles.chatBubble} ${styles.pulseBubble}`}>
-                  <div className={styles.loadingDots}>
+                  <div className={styles.loadingDots} role="status" aria-label="Pulse is replying">
                     <span />
                     <span />
                     <span />
@@ -562,12 +604,30 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
         <p className={styles.stepLabel}>
           {stepNumber(state.step + 2)} / {currentStep.label}
         </p>
-        <h2>{currentStep.title}</h2>
-        <p className={styles.promptHelper}>{currentStep.helper}</p>
+        {/* A visitor who opened with a question of their own ("Who is CEO?")
+            has been answered, not asked about a project yet, so the first
+            step's heading would read as a stale welcome until they give one. */}
+        {state.step === 0 && state.answers.length === 0 && state.askedQuestionFirst ? (
+          <>
+            <h2>{QUESTION_FIRST_HEADING.title}</h2>
+            <p className={styles.promptHelper}>{QUESTION_FIRST_HEADING.helper}</p>
+          </>
+        ) : (
+          <>
+            <h2>{currentStep.title}</h2>
+            <p className={styles.promptHelper}>{currentStep.helper}</p>
+          </>
+        )}
 
         {/* Previous user and Pulse messages display */}
         {state.messages.length > 0 && (
-          <div ref={chatListRef} className={styles.chatList}>
+          <div ref={chatListRef}
+              className={styles.chatList}
+              role="log"
+              aria-label="Conversation with Pulse"
+              aria-live="polite"
+              aria-busy={Boolean(state.loading)}
+            >
             {state.messages.map((m) => (
               <div
                 key={m.id}
@@ -580,7 +640,7 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
             ))}
             {state.loading && !state.streaming && (
               <div className={`${styles.chatBubble} ${styles.pulseBubble}`}>
-                <div className={styles.loadingDots}>
+                <div className={styles.loadingDots} role="status" aria-label="Pulse is replying">
                   <span />
                   <span />
                   <span />
@@ -604,7 +664,7 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
           placeholder={currentStep.placeholder}
           buttonText={state.loading ? "PROCESSING..." : "MAP THIS ↗"}
           onSubmit={(text) => {
-            const inferred = inferContextFromText(text, state.step, state.context);
+            const inferred = inferContextForAnswer(text, state.step, state.context);
             sendChatMessage(text, inferred);
           }}
         />
@@ -690,44 +750,60 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
     const handleLeadSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
       if (contactName.trim() && contactInfo.trim() && !submittingLead) {
+        if (PULSE_TURNSTILE_SITE_KEY && !leadTurnstileToken) {
+          setSubmitError("Please complete the verification check above.");
+          return;
+        }
         setSubmittingLead(true);
         setSubmitError("");
 
-        const dateObj = new Date();
-        const dateStr = `${String(dateObj.getFullYear()).slice(-2)}${String(dateObj.getMonth() + 1).padStart(2, "0")}${String(dateObj.getDate()).padStart(2, "0")}`;
-        const generatedId = `PLS-${dateStr}-${Math.floor(100 + Math.random() * 900)}`;
-
+        // The reference is generated on the server; the browser no longer
+        // invents one, and the server recomputes the recommended modules.
+        const bounded = fitSubmissionToLimits(state.context, state.answers);
         try {
           const res = await fetch("/api/pulse/save-direction", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              pulseId: generatedId,
               lead: {
                 name: contactName.trim(),
                 contact: contactInfo.trim(),
                 method: contactMethod,
               },
-              context: state.context,
-              answers: state.answers,
-              recommendedModules: getRecommendedModules(state.context.industry, state.context, state.answers),
+              context: bounded.context,
+              answers: bounded.answers,
+              turnstileToken: leadTurnstileToken,
             }),
           });
 
-          const data = await res.json();
-          if (res.ok && data.ok) {
+          const data = await res.json().catch(() => null);
+          if (res.ok && data?.ok && typeof data.pulseId === "string") {
             dispatch({
               type: "CONFIRM",
               lead: { name: contactName.trim(), contact: contactInfo.trim(), method: contactMethod },
-              id: data.pulseId || generatedId,
+              id: data.pulseId,
             });
           } else {
+            // Name the field to fix. The server flags which ones failed, but the
+            // form used to show only the generic "check your details" line, so
+            // a visitor with a valid-looking phone number had no idea why.
+            const fields = resolveApiFieldErrors(data);
             setSubmitError(
-              describeApiError(data, "Failed to save project direction. Please try again.")
+              fields.contact
+                ? "Please enter a valid email address or phone number (digits, spaces, +, - and brackets only)."
+                : fields.name
+                ? "Please enter your name (up to 120 characters)."
+                : describeApiError(data, "Failed to save project direction. Please try again.")
             );
+            if (shouldRefreshPulseTurnstile(data)) {
+              setLeadTurnstileToken("");
+              setLeadTurnstileKey((k) => k + 1);
+            }
           }
         } catch {
           setSubmitError("Network error. Please check your connection and try again.");
+          setLeadTurnstileToken("");
+          setLeadTurnstileKey((k) => k + 1);
         } finally {
           setSubmittingLead(false);
         }
@@ -785,6 +861,8 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
             </select>
           </label>
 
+          <PulseTurnstile key={leadTurnstileKey} action="pulse_save" onToken={setLeadTurnstileToken} />
+
           {submitError && (
             <p style={{ color: "var(--error, #e0503b)", fontSize: "0.85rem", margin: "0.8rem 0" }}>
               {submitError}
@@ -828,14 +906,19 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
     };
 
     /**
-     * Mails the blueprint to the address the direction was saved under.
+     * Asks for a confirmation link for the blueprint (switched off for now).
      *
-     * The contact is sent back as proof of ownership: the server will only mail
-     * an address that already matches the stored one, so a guessed PULSE ID
-     * cannot be used to mail a stranger.
+     * The server emails a single-use link to the address the direction was
+     * saved under, never to an address from this request, and sends the
+     * blueprint only after that link is opened. Its reply is the same whether
+     * or not the details matched.
      */
     const handleEmailBlueprint = async () => {
       if (emailState === "sending") return;
+      if (PULSE_TURNSTILE_SITE_KEY && !emailTurnstileToken) {
+        setEmailError("Please complete the verification check first.");
+        return;
+      }
       setEmailState("sending");
       setEmailError("");
 
@@ -843,7 +926,7 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
         const res = await fetch("/api/pulse/email-blueprint", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ pulseId, contact: state.lead?.contact ?? "" }),
+          body: JSON.stringify({ pulseId, contact: state.lead?.contact ?? "", turnstileToken: emailTurnstileToken }),
         });
         const data = await res.json().catch(() => null);
 
@@ -854,9 +937,15 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
 
         setEmailState("idle");
         setEmailError(describeApiError(data, "We couldn't send that email. Please try again."));
+        if (shouldRefreshPulseTurnstile(data)) {
+          setEmailTurnstileToken("");
+          setEmailTurnstileKey((k) => k + 1);
+        }
       } catch {
         setEmailState("idle");
         setEmailError("Network error. Please check your connection and try again.");
+        setEmailTurnstileToken("");
+        setEmailTurnstileKey((k) => k + 1);
       }
     };
 
@@ -864,8 +953,11 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
       downloadPulseBlueprintDocx(state, pulseId);
     };
 
-    // A direction saved against a phone number has nowhere to send.
-    const canEmailBlueprint = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.lead?.contact?.trim() ?? "");
+    // A direction saved against a phone number has nowhere to send. The button
+    // is also hidden while blueprint email is switched off; the API refuses it
+    // regardless, so hiding it is only to avoid offering a dead control.
+    const canEmailBlueprint =
+      PULSE_FEATURES.blueprintEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.lead?.contact?.trim() ?? "");
 
     const handleOk = () => {
       dispatch({ type: "RESTART" });
@@ -914,6 +1006,9 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
               RETURN TO CHAT <b>↗</b>
             </button>
           </div>
+          {canEmailBlueprint && emailState === "idle" && (
+            <PulseTurnstile key={emailTurnstileKey} action="pulse_email" onToken={setEmailTurnstileToken} />
+          )}
         </div>
 
         {copyError && (
@@ -928,7 +1023,7 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
         )}
         {emailState === "sent" && (
           <p className={styles.actionNote} role="status">
-            Blueprint sent. Check your inbox — it may take a minute to arrive.
+            If those details match, we&apos;ve sent a confirmation link to that address. Open it to receive your blueprint.
           </p>
         )}
 

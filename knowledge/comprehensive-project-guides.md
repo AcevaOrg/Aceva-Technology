@@ -1,12 +1,14 @@
 ---
 title: Comprehensive Industry Project & Solution Guide
 category: solutions
-source: knowledge/comprehensive-project-guides.md
+source: Internal solution guide (illustrative capability descriptions, not a record of delivered work); reviewed 29 October 2026
+url: "/services"
+company: "ACEVA Technology"
 ---
 
 # Comprehensive Industry Project & Solution Guide
 
-ACEVA Technology designs, engineers, and deploys custom software solutions tailored to specific industry workflows. Below is the comprehensive guide for major project types, detailing what ACEVA builds, key features, technical architecture, and business outcomes.
+ACEVA Technology designs, engineers, and deploys custom software tailored to specific industry workflows. Below is an illustrative guide to the main solution types: what ACEVA can build and the features such systems usually include. These are capability descriptions, not a record of completed client work — ACEVA's documented client work is only what `client-projects.md` names. Technology choices follow the default stack in the technology guide and are decided per engagement.
 
 ---
 
@@ -22,10 +24,6 @@ Custom digital ordering portals, mobile customer apps, table booking engines, ki
 - **POS & Payment Gateway Integration**: Accepts credit cards, mobile wallets, Apple Pay, Google Pay, and cash on delivery with automated sales reporting.
 - **Customer Loyalty Program**: Points, discounts, digital coupons, and repeat customer retention analytics.
 
-### Technical & Business Benefits
-- **Technical**: Built with Next.js, real-time WebSocket/SSE order updates, PostgreSQL database, and Stripe payment gateway.
-- **Business**: Eliminates 15-30% third-party food app commission fees, increases direct customer retention, and reduces order entry errors.
-
 ---
 
 ## 2. E-Commerce Platforms & Retail Management
@@ -39,10 +37,6 @@ Custom e-commerce platforms, multi-vendor marketplaces, inventory control system
 - **Inventory & Order Management**: Real-time stock level synchronization across online stores and physical retail locations.
 - **Shipment & Delivery Tracking**: Automated tracking links sent to customers via email/SMS with courier integration.
 - **Admin Analytics Dashboard**: Sales performance, top-selling items, customer lifetime value, and revenue reports.
-
-### Technical & Business Benefits
-- **Technical**: Headless architecture using Next.js, Tailwind CSS, PostgreSQL, Redis caching, and Stripe/PayPal integrations.
-- **Business**: Ultra-fast page load speeds increase conversion rates, while automated inventory prevents overselling.
 
 ---
 
@@ -58,10 +52,6 @@ Patient portals, doctor appointment scheduling platforms, telehealth video consu
 - **Automated Appointment Reminders**: Reduces no-shows via automated SMS and email reminders.
 - **Billing & Insurance Tracking**: Patient invoice generation, payment processing, and claim record tracking.
 
-### Technical & Business Benefits
-- **Technical**: Encrypted data transmission (TLS 1.3), secure authentication, WebRTC video streaming, and encrypted database backups.
-- **Business**: Streamlines clinic scheduling, improves patient satisfaction, and reduces staff administrative workload.
-
 ---
 
 ## 4. Real Estate, Construction & Property Management
@@ -74,10 +64,6 @@ Property listing portals, virtual tour showcases, tenant portals, construction j
 - **Tenant & Rent Portal**: Online rent payments, digital lease agreement sign-offs, and maintenance request tickets.
 - **Job & Site Inspection Tracking**: Construction milestone tracking, worker daily logs, material inventory, and photo reports.
 - **Document Repository**: Secure file storage for blueprints, permits, contracts, and inspection certificates.
-
-### Technical & Business Benefits
-- **Technical**: Cloud blob storage for high-res property photos/videos, dynamic map rendering, and role-based admin permissions.
-- **Business**: Accelerates property lease-up rates, automates rent collection, and improves project timeline visibility.
 
 ---
 
@@ -92,10 +78,6 @@ Fleet management dashboards, dispatch control towers, driver mobile apps, wareho
 - **Client Tracking Portal**: Public or authenticated shipment tracking link showing live delivery milestones.
 - **Warehouse Inventory Management**: Stock receiving, bin placement, picking lists, and barcode scanning integration.
 
-### Technical & Business Benefits
-- **Technical**: Real-time event streaming, mobile PWA capabilities, offline data sync, and role-based security access.
-- **Business**: Optimizes delivery routes, reduces vehicle idle times, and provides clients with total supply chain transparency.
-
 ---
 
 ## 6. Education, Schools & E-Learning Platforms
@@ -109,6 +91,10 @@ Learning management systems (LMS), online course portals, school administrative 
 - **Fee Payment & Billing**: Online tuition fee payments with automated receipts and invoice tracking.
 - **Certificate Generation**: Automated digital certificate issuance upon course completion.
 
-### Technical & Business Benefits
-- **Technical**: Optimized video streaming integration, responsive mobile design, and automated quiz scoring logic.
-- **Business**: Expands educational reach beyond local classrooms and automates administrative record-keeping.
+---
+
+## Review notes
+
+- Updated 29 October 2026: every "Technical & Business Benefits" subsection was removed. They named technologies the website does not list (Stripe, PayPal, Redis, WebRTC, TLS 1.3, PWA) and quoted business outcomes with no source ("eliminates 15-30% third-party commission fees", "ultra-fast page load speeds increase conversion rates"). Outcomes and metrics may only be published when supported by a client's own verified reporting.
+- This file overlaps `how-aceva-helps.md`, which lists the same industries in less detail. Keep the two consistent; if an industry page is added to the website, point `url` at it.
+- Re-run `npm run ingest` after editing this file.

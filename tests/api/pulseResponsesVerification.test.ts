@@ -69,7 +69,9 @@ describe("Pulse Response Quality, Tone, & Accuracy Verification Suite", () => {
       expect(response.status).toBe(200);
       const data = await response.json();
       expect(data.isValid).toBe(false);
-      expect(data.answer).toMatch(/interesting|specifically designed|software project/i);
+      // Reworded in the response-quality pass: says what Pulse can help with.
+      expect(data.answer).toMatch(/anything about ACEVA|your own project|build, improve or automate/i);
+      expect(data.answer).not.toMatch(/interesting question/i);
     }
   });
 
@@ -90,7 +92,9 @@ describe("Pulse Response Quality, Tone, & Accuracy Verification Suite", () => {
       const data = await response.json();
       expect(data.isValid).toBe(false);
       expect(data.answer).toContain("I didn't quite catch that.");
-      expect(data.answer).toContain("project description or specific question");
+      // Reworded in the response-quality pass: an invitation, not form validation.
+      expect(data.answer).toMatch(/ask me anything about ACEVA/i);
+      expect(data.answer).not.toMatch(/please enter/i);
     }
   });
 

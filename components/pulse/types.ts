@@ -54,6 +54,19 @@ export interface PulseState {
   answerMarks?: number[];
   /** Where the in-flight turn began. Promoted to `answerMarks` if it counts. */
   turnStart?: number;
+  /**
+   * Later discovery steps (1–4) the visitor's recorded answers already cover.
+   * Sent with every turn so the server never asks for them again.
+   */
+  coveredSteps?: number[];
+  /** Clarifications spent in this discovery; capped at MAX_DISCOVERY_REASKS. */
+  reasks?: number;
+  /**
+   * The visitor asked their own question ("Who is CEO?") before giving any
+   * project answer, so the first step's "tell us about your project" heading
+   * no longer fits what is on screen.
+   */
+  askedQuestionFirst?: boolean;
 }
 
 export type PulseAction =
@@ -61,7 +74,17 @@ export type PulseAction =
   | { type: "CLOSE" }
   | { type: "INTENT"; value: string }
   | { type: "ANSWER"; value: string; inferred?: Partial<PulseContextData> }
-  | { type: "RECORD_VALID_ANSWER"; value: string; inferred?: Partial<PulseContextData> }
+  | {
+      type: "RECORD_VALID_ANSWER";
+      value: string;
+      inferred?: Partial<PulseContextData>;
+      /** The step the server says to show next; it may skip steps already answered. */
+      nextStep?: number;
+      /** Later steps this answer covers. */
+      covered?: number[];
+    }
+  | { type: "RECORD_REASK" }
+  | { type: "RECORD_SIDE_QUESTION" }
   | { type: "SEND_MESSAGE"; text: string }
   | { type: "SET_LOADING"; loading: boolean }
   | { type: "ADD_PULSE_RESPONSE"; text: string }

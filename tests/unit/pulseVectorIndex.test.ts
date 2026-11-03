@@ -230,16 +230,20 @@ describe("Pulse vector index", () => {
       const index = loadVectorIndex();
       const projects = index.chunks.filter((chunk) => chunk.id.startsWith("client-projects"));
 
-      // The two project sections plus the overview. The "Internal: …", "Not yet
-      // documented" and "Review notes" sections are operator guidance and
-      // provenance, which SKIPPED_HEADINGS keeps out of the index — retrieval
-      // must never hand Pulse's own instructions back as an answer.
-      expect(projects).toHaveLength(3);
+      // The overview, the two fact sections approved on 2 November 2026 (who
+      // manages the sites; results), and the two project sections. The
+      // "Internal: …", "Not yet documented" and "Review notes" sections are
+      // operator guidance and provenance, which SKIPPED_HEADINGS keeps out of
+      // the index — retrieval must never hand Pulse's own instructions back as
+      // an answer.
       expect(projects.map((chunk) => chunk.metadata.heading)).toEqual([
         "ACEVA Client Work",
+        "Who manages and controls the two client websites and their domains (angelindianrestaurantnyc.com, chefamritpalsingh.com)",
+        "Results and performance figures",
         "Angel Indian Restaurant website",
         "Chef Amrit Pal Singh portfolio website",
       ]);
+      expect(projects.some((chunk) => /^(internal|not yet documented|review notes?)/i.test(chunk.metadata.heading ?? ""))).toBe(false);
 
       const text = projects.map((chunk) => chunk.content).join("\n");
       expect(text).toContain("angelindianrestaurantnyc.com");
@@ -269,8 +273,11 @@ describe("Pulse vector index", () => {
         expect(chunk.content, `${chunk.id} is missing the delivery date`).toContain("2 October 2026");
       }
 
-      // Hosting and ownership are still unknown. An answer there would cut
-      // against the client-ownership promise, so nothing may be indexed.
+      // Who manages the sites is documented (2 November 2026): ACEVA manages
+      // the server, domain and code on the client's behalf, with permission.
+      // The hosting provider is still unknown, so nothing about where the sites
+      // are hosted may be indexed.
+      expect(text).toMatch(/manages the server, the domain and the code/);
       expect(text).not.toMatch(/hosted|hosting/i);
 
       // The team said "ACEVA Technologies" while the live site, this repo and

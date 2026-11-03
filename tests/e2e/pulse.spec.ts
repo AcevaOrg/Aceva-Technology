@@ -14,7 +14,14 @@ import { test, expect, type Page, type Route } from "@playwright/test";
  * animation state.
  */
 
-const OPEN = { name: "Ask Aceva Pulse" };
+/**
+ * The floating launcher. The site also renders "Ask Aceva Pulse" buttons in
+ * the footer and the home page proof tile (covered by footer.spec.ts and
+ * home.spec.ts), so the accessible name alone is ambiguous in strict mode.
+ * The test id pins the floating one; its accessible name is still asserted.
+ */
+const LAUNCHER = "pulse-launcher";
+const OPEN_NAME = "Ask Aceva Pulse";
 const DIALOG = { name: "ACEVA Pulse Chatbot" };
 const CLOSE = { name: "Close Pulse modal" };
 
@@ -62,7 +69,9 @@ async function stillAnimations(page: Page) {
  */
 async function openWidget(page: Page) {
   await expect(async () => {
-    await page.getByRole("button", OPEN).click();
+    const launcher = page.getByTestId(LAUNCHER);
+    await expect(launcher).toHaveAccessibleName(OPEN_NAME);
+    await launcher.click();
     await expect(page.getByRole("dialog", DIALOG)).toBeVisible({ timeout: 2_000 });
   }).toPass({ timeout: 60_000 });
 }

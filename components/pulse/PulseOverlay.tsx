@@ -63,7 +63,9 @@ export default function PulseOverlay() {
 
   // Calculate score percentage (0-100%) matching valid answered responses:
   // 0 answers = 0%, 1 answer = 20%, 2 = 40%, 3 = 60%, 4 = 80%, 5 = 100%
-  const validAnswersCount = state.answers.length;
+  // Steps skipped because an earlier answer already covered them count as
+  // done, so progress follows the step rather than the number of answers.
+  const validAnswersCount = Math.max(state.answers.length, state.stage === "discovery" ? state.step : 0);
   const score =
     state.stage === "intent" || validAnswersCount === 0
       ? 0

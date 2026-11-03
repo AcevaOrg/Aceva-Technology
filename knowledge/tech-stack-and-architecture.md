@@ -1,101 +1,137 @@
 ---
 title: ACEVA Technology Stack and Architecture Guide
 category: technology
-source: knowledge/tech-stack-and-architecture.md
+source: Approved ACEVA website content (/technology); verified against acevatech.com on 29 October 2026
 url: "/technology"
 company: "ACEVA Technology"
 ---
 
 # ACEVA Technology Stack and Architecture Guide
 
-This is ACEVA's tech stack: the default technology choices behind the platforms
-ACEVA builds. ACEVA Technology selects production-proven, highly scalable technologies designed for security, high performance, maintainability, and client longevity. Every technical decision is explained below in both technical depth and simple business terms.
+This is ACEVA's default technology stack as published on acevatech.com/technology: what ACEVA builds with by default, and what it switches to when a project genuinely needs it. In short, ACEVA's default technologies are Next.js and React with TypeScript for websites and web apps, Expo and React Native for mobile apps, Node.js for APIs, PostgreSQL with Prisma for data, and Vercel with AWS or Railway for hosting. Technology is selected per project, and a client may specify its own stack (see "Choosing your own technology stack" below). Anything not listed in this guide is not an approved claim. ACEVA's management has confirmed that ACEVA can take over existing Laravel applications and works with .NET applications (see "Laravel and .NET applications" below). WordPress, Shopify, Wix, Squarespace, Webflow, Django, Rails, PHP and Java do not appear anywhere on the website, so whether ACEVA will build on or take over an existing site or store on one of those platforms is not documented and must be confirmed with the team at /contact. Likewise Redis, AWS Lambda, Docker, Kubernetes, Firebase and MongoDB are not named on the website; the documented data layer is PostgreSQL with Prisma, and hosting is Vercel for the frontend with AWS or Railway for backend and data.
 
 ---
 
 ## Frontend Technologies
 
 ### Next.js & React
-- **Technical Explanation**: Next.js is a full-stack React framework utilizing Server-Side Rendering (SSR), Static Site Generation (SSG), and incremental static regeneration. It provides automatic code splitting, optimized image assets, Turbopack bundling, and optimized routing.
-- **Non-Technical Explanation**: Next.js ensures your website or web application loads instantly, ranks high on Google search (SEO), and delivers a smooth, fast experience on both mobile phones and desktop computers.
+- **Technical Explanation**: Next.js is a full-stack React framework with server rendering, static generation, automatic code splitting and optimized routing. It is ACEVA's default for websites and web applications, and this website is built with it.
+- **Non-Technical Explanation**: Server rendering is chosen for speed and search visibility, and the typed codebase can be inherited by another team.
 
-### TypeScript
-- **Technical Explanation**: TypeScript is a strongly typed superset of JavaScript that enforces static type checking at compile time, eliminating runtime type errors, NullPointerExceptions, and payload mismatches.
-- **Non-Technical Explanation**: TypeScript acts like an automatic safety check while building your application. It catches bugs and mistakes before your software is launched, preventing crashes and security flaws.
+### TypeScript: the programming language ACEVA uses
+- **Technical Explanation**: A statically typed superset of JavaScript that catches type errors at compile time, used across ACEVA's frontend and backend code.
+- **Non-Technical Explanation**: An automatic safety check while building, so many mistakes are caught before launch.
+
+### UI Toolkit
+- Tailwind CSS, shadcn/ui, Framer Motion and Lucide are the default UI libraries. Motion is "measured in milliseconds rather than decoration".
 
 ### Responsive UI & Accessibility (WCAG AA)
-- **Technical Explanation**: Component architectures built with semantic HTML5, CSS Grid/Flexbox, ARIA accessibility landmarks, keyboard navigation hooks, and contrast-compliant styling targeting WCAG 2.1 AA benchmarks.
-- **Non-Technical Explanation**: Your website or application will look beautiful and function perfectly on iPhones, Android phones, tablets, laptops, and large monitors, while remaining easy to use for all visitors including people with disabilities.
+- **Technical Explanation**: Component architectures using semantic HTML, keyboard navigation and contrast-aware styling, with WCAG AA as the published accessibility target. A design system is produced per client.
+- **Non-Technical Explanation**: Work should look right and function on phones, tablets and desktops and stay usable for people with disabilities. WCAG AA is a target, not a certification.
 
 ---
 
 ## Backend & API Development
 
-### Node.js & Serverless API Routes
-- **Technical Explanation**: Event-driven, non-blocking I/O runtime powering RESTful JSON endpoints and serverless functions. Designed for asynchronous task processing and microservices architecture.
-- **Non-Technical Explanation**: The engine behind your application that handles user logins, data requests, forms, and business logic quickly and reliably without slowing down when many customers visit at once.
+### Node.js & Typed APIs
+- **Technical Explanation**: Node.js services exposing REST and typed APIs, so the contract between frontend and backend is checked rather than assumed.
+- **Non-Technical Explanation**: The engine behind logins, data requests, forms and business logic.
 
-### API Integrations & Webhooks
-- **Technical Explanation**: Secure integration with third-party web services using OAuth 2.0 authorization, RESTful JSON contracts, Webhooks, and automatic retry mechanisms.
-- **Non-Technical Explanation**: Allows your application to connect seamlessly with external services like Stripe (payments), Twilio (SMS notifications), Google Maps, or email platforms, so your business operations run automatically.
+### API Integrations
+- Connections to a client's existing systems are built over REST and typed APIs. Authentication and payments use managed providers rather than hand-rolled code.
 
 ---
 
 ## Databases & Data Management
 
 ### PostgreSQL & Prisma ORM
-- **Technical Explanation**: Production-grade relational database management system (RDBMS) enforcing ACID transactional guarantees, foreign key constraints, indexed query plans, and schema migrations managed via Prisma ORM.
-- **Non-Technical Explanation**: A highly secure, rock-solid vault for storing customer accounts, orders, products, and business records without data loss or corruption.
+- **Technical Explanation**: Relational data by default, because most business problems are relational. Prisma keeps the schema typed end to end, so the database and the application code cannot quietly drift apart.
+- **Non-Technical Explanation**: A reliable, well-understood store for accounts, orders, products and business records.
 
-### Vector Databases & Hybrid Search (RAG)
-- **Technical Explanation**: Specialized vector indexing storing 384-dimensional semantic embeddings combined with BM25 keyword matching for hybrid retrieval-augmented generation (RAG).
-- **Non-Technical Explanation**: An intelligent search database that allows AI tools (like PULSE) to search through business documents and instantly retrieve relevant answers to customer questions.
+### Retrieval over your documents (RAG)
+- For AI features, ACEVA builds retrieval over the client's own approved documents, so an assistant answers from that material rather than from general knowledge. Pulse, the assistant on this website, works this way.
 
-### Caching & In-Memory Storage (Redis)
-- **Technical Explanation**: High-speed in-memory key-value caching layer used for session management, rate limiting, and caching database queries.
-- **Non-Technical Explanation**: A high-speed memory buffer that makes frequently accessed information load in milliseconds.
+---
+
+## Mobile
+
+### Expo / React Native by default
+- iOS and Android apps from a single codebase using Expo and React Native. ACEVA moves to Flutter or fully native code only when a specific requirement — hardware access, performance, a platform-only API — actually needs it, and does not promise separate native builds when a cross-platform product is what the plan and budget support.
 
 ---
 
 ## Cloud Hosting & DevOps Infrastructure
 
-### Vercel & AWS Cloud Infrastructure
-- **Technical Explanation**: Multi-region edge network deployment via Vercel with AWS S3 blob storage, ECS container services, Lambda serverless functions, and CloudFront CDN distribution.
-- **Non-Technical Explanation**: Your application is hosted on global cloud servers with 99.9% uptime, automatic backups, and protection against high traffic spikes.
+### Where apps are hosted: Vercel & AWS / Railway
+- **Technical Explanation**: Vercel serves the frontend by default; backend and data services run on AWS or Railway, chosen per project rather than forced into one box.
+- **Non-Technical Explanation**: Hosting is set up under accounts the client controls and is handed over cleanly. No uptime figure is published.
 
 ### Continuous Integration & Deployment (CI/CD)
-- **Technical Explanation**: Automated GitHub Actions pipelines executing linting, TypeScript compilation, automated unit/integration tests, staging previews, and automated zero-downtime production rollouts.
-- **Non-Technical Explanation**: Every update or improvement to your software is automatically tested and deployed smoothly without taking your website offline.
+- **Technical Explanation**: CI on every change, a staging environment plus rollback, secrets management, monitoring and backups. Nobody deploys production from a laptop.
+- **Non-Technical Explanation**: Every change is checked and staged before it reaches the live product, and there is a way back if something goes wrong.
+
+---
+
+## Intelligence & Automation
+
+- LLM APIs, retrieval over the client's documents, workflow automation, and human approval with activity logging. Every automation is designed to stop at the decision: ACEVA does not call a chatbot an agent and does not ship full autonomy.
 
 ---
 
 ## Security, Authentication & Governance
 
 ### Managed Authentication & Session Security
-- **Technical Explanation**: Passwordless magic links, OAuth 2.0 social sign-in, JWT session tokens, bcrypt password hashing, HTTPS/TLS 1.3 encryption, and HTTP-only secure cookie storage.
-- **Non-Technical Explanation**: Bank-grade security keeping your user accounts and customer data safe from hackers and unauthorized access.
+- Authentication and payments use managed providers rather than hand-rolled code, and security basics are part of every launch checklist. No specific security certification, encryption standard or uptime guarantee is published, and Pulse must not claim one.
 
 ### Client Ownership & Code Quality Standards
-- **Technical Explanation**: 100% client ownership of Git source code repositories, deployment pipelines, cloud vendor accounts, and database schemas under clean licenses.
-- **Non-Technical Explanation**: You own 100% of your software code, database, and accounts. You are never locked into proprietary agency platforms.
+- **Technical Explanation**: The client owns the delivered code, accounts and data. Domain, repository, hosting and analytics are company-controlled during the engagement and handed over — never owned personally by a developer. Quality is scheduled work with named owners: acceptance criteria, automated tests and senior code review.
+- **Non-Technical Explanation**: You own your software, your database and your accounts. You are never locked into a proprietary ACEVA platform.
 
 ---
 
+## Other technologies, client choice and hosting
+
+The stack above is ACEVA's default, not a limit.
+
+### Laravel and .NET applications: support, takeover and maintenance
+
+ACEVA can take over, manage, update and fix existing Laravel applications. It
+works across different technologies, including .NET (dotnet) applications.
+
+### Choosing your own technology stack
+
+A client can specify a preferred stack or technology and does not have to use
+ACEVA's default stack. ACEVA also recommends what fits the project best.
+
+### Using your own cloud provider or hosting
+
+A client can use its own cloud provider or hosting platform; Vercel, AWS and
+Railway are ACEVA's defaults, not a requirement.
+
+### Integrating your preferred AI service or model
+
+ACEVA can integrate AI services and models, depending on the project and the
+client's choice, after the team has reviewed feasibility.
+
+### Browser and device support
+
+Delivered applications are cross-platform and work across multiple browsers
+and devices, based on the client's requirements.
+
 ## Not yet documented
 
-The stack above is the default. These questions come up and are not yet
-answered anywhere approved, so Pulse must say it is not certain and point to
-/contact rather than guess.
+These questions come up and are not yet answered anywhere approved, so Pulse
+must say it is not certain and point to /contact rather than guess.
 
-- TODO(aceva): Will ACEVA work in a stack it did not choose — an existing Laravel, Django, Rails or .NET codebase? Say yes or no, and name any limits.
-- TODO(aceva): Which mobile approach is the default — React Native, Flutter, or fully native Swift/Kotlin — and what decides it?
-- TODO(aceva): Can a client require hosting somewhere other than Vercel or AWS (their own cloud account, on-premise, a specific region for data residency)?
-- TODO(aceva): Which LLM providers are used for AI features, and can a client require a specific one or self-hosting?
-- TODO(aceva): Is there a documented minimum browser or device support baseline?
-- TODO(aceva): What is the documented position on accessibility beyond WCAG AA, if a client needs an audit or certification?
+- TODO(aceva): Can a client require on-premise hosting or a specific data-residency region, beyond choosing its own cloud provider?
+- TODO(aceva): Which LLM providers does ACEVA use by default, and does it support self-hosted models?
+- TODO(aceva): Is there a fixed minimum list of browser versions and devices, beyond each client's requirements?
+- TODO(aceva): What is the documented position on accessibility beyond the WCAG AA target, if a client needs an audit or certification?
+- TODO(aceva): Which CI service and Git host are standard? ("GitHub Actions" and a GitHub/GitLab handover were previously stated here without a source and have been removed.)
 
 ## Review note
 
+- Rewritten on 29 October 2026 against https://acevatech.com/technology (read that day; it matches `app/technology/page.tsx`). Removed as unsourced: Redis, AWS S3/ECS/Lambda/CloudFront, GitHub Actions, "99.9% uptime", "bank-grade security", magic links, bcrypt, JWT, TLS 1.3, Twilio, and a "384-dimensional" vector index description. Added from the website: Tailwind CSS, shadcn/ui, Framer Motion, Lucide, Prisma, Expo / React Native as the mobile default with Flutter or native when justified, Railway, and managed providers for authentication and payments. The mobile-default question that used to be a TODO here is now answered above.
 - The technologies listed above are approved defaults and may be described freely.
 - Anything under "Not yet documented" is unconfirmed. Do not state a position on it.
 - Do not publish, paraphrase, or hint at any TODO line to a visitor.

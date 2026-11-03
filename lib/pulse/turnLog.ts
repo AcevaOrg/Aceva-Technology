@@ -1,5 +1,6 @@
-import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
+import { after } from "next/server";
 import { getDatabaseUrl } from "./env";
+import { getSql, withTimeout } from "./db";
 
 /**
  * One analytics row per chat turn.
@@ -86,17 +87,7 @@ export function isTurnLogSuppressed(): boolean {
   return process.env.NODE_ENV !== "production";
 }
 
-let sqlClient: NeonQueryFunction<false, false> | null = null;
 let schemaReady: Promise<void> | null = null;
-
-function getSql(): NeonQueryFunction<false, false> {
-  const connectionString = getDatabaseUrl();
-  if (!connectionString) {
-    throw new Error("DATABASE_URL is not set — the Pulse turn log is unavailable.");
-  }
-  if (!sqlClient) sqlClient = neon(connectionString);
-  return sqlClient;
-}
 
 /**
  * Creates the table on first use. A rejection is left uncached so the next
@@ -105,7 +96,7 @@ function getSql(): NeonQueryFunction<false, false> {
 export async function ensureChatTurnsTable(): Promise<void> {
   if (!schemaReady) {
     const sql = getSql();
-    schemaReady = sql`
+    schemaReady = withTimeout(sql`
       CREATE TABLE IF NOT EXISTS chat_turns (
         id            BIGSERIAL PRIMARY KEY,
         session_id    TEXT NOT NULL,
@@ -121,7 +112,7 @@ export async function ensureChatTurnsTable(): Promise<void> {
         error_code    TEXT,
         created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
       )
-    `
+    `, "chat_turns DDL")
       .then(() => undefined)
       .catch((error: unknown) => {
         schemaReady = null;
@@ -133,30 +124,40 @@ export async function ensureChatTurnsTable(): Promise<void> {
 
 /**
  * Writes one turn. Throws on failure; `logChatTurn` is the call most code wants.
+ *
+ * Idempotent per request: the row is inserted only if no row for the same
+ * request id exists, so a retried write or a second call for one request
+ * cannot double-count it. (The route also logs each request at most once.)
+ * A unique index on request_id would make this airtight under concurrency;
+ * adding one is a reviewed migration step, not something done at runtime.
+ * Resolves true when a row was written, false when one already existed.
  */
-export async function recordChatTurn(turn: ChatTurnLog): Promise<void> {
+export async function recordChatTurn(turn: ChatTurnLog): Promise<boolean> {
   await ensureChatTurnsTable();
   const sql = getSql();
 
-  await sql`
+  const rows = (await withTimeout(sql`
     INSERT INTO chat_turns (
       session_id, request_id, question, intent, step,
       target_field, is_valid, is_fallback, streamed, latency_ms, error_code
     )
-    VALUES (
-      ${stripUnstorableCharacters(turn.sessionId)},
-      ${turn.requestId},
-      ${stripUnstorableCharacters(redactPii(turn.question)).slice(0, MAX_QUESTION_CHARS)},
-      ${turn.intent ?? null},
-      ${turn.step ?? null},
-      ${turn.targetField ?? null},
-      ${turn.isValid},
-      ${turn.isFallback},
-      ${turn.streamed},
-      ${Math.max(0, Math.round(turn.latencyMs))},
-      ${turn.errorCode ?? null}
-    )
-  `;
+    SELECT
+      ${stripUnstorableCharacters(turn.sessionId)}::text,
+      ${turn.requestId}::text,
+      ${stripUnstorableCharacters(redactPii(turn.question)).slice(0, MAX_QUESTION_CHARS)}::text,
+      ${turn.intent ?? null}::text,
+      ${turn.step ?? null}::integer,
+      ${turn.targetField ?? null}::text,
+      ${turn.isValid}::boolean,
+      ${turn.isFallback}::boolean,
+      ${turn.streamed}::boolean,
+      ${Math.max(0, Math.round(turn.latencyMs))}::integer,
+      ${turn.errorCode ?? null}::text
+    WHERE NOT EXISTS (SELECT 1 FROM chat_turns WHERE request_id = ${turn.requestId}::text)
+    RETURNING id
+  `, "chat_turns insert")) as unknown[];
+
+  return rows.length > 0;
 }
 
 /**
@@ -172,10 +173,37 @@ export function logChatTurn(turn: ChatTurnLog): void {
   // isTurnLogSuppressed for why DATABASE_URL is populated under vitest.
   if (isTurnLogSuppressed()) return;
 
-  void recordChatTurn(turn).catch((error: unknown) => {
-    console.error("[turnLog] failed to record chat turn", {
+  // One line per outcome, keyed by request id and never carrying the
+  // question, so logs can be reconciled against stored rows: every
+  // "recorded" line is one row, and "failed" lines are the turns lost.
+  const write = recordChatTurn(turn).then(
+    (inserted) => {
+      console.info(inserted ? "[turnLog] recorded" : "[turnLog] duplicate ignored", { requestId: turn.requestId });
+    },
+    (error: unknown) => {
+      console.error("[turnLog] failed to record chat turn", {
+        requestId: turn.requestId,
+        reason: error instanceof Error ? error.message : "unknown error",
+      });
+    }
+  );
+
+  // On a serverless host the function can be frozen the moment the response
+  // ends, and an un-awaited write is discarded with it. Production showed the
+  // symptom: seven completed turns in the logs, five rows in the table. `after`
+  // keeps the invocation alive until the write settles, without delaying the
+  // response. Outside a request scope — a script, a unit test — `after` throws
+  // synchronously; the promise above is already running, so that is harmless.
+  try {
+    after(write);
+  } catch (error: unknown) {
+    // No request scope to extend, or a host that offers no `waitUntil`. The
+    // write still proceeds, but nothing keeps the invocation alive for it, so
+    // say so: this branch is only reachable when writes are not suppressed,
+    // and in production it means turns can be lost again.
+    console.warn("[turnLog] after() unavailable; the write is not kept alive", {
       requestId: turn.requestId,
       reason: error instanceof Error ? error.message : "unknown error",
     });
-  });
+  }
 }

@@ -6,7 +6,7 @@ source: knowledge/how-aceva-helps.md
 
 # How ACEVA Can Help You
 
-ACEVA Technology is a custom software company that builds digital products and platforms for businesses across every industry. If you have a business problem, ACEVA can design, build, and launch the technology to solve it.
+ACEVA Technology is a custom software company that builds digital products and platforms for businesses. It starts from the business problem rather than claiming industry specialisms: the industry sections below describe what software can do in each sector, not completed ACEVA projects (those are listed in `client-projects.md`). If you have a business problem, ACEVA can design, build, and launch the technology to solve it.
 
 ## Building New Products and Platforms
 
@@ -24,13 +24,13 @@ Whether it is a slow website, an app that crashes, a system with security issues
 
 # Industries ACEVA Works With
 
-ACEVA is not limited to any single industry. ACEVA has the capabilities to build custom technology solutions for any business in any sector. Below are examples of industries ACEVA can serve and the types of solutions ACEVA can build for each.
+ACEVA starts from the business problem rather than the industry. Its main focus industries are healthcare, finance, real estate, food and restaurants, and e-commerce and retail, and it also builds software for education and other sectors (see `company.md`). The sections below are examples of the software businesses in each sector commonly need. They describe possibilities, not completed ACEVA projects; ACEVA's published client work is in `client-projects.md`.
 
 ---
 
 ## Restaurants and Food Service
 
-ACEVA can build custom technology for restaurants, cafes, bakeries, cloud kitchens, food trucks, catering companies, and any food service business.
+Food and restaurants is one of ACEVA's focus industries, and ACEVA's published client work is in this sector (see `client-projects.md`). ACEVA can build custom technology for restaurants, cafes, bakeries, cloud kitchens, food trucks, catering companies, and any food service business.
 
 Examples of what ACEVA can build for restaurants:
 - Custom restaurant website with menu display, location, hours, and branding
@@ -70,7 +70,7 @@ Examples of what ACEVA can build for hotels:
 
 ## Healthcare and Medical
 
-ACEVA can build custom technology for clinics, hospitals, dental practices, physiotherapy centers, laboratories, pharmacies, telehealth providers, and healthcare organizations.
+Healthcare is one of ACEVA's focus industries. No healthcare project or case study is published yet; the list below describes what ACEVA can build, not completed work. ACEVA can build custom technology for clinics, hospitals, dental practices, physiotherapy centers, laboratories, pharmacies, telehealth providers, and healthcare organizations.
 
 Examples of what ACEVA can build for healthcare:
 - Clinic or hospital website with doctor profiles, services, and appointment booking
@@ -90,7 +90,7 @@ Examples of what ACEVA can build for healthcare:
 
 ## Retail and E-Commerce
 
-ACEVA can build custom technology for retail shops, online stores, fashion brands, electronics sellers, grocery stores, wholesale distributors, and any product-based business.
+E-commerce and retail is one of ACEVA's focus industries. No e-commerce or retail project or case study is published yet; the list below describes what ACEVA can build, not completed work. ACEVA can build custom technology for retail shops, online stores, fashion brands, electronics sellers, grocery stores, wholesale distributors, and any product-based business.
 
 Examples of what ACEVA can build for retail:
 - Custom e-commerce website with product catalog, cart, and checkout
@@ -150,7 +150,7 @@ Examples of what ACEVA can build for logistics:
 
 ## Construction and Real Estate
 
-ACEVA can build custom technology for construction companies, contractors, real estate agencies, property developers, architecture firms, and facility managers.
+Real estate is one of ACEVA's focus industries. No real estate or construction project or case study is published yet; the list below describes what ACEVA can build, not completed work. ACEVA can build custom technology for construction companies, contractors, real estate agencies, property developers, architecture firms, and facility managers.
 
 Examples of what ACEVA can build for construction and real estate:
 - Company website with project portfolio and service listings
@@ -170,7 +170,7 @@ Examples of what ACEVA can build for construction and real estate:
 
 ## Education and E-Learning
 
-ACEVA can build custom technology for schools, colleges, universities, tutoring centers, online course platforms, training academies, and educational organizations.
+ACEVA also builds software for education. No education project or case study is published yet; the list below describes what ACEVA can build, not completed work. ACEVA can build custom technology for schools, colleges, universities, tutoring centers, online course platforms, training academies, and educational organizations.
 
 Examples of what ACEVA can build for education:
 - School or institution website with programs, faculty, and admissions info
@@ -249,7 +249,7 @@ Examples of what ACEVA can build for fitness:
 
 ## Finance and Fintech
 
-ACEVA can build custom technology for financial institutions, investment firms, insurance companies, microfinance organizations, payment processors, and fintech startups.
+Finance is one of ACEVA's focus industries. No finance project or case study is published yet; the list below describes what ACEVA can build, not completed work. ACEVA can build custom technology for financial institutions, investment firms, insurance companies, microfinance organizations, payment processors, and fintech startups.
 
 Examples of what ACEVA can build for finance:
 - Company website with product offerings and contact
@@ -385,9 +385,9 @@ Examples of what ACEVA can build for startups:
 # Engagement Models
 
 ACEVA offers flexible engagement models:
-- **Fixed Scope** — A defined project with clear deliverables and a fixed price.
+- **Fixed Scope** — A defined outcome with written milestones and acceptance criteria.
 - **Dedicated Team** — An ongoing engineering team working as an extension of your business.
-- **Hourly Engagement** — Flexible hours for advisory, code reviews, or smaller tasks.
+- **Hourly Engagement** — Flexible hours for advisory, code reviews, or smaller tasks. This model is approved in ACEVA's internal FAQ only; the public website names fixed-scope and dedicated-team engagements, so describe hourly work as something the team confirms.
 
 ---
 
