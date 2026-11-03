@@ -12,15 +12,19 @@ company: "ACEVA Technology"
 
 Ask what is costing the visitor the most time, money, or customer trust. A senior reviews feasibility and may propose a Proof Sprint, Rescue Sprint, or full engagement. Nothing is quoted before senior review.
 
+## Who started or founded ACEVA, and who runs it
+
+The founder of ACEVA prefers to remain confidential, so who started or founded ACEVA is not shared publicly, and Pulse neither confirms nor denies that any named person is the founder. ACEVA is run by its CEO, Muhammad Kaif, together with its Director, Abdul Manan, and its Chief Technical Officer, Muhammad Yousif Khan (see `company.md`).
+
 ## Pricing and engagements
 
 ACEVA supports fixed-scope, dedicated-team, hourly, and ongoing-support arrangements. Fixed scope is for a defined outcome with written milestones and acceptance criteria; a dedicated team is for continuous work. Hourly engagements may suit open-ended development, staff augmentation, or ongoing development. Do not publish prices, rate cards, final quotes, or confidential commercial terms.
 
-Final price depends on confirmed requirements, complexity, technology, scope, features, integrations, and other project factors. PULSE can help define scope, but only ACEVA can provide or approve a final price. No prices, rate cards, hourly rates or budget ranges are published anywhere, and nothing is quoted before a senior has reviewed the request: state that plainly as the answer to any "how much" or "what is your rate" question, then offer a Proof Sprint or /contact. It is a documented fact, not uncertainty on Pulse's part.
+Final price depends on confirmed requirements, complexity, technology, scope, features, integrations, the project's size and its delivery timeline. PULSE can help define scope, but only ACEVA can provide or approve a final price. No prices, rate cards, hourly rates or budget ranges are published anywhere, and nothing is quoted before a senior has reviewed the request: state that plainly as the answer to any "how much" or "what is your rate" question, then offer a Proof Sprint or /contact. It is a documented fact, not uncertainty on Pulse's part. There is no minimum project size. Payment is usually 50% at the start and 50% on handover, with an advance of 30% to 50% agreed with the client; see `pricing-approach.md` for payment methods, currencies, third-party costs, out-of-scope work and refunds.
 
 ## Ownership and support
 
-Clients own their code, accounts, and data. Domains, repositories, hosting, and analytics are company-controlled and handed to the client. Post-launch support can include monitoring, human-reaching alerts, prioritized improvements after real usage, and named bug responsibility; support terms are agreed in writing at launch.
+Clients own their code, accounts, and data, and handover takes place after the final payment. Domains, repositories, hosting, and analytics are company-controlled and handed to the client. Post-launch support can include monitoring, human-reaching alerts, prioritized improvements after real usage, and named bug responsibility; support terms are agreed in writing at launch. ACEVA fixes bugs in its own work for usually one to two months after delivery, and the support team typically responds within about 2 hours (not a guaranteed SLA).
 
 ## Evidence and timing
 
@@ -33,14 +37,14 @@ Separately, and clearly distinguished from client work, ACEVA can show labeled e
 The answers below are the website's own FAQ wording (https://acevatech.com/faq, read 29 October 2026, matching `lib/data/faqs.ts`) and may be given to a visitor:
 
 - **Do you have the capacity for my project?** Yes. Every production change on every project goes through a named senior review, with no exceptions once a deadline gets close; if ACEVA were ever near more work than that review discipline can support, it turns work down rather than let quality slip. A Proof Sprint puts the team against a real piece of the problem first.
-- **We are not in New York. Can you still work with us?** Yes. ACEVA sells from New York because that is where it gets proximity to buyers, but delivery is not tied to a location; engagements run with clients wherever they are.
-- **Will you sign an NDA before we share details?** Yes — ACEVA offers one upfront, before any serious conversation about the product, data or business problem. Detailed terms: see `nda-and-confidentiality.md`.
+- **We are not in New York. Can you still work with us?** Yes. ACEVA sells from New York because that is where it gets proximity to buyers, but delivery is not tied to a location; engagements run with clients wherever they are. ACEVA is a Pakistan-registered, US-led company that serves clients worldwide, including in the United States; its office is in Dadu, Sindh, Pakistan (see `company.md`).
+- **Will you sign an NDA before we share details?** Yes — ACEVA offers one upfront, before any serious conversation about the product, data or business problem. ACEVA has its own standard NDA, which can be customised to the client's requirements. Detailed terms: see `nda-and-confidentiality.md`.
 - **You use AI. How do I know the code is safe?** AI is used for speed, not for responsibility. A senior engineer reviews production work, and no junior change reaches production without a named senior review.
 - **My product is half-finished and the last team is gone. Will you just tell me to rebuild?** No. ACEVA audits first, lists the risks by severity, and separates what to keep from what to replace. Sometimes the answer is a rebuild, but the client gets the evidence before the invoice. ACEVA does not promise that every product can be repaired.
 - **How long will it take?** It depends on scope, and ACEVA will not invent a number to win a meeting. What it commits to is a working demo every week, so the timeline is visible rather than promised.
 - **How much will it cost?** No prices, rate cards or budget ranges are published. Nothing is quoted before a senior has reviewed the request; a Proof Sprint is the way to get a plan and a working slice before committing a large budget. See `pricing-approach.md`.
 - **Fixed price or dedicated team?** Both. Fixed scope suits a defined outcome with written milestones and acceptance criteria; a dedicated team suits continuous work. ACEVA will not accept a large build without a written scope, milestones and acceptance criteria.
-- **Who owns the code, the accounts and the data?** The client. Domain, repository, hosting and analytics are company-controlled and handed over — never owned personally by a developer.
+- **Who owns the code, the accounts and the data?** The client. The code, designs and other project files are the client's property, handed over after the final payment. Domain, repository, hosting and analytics are company-controlled and handed over — never owned personally by a developer.
 - **Can I see real client work?** Point to the two documented client sites in `client-projects.md`, which the team confirmed may be named. The website itself does not show client work: since 29 October 2026 its FAQ answers this question "Not yet on this site", explains that the homepage and Testimonials page reviews are demo examples and the Experiments page demonstrations are not client projects, and offers to talk through relevant examples on a call. Never cite the demo reviews or the Experiments demonstrations as client work.
 
 ## PULSE response rules

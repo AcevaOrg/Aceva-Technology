@@ -92,6 +92,12 @@ describe("parseStoredSession", () => {
       expect(session?.messages).toHaveLength(2);
     });
 
+    it("restores the question-first heading flag only when it is exactly true", () => {
+      expect(parseStoredSession(stored({ askedQuestionFirst: true }), NOW)?.askedQuestionFirst).toBe(true);
+      expect(parseStoredSession(stored({ askedQuestionFirst: "yes" }), NOW)?.askedQuestionFirst).toBeUndefined();
+      expect(parseStoredSession(stored(), NOW)?.askedQuestionFirst).toBeUndefined();
+    });
+
     it("ignores answer marks that no longer line up with the answers", () => {
       expect(parseStoredSession(stored({ answerMarks: [1] }), NOW)?.answerMarks).toBeUndefined();
       expect(parseStoredSession(stored({ answerMarks: [1, 3] }), NOW)?.answerMarks).toEqual([1, 3]);
@@ -131,6 +137,23 @@ describe("RECORD_VALID_ANSWER", () => {
 
     expect(next.answers).toEqual(["Two locations"]);
     expect(next.step).toBe(1);
+  });
+});
+
+describe("RECORD_SIDE_QUESTION", () => {
+  it("marks a visitor who asked before giving any project answer", () => {
+    const state: PulseState = { ...initialState, stage: "discovery" };
+    expect(pulseReducer(state, { type: "RECORD_SIDE_QUESTION" }).askedQuestionFirst).toBe(true);
+  });
+
+  it("changes nothing once discovery has a recorded answer", () => {
+    const state: PulseState = { ...initialState, stage: "discovery", step: 2, answers: ["a clinic booking app"] };
+    expect(pulseReducer(state, { type: "RECORD_SIDE_QUESTION" })).toBe(state);
+  });
+
+  it("is cleared by a restart", () => {
+    const state: PulseState = { ...initialState, stage: "discovery", askedQuestionFirst: true };
+    expect(pulseReducer(state, { type: "RESTART" }).askedQuestionFirst).toBeUndefined();
   });
 });
 

@@ -24,6 +24,7 @@ import {
   getGibberishOrNonsenseResponse,
   GREETING_REJECTION,
   isFollowUpReference,
+  isVisitorQuestion,
 } from "@/lib/pulse/scope";
 import {
   detectActiveQuestionTarget,
@@ -202,7 +203,7 @@ function pruneUnansweredContext(
 /** One frame of the stream. The client switches on `type`. */
 type StreamFrame =
   | { type: "delta"; text: string }
-  | { type: "done"; answer: string; isValid: boolean; nextStep?: number; reasked?: boolean }
+  | { type: "done"; answer: string; isValid: boolean; nextStep?: number; reasked?: boolean; sideQuestion?: boolean }
   | { type: "error"; error: string; code: ApiErrorCode };
 
 function sseFrame(frame: StreamFrame): string {
@@ -338,7 +339,7 @@ export const POST = withRouteErrorHandling("chat", async (request, requestId) =>
    * protocol regardless of which branch answered. `isValid: false` throughout —
    * none of these is a discovery answer.
    */
-  const cannedReply = (answer: string) => {
+  const cannedReply = (answer: string, sideQuestion = false) => {
     logTurnOnce({
       sessionId,
       requestId,
@@ -352,9 +353,10 @@ export const POST = withRouteErrorHandling("chat", async (request, requestId) =>
       latencyMs: 0,
     });
 
-    if (!streaming) return apiSuccess({ answer, isValid: false });
+    const done = { answer, isValid: false, ...(sideQuestion ? { sideQuestion: true } : {}) };
+    if (!streaming) return apiSuccess(done);
 
-    const body = sseFrame({ type: "delta", text: answer }) + sseFrame({ type: "done", answer, isValid: false });
+    const body = sseFrame({ type: "delta", text: answer }) + sseFrame({ type: "done", ...done });
     return new Response(body, { status: 200, headers: SSE_HEADERS });
   };
 
@@ -382,7 +384,11 @@ export const POST = withRouteErrorHandling("chat", async (request, requestId) =>
   const isFollowUp = Boolean(history?.length) && isFollowUpReference(message);
   const isClearJunk = !isProjectDiscoveryInput(message) && isInvalidOrUnclearInput(message) && !isFollowUp;
   if (isGreetingInput(message) || isAssistantIdentityQuery(message) || isClearJunk) {
-    return cannedReply(getCasualOrFAQResponse(message) ?? GREETING_REJECTION);
+    // "Who are you?" is the visitor's own question, like "Who is CEO?".
+    return cannedReply(
+      getCasualOrFAQResponse(message) ?? GREETING_REJECTION,
+      getDiscoveryField(step) !== undefined && isAssistantIdentityQuery(message)
+    );
   }
 
   // 6. Validate answer against the CURRENT discovery question independently of LLM response.
@@ -409,15 +415,26 @@ export const POST = withRouteErrorHandling("chat", async (request, requestId) =>
   let answerIsValid = fieldValidation.isValid && !(repeatsEarlierAnswer && !reaskSpent);
   if (!answerIsValid && wizardStep !== undefined && reaskSpent && substantive) answerIsValid = true;
   const answerValidation = { isValid: answerIsValid };
+  // A question of the visitor's own ("Who is CEO?") is not a failed answer: it
+  // is answered in full, spends no clarification and leaves the step as it is.
+  const sideQuestion = wizardStep !== undefined && !answerIsValid && isVisitorQuestion(message);
   // A genuine reply that still missed the question spends the clarification.
-  const reask = wizardStep !== undefined && !answerIsValid && substantive;
+  const reask = wizardStep !== undefined && !answerIsValid && substantive && !sideQuestion;
 
   // Steps the visitor's own words have already answered are skipped, so
   // "we have two branches" in the first answer is never asked for again.
   const covered = new Set([...readCoveredSteps(body.covered), ...coveredDiscoverySteps(message)]);
   const nextStep =
     wizardStep !== undefined && answerIsValid ? nextOpenDiscoveryStep(wizardStep, covered) : undefined;
-  const modelContext = wizardStep !== undefined ? pruneUnansweredContext(context, wizardStep, covered) : context;
+  // Before the first answer the browser's context holds only guesses from the
+  // question itself (an intent of "Start something new" for "Who is CEO?"),
+  // which drew project questions into a company answer. They are not sent.
+  const modelContext =
+    sideQuestion && wizardStep === 0 && covered.size === 0
+      ? undefined
+      : wizardStep !== undefined
+        ? pruneUnansweredContext(context, wizardStep, covered)
+        : context;
 
   // An answer that leaves nothing to ask ends questioning, so Pulse must close
   // with a statement. Usually that is the 5th step (timeline/budget), but it
@@ -476,6 +493,9 @@ export const POST = withRouteErrorHandling("chat", async (request, requestId) =>
       isValid,
       ...(isValid && nextStep !== undefined ? { nextStep } : {}),
       ...(reask && !completion.isFallback ? { reasked: true } : {}),
+      // Lets the panel stop showing the step's "tell us about your project"
+      // heading above an answer to the visitor's own question.
+      ...(sideQuestion && !completion.isFallback ? { sideQuestion: true } : {}),
     };
   };
 
@@ -491,6 +511,8 @@ export const POST = withRouteErrorHandling("chat", async (request, requestId) =>
         reask,
         nextQuestion,
         nextQuestionHelper,
+        sideQuestion,
+        discoveryUnderway: (wizardStep ?? 0) > 0 || covered.size > 0,
       });
     } catch (error) {
       // Counted as a failed turn, as the streamed path does, then handled by
@@ -544,6 +566,8 @@ export const POST = withRouteErrorHandling("chat", async (request, requestId) =>
           reask,
           nextQuestion,
           nextQuestionHelper,
+          sideQuestion,
+          discoveryUnderway: (wizardStep ?? 0) > 0 || covered.size > 0,
           signal: request.signal,
           onToken: (delta) => send({ type: "delta", text: delta }),
         });

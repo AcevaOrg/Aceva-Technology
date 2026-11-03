@@ -200,14 +200,81 @@ const DOMAIN_SYNONYMS: Record<string, string[]> = {
   deploy: ["deployment", "hosting", "vercel", "aws", "railway", "cloud"],
   deployed: ["deployment", "hosting", "vercel", "aws", "railway", "cloud"],
   deployment: ["deployment", "hosting", "vercel", "aws", "railway", "cloud"],
-  server: ["vercel", "aws", "railway", "hosting", "deployment", "cloud"],
-  servers: ["vercel", "aws", "railway", "hosting", "deployment", "cloud"],
-  // Refund and cancellation terms are unpublished; pricing-approach.md says so
-  // under "Payment and commercial terms", and that heading is what must be met.
-  refund: ["payment", "refund", "cancellation", "pricing"],
-  refunds: ["payment", "refund", "cancellation", "pricing"],
-  cancel: ["payment", "cancellation", "refund", "pricing"],
-  cancellation: ["payment", "cancellation", "refund", "pricing"],
+  // No "hosting" here: "Which servers do you use?" is about the stack, and the
+  // hosting-fee and third-party-cost headings would otherwise tie with it.
+  server: ["vercel", "aws", "railway", "deployment", "cloud"],
+  servers: ["vercel", "aws", "railway", "deployment", "cloud"],
+  // The approved refund position (2 November 2026) sits under the heading
+  // "Refunds and cancellation" in pricing-approach.md. "payment" used to lead
+  // here, for a heading that no longer exists, and since expansion stops at
+  // the first synonym found anywhere, "can I get my money back if I cancel"
+  // reached the general pricing chunks instead of the refund answer.
+  refund: ["refund", "cancellation", "payment", "pricing"],
+  refunds: ["refund", "cancellation", "payment", "pricing"],
+  cancel: ["refund", "cancellation", "payment", "pricing"],
+  cancellation: ["cancellation", "refund", "payment", "pricing"],
+  // Visitor words for the approved payment terms (heading "Payment schedule and
+  // advance payment"); none of them is used in the knowledge text itself.
+  upfront: ["advance", "payment", "schedule"],
+  deposit: ["advance", "payment", "schedule"],
+  advance: ["advance", "payment", "schedule"],
+  installment: ["payment", "schedule", "advance"],
+  installments: ["payment", "schedule", "advance"],
+  instalment: ["payment", "schedule", "advance"],
+  instalments: ["payment", "schedule", "advance"],
+  // ".NET" tokenises to "net", which the heading "Laravel and .NET
+  // applications" already matches. "net" itself is deliberately not a key: it
+  // would pull that heading into "are your invoices net 30?".
+  dotnet: ["net", "dotnet", "technology", "technologies"],
+  // "Which programming languages do you use?" names no technology, so it missed
+  // the stack overview that lists TypeScript (3 November 2026). The word itself
+  // is left out: it matches the "large language models" heading first.
+  language: ["typescript", "technologies"],
+  // A country or region in a question means where ACEVA works, not an
+  // industry: "can you work with someone in Canada?" retrieved no location
+  // context and drew the industry deferral (3 November 2026). Limited to the
+  // markets company.md names.
+  canada: ["international clients", "countries", "worldwide"],
+  america: ["international clients", "countries", "worldwide"],
+  american: ["international clients", "countries", "worldwide"],
+  usa: ["international clients", "countries", "worldwide"],
+  europe: ["international clients", "countries", "worldwide"],
+  european: ["international clients", "countries", "worldwide"],
+  britain: ["international clients", "countries", "worldwide"],
+  england: ["international clients", "countries", "worldwide"],
+  australia: ["international clients", "countries", "worldwide"],
+  dubai: ["international clients", "countries", "worldwide"],
+  uae: ["international clients", "countries", "worldwide"],
+  saudi: ["international clients", "countries", "worldwide"],
+  germany: ["international clients", "countries", "worldwide"],
+  // "Are you an official Microsoft partner?" (CSV row 50).
+  partner: ["partnerships", "partner"],
+  partners: ["partnerships", "partners"],
+  languages: ["typescript", "technologies"],
+  programming: ["typescript", "technologies"],
+  // Location questions ("Where is ACEVA based?") meet the company heading
+  // "Office, headquarters and where ACEVA is based".
+  based: ["based", "office", "headquarters"],
+  located: ["based", "office", "headquarters", "location"],
+  headquarters: ["headquarters", "office", "based"],
+  hq: ["headquarters", "office", "based"],
+  // "Who is the chief executive?" names neither "CEO" nor "leadership".
+  executive: ["leadership", "ceo", "executive"],
+  chief: ["leadership", "ceo", "chief"],
+  // "Do I get the IP rights?" — "IP" is too short to score, so "rights" carries
+  // the question to the ownership sections.
+  rights: ["ownership", "intellectual property", "own"],
+  // Provider names a visitor uses for "can you integrate my preferred AI?";
+  // the answer sits under "Integrating your preferred AI service or model".
+  claude: ["ai service", "ai model", "model"],
+  openai: ["ai service", "ai model", "model"],
+  gemini: ["ai service", "ai model", "model"],
+  anthropic: ["ai service", "ai model", "model"],
+  chatgpt: ["ai service", "ai model", "model"],
+  // Browser names a visitor uses; the answer sits under "Browser and device support".
+  chrome: ["browser", "browsers", "device"],
+  safari: ["browser", "browsers", "device"],
+  firefox: ["browser", "browsers", "device"],
   rescue: ["rescue", "recovery", "unstable", "audit", "legacy", "fix", "broken", "stuck"],
   career: ["career", "careers", "job", "jobs", "hiring", "openings", "team"],
   restaurant: ["restaurant", "food", "kitchen", "cafe", "menu", "ordering", "dining", "reservation"],

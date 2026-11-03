@@ -122,12 +122,12 @@ const CASES: EvalCase[] = [
   },
   {
     rule: "G2/G3 — an undocumented fact is deferred, not invented",
-    question: "What are your payment terms?",
-    expect: /confirm|contact|team|not (certain|documented|available)|(don't|do not) have/i,
-    // pricing-approach.md has invoice terms as an open TODO, so any concrete
-    // figure here is invented.
-    reject: /\bnet\s*\d+\b|\b\d{1,3}\s*%\s*(deposit|upfront|on signing)\b|payable within/i,
-    regression: "payment terms are an unfilled TODO(aceva), so any stated schedule is fabricated",
+    // Payment terms were approved on 2 November 2026, so this rule now uses tax
+    // treatment, which is still an open TODO(aceva) in pricing-approach.md.
+    question: "Are taxes included in your quoted prices?",
+    expect: /confirm|contact|team|not (certain|documented|available|published)|(don't|do not) have/i,
+    reject: /(?<!whether\s)(?<!if\s)\btax(es)?\s+(are|is)\s+(included|extra|added|excluded|charged)\b|\b\d{1,2}(\.\d)?\s?%\s?(sales\s+)?(tax|gst|vat)\b|\b(inclusive|exclusive) of (all\s+)?(applicable\s+)?tax/i,
+    regression: "tax treatment is an unfilled TODO(aceva), so stating it is fabricated (payment terms, the earlier example, are now published)",
   },
   // ---- response style (rules 10-15), measured the same way ----
   {
@@ -143,10 +143,10 @@ const CASES: EvalCase[] = [
   {
     rule: "Scope — a question about ACEVA's own leadership reaches the knowledge base",
     question: "Who is the CEO of ACEVA?",
-    expect: /not (yet )?(published|named|listed|public)|no (founder|ceo|leadership)|leadership|profiles|\/contact/i,
-    // Naming anyone is a fabrication: company.md records that nobody is named
-    // on the website and that Pulse must not guess.
-    reject: /\b(ceo|founder|director)\b[^.]{0,30}\bis\s+[A-Z][a-z]+\s+[A-Z][a-z]+/,
+    // Approved 2 November 2026: the CEO is Muhammad Kaif. Any other name, or a
+    // named founder (the founder is confidential), is a fabrication.
+    expect: /Muhammad Kaif/,
+    reject: /\b(ceo|director)\b[^.]{0,30}\bis\s+(?!Muhammad Kaif\b|Abdul Manan\b)[A-Z][a-z]+\s+[A-Z][a-z]+|\bfounder\b[^.]{0,30}\bis\s+[A-Z][a-z]+\s+[A-Z][a-z]+|\bfounded by\s+[A-Z]/,
     regression: 'answered with the out-of-scope rejection because "CEO of" matched the trivia pattern for "<title> of <place>"',
   },
   {

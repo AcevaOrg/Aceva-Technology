@@ -61,6 +61,12 @@ export interface PulseState {
   coveredSteps?: number[];
   /** Clarifications spent in this discovery; capped at MAX_DISCOVERY_REASKS. */
   reasks?: number;
+  /**
+   * The visitor asked their own question ("Who is CEO?") before giving any
+   * project answer, so the first step's "tell us about your project" heading
+   * no longer fits what is on screen.
+   */
+  askedQuestionFirst?: boolean;
 }
 
 export type PulseAction =
@@ -78,6 +84,7 @@ export type PulseAction =
       covered?: number[];
     }
   | { type: "RECORD_REASK" }
+  | { type: "RECORD_SIDE_QUESTION" }
   | { type: "SEND_MESSAGE"; text: string }
   | { type: "SET_LOADING"; loading: boolean }
   | { type: "ADD_PULSE_RESPONSE"; text: string }

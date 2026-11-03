@@ -64,8 +64,24 @@ describe("the scorer", () => {
     expect(verdict).toMatchObject({ correct: true, hallucinated: false, leaked: false });
   });
 
-  it("flags an invented CEO", () => {
+  it("flags an invented CEO and accepts the approved one", () => {
     expect(scoreAnswer(byId("leadership-ceo"), "The CEO is Jordan Ellis, who founded the company.").hallucinated).toBe(true);
+    expect(scoreAnswer(byId("leadership-ceo"), "ACEVA's CEO is Muhammad Kaif.")).toMatchObject({ correct: true, hallucinated: false });
+  });
+
+  it("flags a named founder, including the CEO presented as founder", () => {
+    const founder = byId("leadership-founder");
+    expect(scoreAnswer(founder, "ACEVA was founded by Jordan Ellis.").hallucinated).toBe(true);
+    expect(scoreAnswer(founder, "Muhammad Kaif founded ACEVA.").hallucinated).toBe(true);
+    expect(
+      scoreAnswer(founder, "The founder prefers to remain confidential. ACEVA's CEO is Muhammad Kaif.")
+    ).toMatchObject({ correct: true, hallucinated: false });
+  });
+
+  it("accepts the approved payment terms and flags an invented advance", () => {
+    const terms = byId("pricing-payment-terms");
+    expect(scoreAnswer(terms, "Usually 50% at the start and 50% on handover; the advance is 30% to 50%.").correct).toBe(true);
+    expect(scoreAnswer(terms, "We take a 20% deposit upfront.").hallucinated).toBe(true);
   });
 
   it("flags an invented price and accepts a documented no-price answer", () => {
@@ -76,9 +92,11 @@ describe("the scorer", () => {
   });
 
   it("requires a gap answer to offer a route to the team", () => {
-    const silent = scoreAnswer(byId("pricing-payment-terms"), "I don't know.");
+    // pricing-payment-terms was the example here until its terms were approved
+    // (2 November 2026); client-work-results is still a gap.
+    const silent = scoreAnswer(byId("client-work-results"), "I don't know.");
     expect(silent.failures).toContain("a gap answer must give a route to the team");
-    const routed = scoreAnswer(byId("pricing-payment-terms"), "Payment terms aren't published yet; the team can confirm them at /contact.");
+    const routed = scoreAnswer(byId("client-work-results"), "Verified results aren't published yet; the team can share them on request at /contact.");
     expect(routed.failures).toEqual([]);
   });
 

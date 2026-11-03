@@ -110,8 +110,12 @@ General background, not a statement about ACEVA:
 - Ownership of the domain, hosting, repository and analytics is a published
   launch deliverable, and launch happens under accounts the client controls.
 - Secrets management and access revocation are documented working practices.
-- The step-by-step handover protocol, and whether ownership transfers on final
-  payment or progressively, are not published. The team confirms them.
+- Handover takes place after the final payment. ACEVA hands over the project
+  details and everything the client asks for and needs.
+- Access to client data is limited to the team lead and the DevOps engineers
+  who have live server access.
+- The step-by-step handover protocol (credential rotation, removal of ACEVA's
+  access) is not published. The team confirms it.
 
 General practice, not a published ACEVA protocol:
 - Transfer ownership of the organisation or repository itself, rather than

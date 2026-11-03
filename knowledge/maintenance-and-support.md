@@ -18,12 +18,29 @@ practice for keeping software modern and secure in the years after launch.
   - alerts that reach a human;
   - a prioritized improvement list after real usage;
   - named people responsible for bugs.
-- Support terms are agreed in writing at launch.
+- Support terms are agreed in writing at launch and can be set in the contract.
 - Ongoing support is one of ACEVA's engagement models, alongside fixed scope and a
   dedicated team.
-- ACEVA has not published a warranty period, maintenance packages, a
-  service-level agreement or response times. Pulse must not state one. The team
-  confirms them through /contact or contact@acevatech.com.
+
+## Warranty on delivered software: bugs fixed after delivery
+
+ACEVA fixes bugs caused by its own development for a set period after delivery,
+usually one to two months. The warranty covers defects in ACEVA's own work.
+Coverage of new features, third-party services or problems the client causes is
+not published, so do not promise it.
+
+## Support response time and SLA
+
+ACEVA's support team typically responds within about 2 hours. This is a typical
+response time, not a guaranteed service-level agreement (SLA). Specific support
+terms can be agreed in the contract. ACEVA has not published maintenance
+packages, a guaranteed SLA or fix times; the team confirms them through
+/contact or contact@acevatech.com.
+
+## Hosting and maintenance by ACEVA: fees
+
+If ACEVA hosts and maintains a client's project after launch, a maintenance fee
+and a live-server fee apply. The amounts and billing period are not published.
 
 ## Keeping software modern and secure 12 to 24 months after launch
 

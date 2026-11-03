@@ -154,3 +154,11 @@ knowledge/savedDirections.json
 # Internal manager confirmation register for the Pulse knowledge base. The
 # repository is public, so it stays on the maintainers' machines only.
 knowledge/manager-confirmations.md
+
+# Manager answers reference (supplementary company answers). Internal source
+# material, never indexed or published; the repository is public.
+/aceva_pulse_knowledge_base.csv
+
+# Local Pulse audit output (questions, answers and verdicts, including CSV
+# question text). Internal; never committed.
+/pulse-audit/

@@ -157,6 +157,11 @@ export function pulseReducer(state: PulseState, action: PulseAction): PulseState
     case "RECORD_REASK":
       return { ...state, reasks: (state.reasks ?? 0) + 1 };
 
+    // Only before the first answer: once discovery is underway the step's own
+    // heading is the right one, side questions or not.
+    case "RECORD_SIDE_QUESTION":
+      return state.answers.length === 0 ? { ...state, askedQuestionFirst: true } : state;
+
     case "SEND_MESSAGE": {
       const newMessage = {
         id: `msg-${Date.now()}-${Math.random()}`,
@@ -336,7 +341,7 @@ interface PulseContextType {
 /** One frame of the /api/chat event stream. Mirrors the route's union. */
 type StreamFrame =
   | { type: "delta"; text: string }
-  | { type: "done"; answer: string; isValid: boolean; nextStep?: number; reasked?: boolean }
+  | { type: "done"; answer: string; isValid: boolean; nextStep?: number; reasked?: boolean; sideQuestion?: boolean }
   | { type: "error"; error: string; code: string };
 
 /**
@@ -528,6 +533,7 @@ export function parseStoredSession(
   if (typeof stored.reasks === "number" && Number.isInteger(stored.reasks) && stored.reasks >= 0) {
     session.reasks = stored.reasks;
   }
+  if (stored.askedQuestionFirst === true) session.askedQuestionFirst = true;
 
   return session;
 }
@@ -575,7 +581,7 @@ export function PulseProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     try {
-      const { stage, step, answers, answerMarks, context, messages, lead, id, coveredSteps, reasks } = state;
+      const { stage, step, answers, answerMarks, context, messages, lead, id, coveredSteps, reasks, askedQuestionFirst } = state;
       localStorage.setItem(
         STORAGE_KEY,
         JSON.stringify({
@@ -589,6 +595,7 @@ export function PulseProvider({ children }: { children: React.ReactNode }) {
           id,
           coveredSteps,
           reasks,
+          askedQuestionFirst,
           savedAt: Date.now(),
         })
       );
@@ -628,7 +635,7 @@ export function PulseProvider({ children }: { children: React.ReactNode }) {
     };
 
     /** Records the answer (advancing to the step the server named) or the spent clarification. */
-    const settleTurn = (result: { isValid?: boolean; nextStep?: unknown; reasked?: unknown }) => {
+    const settleTurn = (result: { isValid?: boolean; nextStep?: unknown; reasked?: unknown; sideQuestion?: unknown }) => {
       if (result.isValid) {
         dispatch({
           type: "RECORD_VALID_ANSWER",
@@ -639,6 +646,8 @@ export function PulseProvider({ children }: { children: React.ReactNode }) {
         });
       } else if (result.reasked === true) {
         dispatch({ type: "RECORD_REASK" });
+      } else if (result.sideQuestion === true) {
+        dispatch({ type: "RECORD_SIDE_QUESTION" });
       }
     };
 
@@ -681,14 +690,14 @@ export function PulseProvider({ children }: { children: React.ReactNode }) {
       // ---- Streaming path.
       dispatch({ type: "PULSE_STREAM_START" });
 
-      let settled: { answer: string; isValid: boolean; nextStep?: number; reasked?: boolean } | null = null;
+      let settled: { answer: string; isValid: boolean; nextStep?: number; reasked?: boolean; sideQuestion?: boolean } | null = null;
       let streamError: string | null = null;
 
       for await (const frame of readSseFrames(res.body as ReadableStream<Uint8Array>)) {
         if (frame.type === "delta") {
           dispatch({ type: "PULSE_STREAM_DELTA", text: frame.text });
         } else if (frame.type === "done") {
-          settled = { answer: frame.answer, isValid: frame.isValid, nextStep: frame.nextStep, reasked: frame.reasked };
+          settled = { answer: frame.answer, isValid: frame.isValid, nextStep: frame.nextStep, reasked: frame.reasked, sideQuestion: frame.sideQuestion };
         } else if (frame.type === "error") {
           streamError = frame.error;
         }

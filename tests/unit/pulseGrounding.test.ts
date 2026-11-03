@@ -56,7 +56,7 @@ vi.mock("@/lib/pulse/vectorStore", async (importOriginal) => ({
   findSimilarChunks,
 }));
 
-import { generatePulseCompletion } from "@/lib/pulse/llm";
+import { currentDateLine, generatePulseCompletion } from "@/lib/pulse/llm";
 import { clearEnvCache } from "@/lib/pulse/env";
 import { loadVectorIndex } from "@/lib/pulse/vectorStore";
 // Pure helpers, imported from the eval directory rather than its suite file:
@@ -129,6 +129,21 @@ describe("the grounding rules are constructed into every request", () => {
     for (const rule of ["G1.", "G2.", "G3.", "G4.", "G5.", "G6."]) {
       expect(prompt, `${rule} is missing from the system prompt`).toContain(rule);
     }
+  });
+
+  it("tells the model today's date, so ACEVA's age is computed rather than guessed", async () => {
+    // "how old is aceva" drew "just over a year old" on 3 November 2026 for a
+    // company founded in August 2026.
+    expect(currentDateLine(new Date(Date.UTC(2026, 10, 3, 12)))).toContain("Today's date is 3 November 2026.");
+    findSimilarChunks.mockReturnValue([
+      chunk("company-chunk-6", "When ACEVA was founded", "ACEVA was founded in August 2026."),
+    ]);
+    expect(await capturedSystemPrompt()).toContain(currentDateLine());
+  });
+
+  it("leaves the date out when the context has no founding date", async () => {
+    // Sent on every turn it changed discovery replies (two questions in one).
+    expect(await capturedSystemPrompt()).not.toContain("Today's date is");
   });
 
   it("keeps them when the final-step closing statement is requested", async () => {

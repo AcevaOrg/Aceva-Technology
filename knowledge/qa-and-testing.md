@@ -31,11 +31,13 @@ across desktop, tablet and mobile.
 
 Design covers the primary user journeys, including mobile. The interface is
 built to work on phones, tablets and desktops, and launch includes both mobile
-QA and browser QA. ACEVA has not published the following, which the team
-confirms through /contact:
+QA and browser QA. Delivered applications are cross-platform and work across
+multiple browsers and devices, based on the client's requirements. ACEVA has
+not published the following, which the team confirms through /contact:
 - which testing tools it uses;
 - whether it tests on real devices or a device cloud;
-- a minimum browser and device support list.
+- a fixed list of supported browser versions and devices (support follows each
+  client's requirements).
 
 ## General practice: cross-device UI testing
 

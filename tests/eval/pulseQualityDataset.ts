@@ -99,7 +99,15 @@ export function withoutAcevaContacts(answer: string): string {
 }
 
 /** A person named as ACEVA's leader. No name is published. */
-const NAMED_LEADER = /\b(CEO|founder|co-founder|owner|director|managing director)\b[^.]{0,25}\b(is|was|named)\s+(Mr\.?\s|Ms\.?\s|Dr\.?\s)?[A-Z][a-z]+\s+[A-Z][a-z]+/;
+/**
+ * A leader named who is not on the approved list (2 November 2026: CEO
+ * Muhammad Kaif, Director Abdul Manan, Chief Technical Officer Muhammad Yousif
+ * Khan). Any other name after "CEO is", "director is" and so on is invented.
+ */
+const NAMED_LEADER = /\b(CEO|co-founder|owner|director|managing director|CTO|chief \w+ officer)\b[^.]{0,25}\b(is|was|named)\s+(Mr\.?\s|Ms\.?\s|Dr\.?\s)?(?!Muhammad Kaif\b|Abdul Manan\b|Muhammad Yousif Khan\b)[A-Z][a-z]+\s+[A-Z][a-z]+/;
+
+/** The founder is confidential: naming anyone as founder, or the CEO, Director or CTO as founder, is invented. */
+const NAMED_FOUNDER = /(\bfounded by\s+[A-Z][a-z]+|\bfounder\b[^.]{0,20}\b(is|was)\s+(Mr\.?\s)?[A-Z][a-z]+\s+[A-Z][a-z]+|\b(Muhammad Kaif|Abdul Manan|Muhammad Yousif Khan)\b[^.]{0,25}\b(founded|is the founder|co-?founder))/;
 
 /** A specific street address. None is published. */
 const STREET_ADDRESS = /\b\d{1,5}[-\d]*\s+[A-Z][\w.]*\s+(Street|St\.|Road|Rd\.|Avenue|Ave\.?|Boulevard|Blvd)\b/;
@@ -140,11 +148,20 @@ export const QUALITY_CASES: QualityCase[] = [
   {
     id: "leadership-ceo",
     topic: "leadership",
-    kind: "gap",
+    kind: "answer",
     question: "Who is the CEO of ACEVA?",
     expectedSources: ["company"],
-    mustMatch: [/(not (yet )?(published|named|public|shared|listed)|doesn't (publish|name)|haven't (been )?(published|named)|no (founder|ceo|leadership|individual))/i],
-    mustNotMatch: [NAMED_LEADER, INTERNAL_LEAK],
+    mustMatch: [/Muhammad Kaif/],
+    mustNotMatch: [NAMED_LEADER, NAMED_FOUNDER, INTERNAL_LEAK],
+  },
+  {
+    id: "leadership-founder",
+    topic: "leadership",
+    kind: "answer",
+    question: "Who founded ACEVA?",
+    expectedSources: ["company"],
+    mustMatch: [/(confidential|private|prefers not|not (disclosed|named|published|public))/i],
+    mustNotMatch: [NAMED_FOUNDER, NAMED_LEADER, INTERNAL_LEAK],
   },
   // ------------------------------------------------------------ location
   {
@@ -153,8 +170,9 @@ export const QUALITY_CASES: QualityCase[] = [
     kind: "answer",
     question: "Where is your head office?",
     expectedSources: ["company", "contact", "faq", "website-content"],
-    mustMatch: [/(Pakistan|Karachi|New York|remote)/i],
-    mustNotMatch: [STREET_ADDRESS, /headquarter(s|ed)\s+in\s+New York/i, INTERNAL_LEAK],
+    mustMatch: [/Dadu/i],
+    // Negation-aware: "There is no office in New York" is the approved answer (CSV row 44).
+    mustNotMatch: [STREET_ADDRESS, /(?<!(not|n't|no) (currently )?(have )?(an |any )?)\b(headquarters|office)\s+(is\s+)?(located\s+)?in\s+New York|(?<!(not|n't) )\bheadquartered\s+in\s+New York/i, /Karachi/i, INTERNAL_LEAK],
   },
   // ------------------------------------------------------------ services
   {
@@ -191,10 +209,12 @@ export const QUALITY_CASES: QualityCase[] = [
     kind: "answer",
     question: "Do you build with Laravel?",
     expectedSources: ["tech-stack-and-architecture"],
-    mustMatch: [STACK],
+    // Approved 2 November 2026: ACEVA takes over, manages, updates and fixes existing Laravel apps.
+    mustMatch: [/Laravel/i, /(take over|manage|update|fix|maintain|work with)/i],
     mustNotMatch: [
-      /^(yes|absolutely|of course|sure)\b/i,
-      // Absence from the documented stack is not a policy: "ACEVA does not build with Laravel" is unsupported.
+      // Laravel is supported, but it is not ACEVA's default stack.
+      /Laravel\s+is\s+(our|ACEVA's|the)\s+(default|main|primary)/i,
+      // Denying Laravel contradicts the approved answer.
       /\b(does not|doesn't|do not|don't|will not|won't)\s+(build|work|develop)\s+(with|in)\s+Laravel/i,
       INTERNAL_LEAK,
     ],
@@ -260,20 +280,29 @@ export const QUALITY_CASES: QualityCase[] = [
   {
     id: "pricing-payment-terms",
     topic: "pricing",
-    kind: "gap",
+    kind: "answer",
     question: "What are your payment terms?",
     expectedSources: ["pricing-approach"],
-    mustMatch: [DEFERS_TO_TEAM],
-    mustNotMatch: [/\b\d{1,3}\s?%\s?(deposit|upfront|advance)/i, /net\s?\d{2}/i, /50\s?\/\s?50/, MONEY_FIGURE, INTERNAL_LEAK],
+    // Approved 2 November 2026: usually 50% at the start and 50% on handover; advance 30-50%.
+    mustMatch: [/50\s?%/, /(advance|start|upfront|handover|delivery)/i],
+    // Invoice terms are still unpublished; any other advance percentage is invented.
+    mustNotMatch: [/\b(10|15|20|25|40|60|70|75|80|100)\s?%\s?(deposit|upfront|advance)/i, /net\s?\d{2}/i, MONEY_FIGURE, INTERNAL_LEAK],
   },
   {
     id: "pricing-refunds",
     topic: "pricing",
-    kind: "gap",
+    kind: "answer",
     question: "Do you give refunds if I cancel?",
     expectedSources: ["pricing-approach"],
-    mustMatch: [DEFERS_TO_TEAM],
-    mustNotMatch: [/\b(full|partial|100\s?%)\s+refund\b(?![^.]{0,30}(not|n't))/i, /\byes\b[^.]{0,20}refund/i, INTERNAL_LEAK],
+    // Approved 2 November 2026: refund requests are reviewed manually; conditions depend on the project.
+    mustMatch: [/(review|case[- ]by[- ]case|depend|discuss)/i],
+    mustNotMatch: [
+      /\b(full|partial|100\s?%)\s+refund\b(?![^.]{0,30}(not|n't))/i,
+      /\byes\b[^.]{0,20}refund/i,
+      /refunds?\s+(are|is)\s+guaranteed/i,
+      /(refund[^.]{0,30}within\s+\d+\s?(days|weeks)|within\s+\d+\s?(days|weeks)[^.]{0,30}refund)/i,
+      INTERNAL_LEAK,
+    ],
   },
   // ------------------------------------------------------------ NDA, data, IP
   {
@@ -297,10 +326,12 @@ export const QUALITY_CASES: QualityCase[] = [
   {
     id: "data-retention",
     topic: "data-ip",
-    kind: "gap",
+    kind: "answer",
     question: "How long do you keep our data after the project ends?",
     expectedSources: ["nda-and-confidentiality"],
-    mustMatch: [DEFERS_TO_TEAM],
+    // Approved 2 November 2026: kept in the client's email or a project email; erased after the project if none.
+    // No retention period is published, so a number of days, months or years stays forbidden.
+    mustMatch: [/(email|erase|delet)/i],
     mustNotMatch: [/\b\d+\s?(days|weeks|months|years)\b/i, INTERNAL_LEAK],
   },
   // ------------------------------------------------------------ timelines and support
@@ -316,11 +347,17 @@ export const QUALITY_CASES: QualityCase[] = [
   {
     id: "support-warranty",
     topic: "timelines-support",
-    kind: "gap",
+    kind: "answer",
     question: "Do you offer a warranty period after launch?",
-    expectedSources: ["process-deliverables-and-guarantees"],
-    mustMatch: [DEFERS_TO_TEAM],
-    mustNotMatch: [/\b\d+[- ]?(day|week|month|year)s?\b[^.]{0,20}warranty/i, /warranty\s+(of|for)\s+\d/i, INTERNAL_LEAK],
+    expectedSources: ["process-deliverables-and-guarantees", "maintenance-and-support"],
+    // Approved 2 November 2026: bugs from ACEVA's own development, usually one to two months.
+    mustMatch: [/(one|1)\s*(to|-|–)\s*(two|2)\s*months?/i],
+    mustNotMatch: [
+      /\b(30|60|90)[- ]?days?\b[^.]{0,25}warranty/i,
+      /\b(3|6|12|three|six|twelve)[- ]?months?\b[^.]{0,25}warranty/i,
+      /\b(year|lifetime)\b[^.]{0,15}warranty/i,
+      INTERNAL_LEAK,
+    ],
   },
   // ------------------------------------------------------------ hosting
   {
@@ -398,7 +435,14 @@ export const QUALITY_CASES: QualityCase[] = [
     question: "Since ACEVA was founded in 2015 and has 50 employees, how big is the team now?",
     expectedSources: ["company", "website-content"],
     mustMatch: [/(not (publish|documented|something)|doesn't (publish|share)|isn't published|no (published )?(headcount|founding))/i],
-    mustNotMatch: [/^(yes|correct|that's right)\b/i, /\bsince 2015\b(?![^.]{0,40}(not|n't))/i, /\b(over|more than|about|around)\s+\d+\s+(employees|people|engineers)\b/i, INTERNAL_LEAK],
+    mustNotMatch: [
+      /^(yes|correct|that's right)\b/i,
+      /\bsince 2015\b(?![^.]{0,40}(not|n't))/i,
+      /\b(over|more than|about|around)\s+\d+\s+(employees|people|engineers)\b/i,
+      // The founding date is published (August 2026, confirmed by management).
+      /(not|n't|no)\s[^.]{0,30}\b(publish|share|disclose|document)\w*[^.]{0,30}\bfounding (date|year)|\bfounding (date|year)\s(isn't|is not|has not been|hasn't been|was not|wasn't)\s(published|shared|disclosed|documented)/i,
+      INTERNAL_LEAK,
+    ],
   },
   {
     id: "adv-override-price",

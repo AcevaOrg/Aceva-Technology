@@ -42,6 +42,11 @@ Automation. The general explanations further down are labelled as such.
   4. A person authorizes it.
   5. The system is updated.
   6. The step is recorded in an audit log.
+- ACEVA can integrate AI services and AI models, depending on the project and
+  the client's choice — a client can ask for its preferred AI provider or
+  model. Each integration is still subject to the team's feasibility review;
+  this is not a promise that every service fits every project.
+- ACEVA does not use client data to train AI.
 - ACEVA has not published which specific CRM, ERP, email or payment products it
   has integrated with. The team confirms whether a particular platform fits.
 

@@ -90,8 +90,24 @@ const HR_EMAIL = /\b(hr|careers?|jobs?|recruit\w*|hiring|people|talent|apply)@/i
 /** A duration stated for something ACEVA does not time-box publicly. */
 const STATED_DURATION = /(?<![/\d])\b(\d+|one|two|three|four|five|six|a few|several)\s*(-|to|–)?\s*(\d+\s*)?(business\s+)?(days?|weeks?)\b/i;
 
+/**
+ * Any duration except the two approved on 2 November 2026: a Proof Sprint of
+ * about one day, and delivery sprints of 1–2 weeks. Use it only where those two
+ * may legitimately appear; pair it with a phase-specific pattern, because the
+ * approved "1–2 weeks" is a sprint length, not the length of any phase.
+ */
+const UNAPPROVED_DURATION =
+  /(?<![/\d])(?<!\b30,\s*60,?\s*(?:or|and)?\s*)(?<!(?:\b1|\bone)\s*(?:-|to|–)\s*)\b(?!(?:1|one)\s+day\b)(?!(?:1|one)\s*(?:-|to|–)\s*(?:2|two)[- ]?weeks?\b)(\d+|one|two|three|four|five|six|a few|several)\s*(-|to|–)?\s*(\d+\s*)?(business\s+)?(days?|weeks?)\b/i;
+
+/** A duration stated for a phase whose length is still unpublished, such as the Rescue Sprint or Understand. */
+// (?<![/\d]) keeps the published "30/60/90-day roadmap" from reading as a duration,
+// and the second look-behind its spelled-out form, "the next 30, 60 or 90 days".
+const PHASE_DURATION_TAIL = String.raw`\b[^.]{0,60}(?<![/\d])(?<!\b30,\s*60,?\s*(?:or|and)?\s*)\b(\d+|one|two|three|four|five|six|a few|several)\s*(-|to|–)?\s*(\d+\s*)?(business\s+)?(days?|weeks?)\b`;
+const phaseDuration = (phase: string) => new RegExp(String.raw`\b(` + phase + ")" + PHASE_DURATION_TAIL, "i");
+
 /** A sprint length ACEVA has not published. */
-const SPRINT_LENGTH = /\b(\d|one|two|three|four)[- ]week\s+(sprints?|iterations?|cycles?)/i;
+/** A sprint length other than the approved 1–2 weeks (2 November 2026). */
+const SPRINT_LENGTH = /\b(3|4|6|three|four|six)[- ]weeks?\s+(sprints?|iterations?|cycles?)|sprints?\s+(of|last(s|ing)?)\s+(3|4|6|three|four|six)\s+weeks?/i;
 
 /** A zero-downtime promise. */
 const DOWNTIME_PROMISE = /\b(we|aceva|I)\s+(can\s+|will\s+)?(guarantee|promise|ensure)s?\s+(zero|no)\s+(downtime|outage)/i;
@@ -294,7 +310,7 @@ export const QUESTION_BANK_CASES: QuestionBankCase[] = [
     confirmations: ["DW-05", "DW-12"],
     expectedSources: ["maintenance-and-support", "process", "process-deliverables-and-guarantees"],
     mustMatch: [/(monitor|roadmap|improve|support)/i],
-    mustNotMatch: [/\b\d+[- ]?(day|month|year)s?\b[^.]{0,20}(warranty|sla)/i, /\b(we|aceva)\s+(guarantee|promise)s?\b/i],
+    mustNotMatch: [/\b(?!1\b|2\b)\d+[- ]?(day|month|year)s?\b[^.]{0,20}(warranty|sla)/i, /\b(we|aceva)\s+(guarantee|promise)s?\b/i],
   }),
 
   // ============================================================ B. AI and integrations
@@ -416,7 +432,8 @@ export const QUESTION_BANK_CASES: QuestionBankCase[] = [
     confirmations: [],
     expectedSources: ["proof-sprint", "rescue-sprint"],
     mustMatch: [/(new|prototype|prove|narrow)/i, /(existing|audit|broken|inherited|30\/60\/90)/i],
-    mustNotMatch: [MONEY_FIGURE, STATED_DURATION],
+    // The Proof Sprint's "about one day" is approved; a Rescue Sprint duration is still unpublished.
+    mustNotMatch: [MONEY_FIGURE, UNAPPROVED_DURATION, phaseDuration("rescue sprints?")],
   }),
 
   // ============================================================ D. Project management and delivery
@@ -424,14 +441,14 @@ export const QUESTION_BANK_CASES: QuestionBankCase[] = [
     id: "qb21-scope-change",
     briefNumber: 21,
     topic: "delivery",
-    kind: "gap",
+    kind: "answer",
     category: "A+B+C",
     question: "What is Aceva's policy regarding project scope changes or additional features during development?",
     keyInformation: "Written scope boundaries, milestones and acceptance criteria; decisions written weekly; change process and pricing not published.",
     confirmations: ["DW-08", "PR-08"],
     expectedSources: ["delivery-and-sprints", "pricing-approach", "process", "faq"],
-    mustMatch: [/(scope|written|milestone|acceptance)/i],
-    mustNotMatch: [MONEY_FIGURE, /\bchange (orders?|requests?)\s+(are|is)\s+(billed|charged|priced|free)/i, /\b(we|aceva)\s+(charge|bill)s?\b/i],
+    mustMatch: [/(scope|written|milestone|acceptance)/i, /(quot\w*|priced|charged)[^.]{0,40}(separately|on its own)|separate (quote|price)|(approv\w*)[^.]{0,30}quote/i],
+    mustNotMatch: [MONEY_FIGURE, /\bchange (orders?|requests?)\s+(are|is)\s+free/i, /\b(free|no extra cost|at no cost)\b[^.]{0,30}(out[- ]of[- ]scope|outside (the )?scope)/i],
   }),
   bank({
     id: "qb22-code-review",
@@ -457,7 +474,7 @@ export const QUESTION_BANK_CASES: QuestionBankCase[] = [
     confirmations: ["DW-04"],
     expectedSources: ["maintenance-and-support", "delivery-and-sprints", "process-deliverables-and-guarantees", "faq"],
     mustMatch: [/(named|monitor|alert|prioriti)/i],
-    mustNotMatch: [/\b\d+[- ]?(day|week|month)s?\b[^.]{0,25}warranty/i, /warranty\s+(of|for|lasts?)\s+\d/i, acevaUses(TRACKERS)],
+    mustNotMatch: [/\b(30|60|90)[- ]?days?\b[^.]{0,25}warranty/i, /\b(3|6|12|three|six|twelve)[- ]?months?\b[^.]{0,25}warranty/i, /\b(year|lifetime)\b[^.]{0,15}warranty/i, acevaUses(TRACKERS)],
   }),
   bank({
     id: "qb24-bugs-in-development",
@@ -496,7 +513,8 @@ export const QUESTION_BANK_CASES: QuestionBankCase[] = [
     confirmations: ["DW-07"],
     expectedSources: ["delivery-and-sprints", "process", "process-deliverables-and-guarantees"],
     mustMatch: [/(depends? on (the )?(project.s |your )?scope|no (typical|standard|published|set)|(hasn.t|has not|not) (been )?published)/i],
-    mustNotMatch: [STATED_DURATION],
+    // The approved Proof Sprint and sprint lengths may be mentioned; a length for Understand may not.
+    mustNotMatch: [UNAPPROVED_DURATION, phaseDuration("understand(ing)?( phase)?")],
   }),
   bank({
     id: "qb27-train-client-team",
@@ -564,7 +582,7 @@ export const QUESTION_BANK_CASES: QuestionBankCase[] = [
     confirmations: ["SR-02", "ND-07"],
     expectedSources: ["secure-development", "nda-and-confidentiality", "process-deliverables-and-guarantees"],
     mustMatch: [/(handed|handover|ownership|transfer)/i],
-    mustNotMatch: [acevaUses(GIT_HOSTS + "|1password|lastpass|bitwarden"), /\b(ownership|repositor\w+|credentials|code|accounts)\s+(is|are)\s+(transferred|handed over|released)\s+(on|after|upon)\s+final payment/i],
+    mustNotMatch: [acevaUses(GIT_HOSTS + "|1password|lastpass|bitwarden")],
   }),
   bank({
     id: "qb32-nda-business-logic",
@@ -636,25 +654,26 @@ export const QUESTION_BANK_CASES: QuestionBankCase[] = [
   bank({
     id: "para-feature-request",
     topic: "delivery",
-    kind: "gap",
+    kind: "answer",
     category: "A+C",
     question: "What happens if we want to add a feature request halfway through the build?",
     keyInformation: "Written scope boundaries and weekly written decisions; change process and pricing not published.",
     confirmations: ["DW-08", "PR-08"],
     expectedSources: ["delivery-and-sprints", "pricing-approach", "process"],
-    mustMatch: [/(scope|written|deferred|acceptance|milestone)/i],
-    mustNotMatch: [MONEY_FIGURE, /\b(we|aceva)\s+(charge|bill)s?\b/i, /\b(free|no extra cost)\b[^.]{0,20}(change|feature)/i],
+    mustMatch: [/(scope|written|deferred|acceptance|milestone)/i, /(quot\w*|priced|charged)[^.]{0,40}(separately|on its own)|separate (quote|price)|(approv\w*)[^.]{0,30}quote/i],
+    mustNotMatch: [MONEY_FIGURE, /\b(free|no extra cost|at no cost)\b[^.]{0,30}(out[- ]of[- ]scope|outside (the )?scope)/i, /\b(free|no extra cost)\b[^.]{0,20}(change|feature)/i],
   }),
   bank({
     id: "para-broken-after-launch",
     topic: "maintenance",
-    kind: "gap",
+    kind: "answer",
     category: "A+C",
     question: "If something breaks a month after launch, will you fix it for free?",
     keyInformation: "Named people responsible for bugs and support terms agreed in writing at launch; warranty not published.",
     confirmations: ["DW-04"],
     expectedSources: ["maintenance-and-support", "process-deliverables-and-guarantees", "faq"],
-    mustMatch: [/(named|support terms|in writing|agreed)/i],
+    // Approved 2 November 2026: ACEVA fixes bugs from its own development for usually one to two months.
+    mustMatch: [/(one|1)\s*(to|-|–)\s*(two|2)\s*months?|own (development|work|defects)/i],
     mustNotMatch: [BARE_YES, /\b(we|aceva)\s+(will\s+)?(fix|cover|repair)[^.]{0,40}(for free|free of charge|at no (extra |additional )?cost)/i],
   }),
   bank({

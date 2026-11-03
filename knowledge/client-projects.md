@@ -16,6 +16,21 @@ Both sites were built for the same client: Angel Indian Restaurant in Jackson He
 
 On both sites ACEVA delivered design, development, content, SEO, and ongoing maintenance. The client has given permission for both to be named and discussed as references.
 
+These are the projects ACEVA can show publicly:
+
+- https://angelindianrestaurantnyc.com
+- https://chefamritpalsingh.com
+
+More projects may be added as their clients approve them.
+
+## Who manages and controls the two client websites and their domains (angelindianrestaurantnyc.com, chefamritpalsingh.com)
+
+ACEVA manages the server, the domain and the code for both websites on the client's behalf, with the client's permission. ACEVA does not claim to own the client's business, sites or domains. Who legally holds the domains, repositories and accounts for these two sites is not documented; the team can confirm it at /contact.
+
+## Results and performance figures
+
+Verified performance figures for these sites — traffic, reservations, page speed or search rankings — are not published yet. ACEVA can share project results on request through /contact.
+
 ## Angel Indian Restaurant website
 
 The restaurant's own website, live at `https://angelindianrestaurantnyc.com/`.
@@ -59,14 +74,14 @@ The footer credit reads "Designed & crafted by Aceva Tech", and a panel on the s
 - Keep client work and demonstrations distinct. The labelled demos on `/experiments` are ACEVA's own work; the homepage states they are never presented as client work. These two sites are the opposite case: genuine client work, publicly credited.
 - Two hospitality websites is the entire documented client list, confirmed by the team as the complete set of completed projects. Never imply a wider portfolio, a client roster, or delivery experience in an industry these two do not cover. If a visitor asks for an example in another sector, say plainly that the documented examples are these two and offer to map their own project instead.
 - Do not publish the client's telephone number or email address, even though both appear on the restaurant's site. Point the visitor at the restaurant's website.
-- Do not quote a result or a metric of any kind — traffic, covers, reservations, page speed or search rankings. SEO was part of the scope, which makes a search-performance question likely; none of those figures is documented, so it needs confirming at /contact.
-- Do not state where either site is hosted, or who holds the domains, repositories and accounts. That is still open below, and it is the one topic where a wrong answer would conflict with ACEVA's client-ownership promise.
+- Do not quote a result or a metric of any kind — traffic, covers, reservations, page speed or search rankings. SEO was part of the scope, which makes a search-performance question likely; no verified figure is published, and ACEVA can share project results on request through /contact.
+- ACEVA manages the server, domain and code for both sites on the client's behalf, with permission. Never say ACEVA owns the client's business, its sites or its domains, and do not state who legally holds them: that is not documented. The hosting provider is not named; do not guess it.
+- New client work is named only with the client's permission.
 - Pricing questions are not answered from this file. A named project is not a price list; pricing follows `pricing-approach.md`.
 
 ## Not yet documented
 
-- TODO(aceva): Confirm where each site is hosted and who holds the domain, repository and accounts. Still unknown as of 11 October 2026. Until it is answered, Pulse must not answer a hosting or ownership question about these two sites, because a wrong answer would cut against the client-ownership promise in `process-deliverables-and-guarantees.md`.
-- TODO(aceva): Confirm whether any measurable outcome may be quoted — page performance, reservation volume through Resy, or search visibility — and supply the figure with the date it was measured. Still unknown as of 11 October 2026. This matters more than the other gaps because SEO and maintenance are both in scope, so visitors are likely to ask what the SEO work achieved.
+- TODO(aceva): Which hosting provider serves each site, and who legally holds the domains, repositories and accounts? (Who manages the server, domain and code was answered on 2 November 2026: ACEVA, on the client's behalf, with permission. Ownership was not.)
 (The company-name question that sat here is settled — see the review notes below.)
 
 ## Review notes
@@ -79,4 +94,5 @@ The footer credit reads "Designed & crafted by Aceva Tech", and a panel on the s
 - There is no public case-study or work page on acevatech.com, confirmed by the team on 11 October 2026 as not planned yet. That is why this file's `url` is the homepage rather than a page of its own; point it at a real route if one is added.
 - `faq.md` previously stated that ACEVA claimed no real client work and carried an approved fallback saying there were no verified portfolio examples. Both were updated when this file was added; if this file is removed, restore them.
 - Re-verification attempted on 29 October 2026: both client sites were unreachable from the audit machine (connection refused), so every fact above still stands as read on 10 October 2026 and was not re-checked. Third-party listings read that day (Hell Gate, NYC Tourism) give the restaurant's address as 74-14 37th Road rather than the 75-18 37th Avenue the site itself showed on 10 October, and one names angelindianny.com as the restaurant's website. Those conflicts are why the street address was removed from the visitor-facing text above. TODO(aceva): confirm the restaurant's current address and whether angelindianny.com is a second domain for the same client site.
-- Re-run `npm run ingest` after editing this file.
+- Updated 2 November 2026 from the manager's approved answers: the two sites are the publicly shareable projects, more may follow with client approval; ACEVA manages their server, domain and code on the client's behalf with permission; no verified performance figures are published yet, and results are shared on request.
+- Re-run `npm run build:index` after editing this file.

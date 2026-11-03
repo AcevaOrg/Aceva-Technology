@@ -136,6 +136,12 @@ export const EXPLORE_OPTIONS: readonly { label: string; hint: string; intent: Pu
 // question the heading is showing.
 const WIZARD_STEPS = DISCOVERY_STEPS;
 
+/** Shown in place of step 1's heading after the visitor's own question is answered. */
+export const QUESTION_FIRST_HEADING = {
+  title: "Ask anything about ACEVA.",
+  helper: "When you're ready, tell us about your business or project: what you do or want to build, and who it's for.",
+} as const;
+
 export const INDUSTRY_RULES = [
   { test: /\b(restaurants?|cafe|cafes|food|dining|kitchen|bakery|catering|takeaway|fast food)\b/i, industry: "Hospitality & Restaurant", business: "Restaurant operation", friction: ["Manual order taking", "Lack of direct online ordering"], goals: ["Direct online ordering", "Faster kitchen throughput"] },
   { test: /\b(dairy|farms?|cattle|milk|agriculture|livestock|crops?)\b/i, industry: "Dairy & Agriculture", business: "Farm & dairy operation", friction: ["Manual yield logging", "Distributor tracking gaps"], goals: ["Automated milk/yield logging", "Streamlined distribution"] },
@@ -524,7 +530,7 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
                   type="text"
                   value={lookupPulseId}
                   onChange={(e) => setLookupPulseId(e.target.value)}
-                  placeholder="Enter reference ID (e.g. PLS-260829-123)"
+                  placeholder="Enter reference ID (e.g. PLS-261102-7KQ2-M9XD)"
                   aria-label="Enter reference PULSE ID"
                 />
                 <button type="submit" disabled={!lookupPulseId.trim()}>
@@ -598,8 +604,20 @@ export default function PulseMessages({ state, dispatch }: PulseMessagesProps) {
         <p className={styles.stepLabel}>
           {stepNumber(state.step + 2)} / {currentStep.label}
         </p>
-        <h2>{currentStep.title}</h2>
-        <p className={styles.promptHelper}>{currentStep.helper}</p>
+        {/* A visitor who opened with a question of their own ("Who is CEO?")
+            has been answered, not asked about a project yet, so the first
+            step's heading would read as a stale welcome until they give one. */}
+        {state.step === 0 && state.answers.length === 0 && state.askedQuestionFirst ? (
+          <>
+            <h2>{QUESTION_FIRST_HEADING.title}</h2>
+            <p className={styles.promptHelper}>{QUESTION_FIRST_HEADING.helper}</p>
+          </>
+        ) : (
+          <>
+            <h2>{currentStep.title}</h2>
+            <p className={styles.promptHelper}>{currentStep.helper}</p>
+          </>
+        )}
 
         {/* Previous user and Pulse messages display */}
         {state.messages.length > 0 && (

@@ -8,7 +8,7 @@ company: "ACEVA Technology"
 
 # ACEVA Technology Stack and Architecture Guide
 
-This is ACEVA's default technology stack as published on acevatech.com/technology: what ACEVA builds with by default, and what it switches to when a project genuinely needs it. Technology is selected per project. Every item below is named on the website; anything not listed here is not an approved claim. In particular, WordPress, Shopify, Wix, Squarespace, Webflow, Laravel, Django, Rails, .NET, PHP and Java do not appear anywhere on the website, so whether ACEVA will build on or take over an existing site or store on one of those platforms is not documented and must be confirmed with the team at /contact. Likewise Redis, AWS Lambda, Docker, Kubernetes, Firebase and MongoDB are not named on the website; the documented data layer is PostgreSQL with Prisma, and hosting is Vercel for the frontend with AWS or Railway for backend and data.
+This is ACEVA's default technology stack as published on acevatech.com/technology: what ACEVA builds with by default, and what it switches to when a project genuinely needs it. In short, ACEVA's default technologies are Next.js and React with TypeScript for websites and web apps, Expo and React Native for mobile apps, Node.js for APIs, PostgreSQL with Prisma for data, and Vercel with AWS or Railway for hosting. Technology is selected per project, and a client may specify its own stack (see "Choosing your own technology stack" below). Anything not listed in this guide is not an approved claim. ACEVA's management has confirmed that ACEVA can take over existing Laravel applications and works with .NET applications (see "Laravel and .NET applications" below). WordPress, Shopify, Wix, Squarespace, Webflow, Django, Rails, PHP and Java do not appear anywhere on the website, so whether ACEVA will build on or take over an existing site or store on one of those platforms is not documented and must be confirmed with the team at /contact. Likewise Redis, AWS Lambda, Docker, Kubernetes, Firebase and MongoDB are not named on the website; the documented data layer is PostgreSQL with Prisma, and hosting is Vercel for the frontend with AWS or Railway for backend and data.
 
 ---
 
@@ -18,7 +18,7 @@ This is ACEVA's default technology stack as published on acevatech.com/technolog
 - **Technical Explanation**: Next.js is a full-stack React framework with server rendering, static generation, automatic code splitting and optimized routing. It is ACEVA's default for websites and web applications, and this website is built with it.
 - **Non-Technical Explanation**: Server rendering is chosen for speed and search visibility, and the typed codebase can be inherited by another team.
 
-### TypeScript
+### TypeScript: the programming language ACEVA uses
 - **Technical Explanation**: A statically typed superset of JavaScript that catches type errors at compile time, used across ACEVA's frontend and backend code.
 - **Non-Technical Explanation**: An automatic safety check while building, so many mistakes are caught before launch.
 
@@ -89,16 +89,43 @@ This is ACEVA's default technology stack as published on acevatech.com/technolog
 
 ---
 
+## Other technologies, client choice and hosting
+
+The stack above is ACEVA's default, not a limit.
+
+### Laravel and .NET applications: support, takeover and maintenance
+
+ACEVA can take over, manage, update and fix existing Laravel applications. It
+works across different technologies, including .NET (dotnet) applications.
+
+### Choosing your own technology stack
+
+A client can specify a preferred stack or technology and does not have to use
+ACEVA's default stack. ACEVA also recommends what fits the project best.
+
+### Using your own cloud provider or hosting
+
+A client can use its own cloud provider or hosting platform; Vercel, AWS and
+Railway are ACEVA's defaults, not a requirement.
+
+### Integrating your preferred AI service or model
+
+ACEVA can integrate AI services and models, depending on the project and the
+client's choice, after the team has reviewed feasibility.
+
+### Browser and device support
+
+Delivered applications are cross-platform and work across multiple browsers
+and devices, based on the client's requirements.
+
 ## Not yet documented
 
-The stack above is the default. These questions come up and are not yet
-answered anywhere approved, so Pulse must say it is not certain and point to
-/contact rather than guess.
+These questions come up and are not yet answered anywhere approved, so Pulse
+must say it is not certain and point to /contact rather than guess.
 
-- TODO(aceva): Will ACEVA work in a stack it did not choose — an existing Laravel, Django, Rails or .NET codebase? Say yes or no, and name any limits.
-- TODO(aceva): Can a client require hosting somewhere other than Vercel, AWS or Railway (their own cloud account, on-premise, a specific region for data residency)?
-- TODO(aceva): Which LLM providers are used for AI features, and can a client require a specific one or self-hosting?
-- TODO(aceva): Is there a documented minimum browser or device support baseline?
+- TODO(aceva): Can a client require on-premise hosting or a specific data-residency region, beyond choosing its own cloud provider?
+- TODO(aceva): Which LLM providers does ACEVA use by default, and does it support self-hosted models?
+- TODO(aceva): Is there a fixed minimum list of browser versions and devices, beyond each client's requirements?
 - TODO(aceva): What is the documented position on accessibility beyond the WCAG AA target, if a client needs an audit or certification?
 - TODO(aceva): Which CI service and Git host are standard? ("GitHub Actions" and a GitHub/GitLab handover were previously stated here without a source and have been removed.)
 

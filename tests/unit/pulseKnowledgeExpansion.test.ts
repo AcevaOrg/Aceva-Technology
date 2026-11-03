@@ -187,7 +187,8 @@ describe("the bank's forbidden patterns catch the claims they exist for", () => 
     ["unconfirmed-qdrant", "No, ACEVA doesn't use Qdrant."],
     ["policy-hipaa-compliant", "Yes, ACEVA is HIPAA compliant. Reach out at /contact."],
     ["qb33-hr-email", "You can write to hr@acevatech.com, or contact@acevatech.com for general questions."],
-    ["qb25-weekly-commitments", "ACEVA works in two-week sprints with a demo every week."],
+    // 1–2 week sprints were approved on 2 November 2026; a four-week sprint is still invented.
+    ["qb25-weekly-commitments", "ACEVA works in four-week sprints with a demo every week."],
     ["qb26-understand-duration", "Understand usually takes one to two weeks; the team at /contact can confirm."],
     ["qb02-legacy-downtime", "ACEVA audits first and we guarantee zero downtime through staging. The team at /contact can confirm."],
     ["qb06-offline-apps", "Yes, ACEVA builds offline-first apps. The team can confirm at /contact."],
@@ -226,12 +227,42 @@ describe("the bank's forbidden patterns catch the claims they exist for", () => 
     expect(scoreAnswer(c, "A Proof Sprint takes two weeks; a Rescue Sprint audits existing software.").hallucinated).toBe(true);
   });
 
-  it("allows saying the payment timing of a handover is unpublished, but not stating it", () => {
+  // Handover after final payment was approved on 2 November 2026, so stating it
+  // is now correct. The transfer protocol and the Git host are still open.
+  it("allows stating handover after final payment, but not an invented Git host or vault", () => {
     const c = byId("qb31-credential-transfer");
-    const honest =
-      "Ownership of the repository is a launch deliverable. Whether ownership transfers on final payment or progressively is not published; the team can confirm.";
-    expect(scoreAnswer(c, honest).hallucinated).toBe(false);
-    expect(scoreAnswer(c, "The repository is handed over on final payment, and the team can confirm the rest.").hallucinated).toBe(true);
+    const approved =
+      "Handover takes place after the final payment, and ownership of the repository is a launch deliverable. The step-by-step transfer protocol is not published; the team can confirm.";
+    expect(scoreAnswer(c, approved).hallucinated).toBe(false);
+    expect(scoreAnswer(c, "ACEVA uses GitHub and shares credentials through 1Password at handover.").hallucinated).toBe(true);
+  });
+
+  it("accepts the approved 1–2 week sprint length", () => {
+    const c = byId("qb25-weekly-commitments");
+    expect(scoreAnswer(c, "Work runs in 1–2 week sprints, with a working demo every week.").hallucinated).toBe(false);
+  });
+
+  // Live answers of 2 November 2026, after the Proof Sprint (about one day) and
+  // sprint length (1–2 weeks) were approved. They are correct and must pass;
+  // a duration for the still-unpublished phases must not.
+  it("allows the approved Proof Sprint and sprint lengths, but not a Rescue Sprint or Understand duration", () => {
+    const proofVsRescue = byId("qb20-proof-vs-rescue");
+    expect(
+      scoreAnswer(
+        proofVsRescue,
+        "A Proof Sprint is for something new: a written scope, a working prototype and a build plan. It typically lasts about one day. A Rescue Sprint is for existing software: an audit, a risk list and a 30/60/90-day roadmap."
+      ).hallucinated
+    ).toBe(false);
+    expect(scoreAnswer(proofVsRescue, "A Proof Sprint proves a new plan; a Rescue Sprint audits existing software and takes two weeks.").hallucinated).toBe(true);
+    expect(scoreAnswer(proofVsRescue, "A Proof Sprint for a new product takes about three weeks; a Rescue Sprint audits existing software.").hallucinated).toBe(true);
+
+    const understand = byId("qb26-understand-duration");
+    expect(
+      scoreAnswer(
+        understand,
+        "ACEVA has not published a typical length for the Understand phase, as project timelines depend on scope. A Proof Sprint usually takes about one day, while delivery sprints last 1–2 weeks. The team can confirm at /contact."
+      ).hallucinated
+    ).toBe(false);
   });
 
   // Measured in the live runs of 31 October 2026: qb29 attributed general

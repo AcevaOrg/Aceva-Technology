@@ -15,6 +15,11 @@ efficient and scaling during rapid growth.
 
 - Vercel serves the frontend by default. Backend and data services run on AWS or
   Railway, chosen per project rather than forced into one box.
+- That is the default, not a requirement: a client can use its own cloud
+  provider or hosting platform instead.
+- If ACEVA hosts and maintains a project for the client, a maintenance fee and a
+  live-server fee apply. Hosting, domain and other third-party costs are billed
+  separately from the project price.
 - The published DevOps practices are:
   - CI on every change;
   - staging plus rollback;

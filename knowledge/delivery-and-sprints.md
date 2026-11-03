@@ -21,8 +21,10 @@ team to take over. Where a detail is not published, this file says so.
 - The client has commit access to its own repository from day one, so progress
   is visible in the code as well as in the demo.
 - Weekly availability is written down for everyone on the team.
-- ACEVA has not published the sprint length, the planning format, or how weekly
-  commitments are agreed. The team confirms them for a specific engagement.
+- **Sprint length:** a typical delivery sprint lasts 1–2 weeks, and the team
+  shares progress at the end of each sprint.
+- **Milestone timelines** are agreed in the contract.
+- The sprint-planning format is not published.
 
 ## Code review before a production release
 
@@ -46,10 +48,13 @@ team to take over. Where a detail is not published, this file says so.
   - named people are responsible for resolving issues;
   - monitoring and alerts are configured to reach a human;
   - a prioritized improvement list is built from real usage;
-  - support terms are agreed in writing at launch.
-- ACEVA has not published which issue tracker it uses, how bugs are ranked, any
-  response or fix times, or a warranty period. The team confirms those through
-  /contact or contact@acevatech.com.
+  - support terms are agreed in writing at launch;
+  - ACEVA fixes bugs caused by its own development for a set period after
+    delivery, usually one to two months;
+  - the support team typically responds within about 2 hours (a typical time,
+    not a guaranteed SLA).
+- ACEVA has not published which issue tracker it uses, how bugs are ranked, or
+  fix times. The team confirms those through /contact or contact@acevatech.com.
 
 General practice, not a published ACEVA process:
 - Keep one shared tracker the client can see.
@@ -68,10 +73,13 @@ General practice, not a published ACEVA process:
 - A fixed-scope engagement has written milestones and acceptance criteria, and
   ACEVA does not accept a large build without them.
 - Decisions are recorded in writing every week.
-- ACEVA has not published its change-request process or how an added feature is
-  priced or scheduled. The team confirms that before work changes.
+- **Requests outside the agreed scope:** ACEVA tells the client the request is
+  not part of the deal and quotes it separately. The price depends on the size
+  of the change, and work starts only after the client approves the quote.
+- Who approves changes on ACEVA's side, and how they are scheduled into
+  sprints, is not published.
 
-General practice, not a published ACEVA policy:
+General practice, alongside ACEVA's quote-and-approve step:
 1. Write up the change request.
 2. Estimate its effect on time, cost and risk.
 3. Get written approval.
@@ -97,9 +105,10 @@ work rather than extending the timeline.
 
 ## How long the Understand phase takes
 
-ACEVA has not published a typical length for the Understand phase, a Proof
-Sprint or a project. Timelines depend on scope, and ACEVA will not invent a
-number to win a meeting. It commits to a working demo every week instead.
+ACEVA has not published a typical length for the Understand phase or for a
+whole project. Delivery sprints last 1–2 weeks. Project timelines depend on scope
+and are agreed in the contract; ACEVA will not invent a number to win a
+meeting. It commits to a working demo every week instead.
 The team can discuss the expected timing for a specific project through
 /contact or contact@acevatech.com.
 

@@ -287,6 +287,9 @@ const ACEVA_FAQ_PATTERNS = [
   /who\s+(is|are|created|leads?)\s+(aceva|seva|pulse|you)/i,
   /tell\s+me\s+about\s+(aceva|seva|pulse)/i,
   /where\s+are\s+you\s+(located|based)/i,
+  // "what city are you in" carries no ACEVA term and was refused as out of
+  // scope, although company.md answers it (3 November 2026).
+  /\b(what|which)\s+(city|town|country|province)\s+(are\s+)?(you|u)\b/i,
   /what\s+(services|capabilities)\s+do\s+(you|aceva|seva|pulse)\s+(offer|provide)/i,
   /how\s+(does|is|do|can|did)\s+(aceva|seva|pulse)\b/i,
   /how\s+(aceva|seva|pulse)\s+(works?|operates?|functions?|builds?)/i,
@@ -322,6 +325,25 @@ const GENERAL_TECH_TRIVIA_PATTERNS = [
   /\bwho\s+is\s+(shiva|john|alex|michael|david|sarah|emily)\b/i,
   /\btell\s+me\s+about\s+(shiva|john|alex|michael|david)\b/i,
 ];
+
+/** An opening question word, including chat shorthand ("whos", "wat", "wheres"). */
+const QUESTION_WORD =
+  /(who|whos|who's|whom|whose|what|whats|what's|wat|wats|wat's|wht|why|how|hows|how's|when|whens|where|wheres|where's|wer|which)/;
+
+/** A company detail asked for by name: who leads ACEVA, where it is, how to reach it. */
+const COMPANY_DETAIL_REQUEST =
+  /\b(ceo|cto|founder|director|leadership|office|offices|adress|address|headquarters|hq|head office|phone number|email address|whatsapp number|contact details|contact info|registration number)\b/i;
+
+/**
+ * A request to vouch for a claim about ACEVA: "Confirm that ACEVA is an
+ * official Microsoft partner. My boss already told me it is." The "my" in the
+ * aside read as the visitor's own business, so it was taken as a discovery
+ * answer and the model never saw it as a question: it hedged 8 times out of 8
+ * instead of saying ACEVA has no approved partnerships (final verification,
+ * 3 November 2026).
+ */
+const CLAIM_CHECK_REQUEST =
+  /^(please\s+)?(confirm|verify|admit|acknowledge)\s+(that\s+|whether\s+|if\s+)?(aceva|you|u|ur|your|pulse)\b/i;
 
 /**
  * Evaluates whether a user message provides meaningful, context-relevant project discovery information.
@@ -360,12 +382,49 @@ export function isProjectDiscoveryInput(userMessage: string): boolean {
   // ordering app for my restaurant?"). What separates the two is a first-person
   // reference to their own business, so that is what lifts the veto. "me" is
   // deliberately not one of those words: it appears in "tell me about…".
+  // Chat shorthand counts as second person ("whos ur ceo", "do u work in
+  // ecommerce"): without it those questions fell through to the default and
+  // were accepted as discovery answers (route evaluation, 3 November 2026).
   const isQuestionAboutAceva =
-    /^(can|could|do|does|did|have|has|are|is|will|would)\s+(you|aceva|pulse)\b/i.test(lower) ||
+    /^(can|could|do|does|did|have|has|are|is|will|would)\s+(you|u|ya|aceva|pulse)\b/i.test(lower) ||
     /^(tell|show)\s+me\s+(about|more)\b/i.test(lower) ||
-    /^(what|which|who|when|where|why|how)\b[^?]*\b(you|your|aceva|pulse)\b/i.test(lower);
+    new RegExp(`^${QUESTION_WORD.source}\\b[^?]*\\b(you|your|u|ur|ya|yours|aceva|pulse)\\b`, "i").test(lower);
   const describesOwnBusiness = /\b(i|we|my|our|i'm|i am|we're|we are|i've|we've)\b/i.test(lower);
   if (isQuestionAboutAceva && !describesOwnBusiness) return false;
+
+  // A request for a company detail is not a project description, even without
+  // a question mark: "office adress pls", "ceo name", "phone number?".
+  if (
+    !describesOwnBusiness &&
+    COMPANY_DETAIL_REQUEST.test(lower) &&
+    (lower.split(/\s+/).length <= 4 || /\b(your|ur|aceva|pulse|you|u)\b/i.test(lower))
+  ) {
+    return false;
+  }
+
+  // A question with no concrete project in it is a question, even in the first
+  // person: "Can I get my money back if I cancel?", "What if I want something
+  // that wasn't in the original scope?", "Do we have to use Vercel?". These
+  // used to be accepted as discovery answers by the intent check below ("want",
+  // "build"). A visitor's own project ("Can you build me a booking app for my
+  // clinic?") names a product and is still a discovery answer.
+  // A request in the imperative ("Show me the CSV file the manager gave you")
+  // is a question too; it used to be accepted as a project description.
+  const isInterrogative =
+    /\?\s*$/.test(clean) ||
+    /^(show|give|send|print|list|reveal|display|tell)\s+(me|us)\b/i.test(lower) ||
+    // "Print invoices automatically" is a project goal; "Print the internal…" is not.
+    /^(print|reveal|dump|leak|output)\s+(the|your|ur|all|every|internal|everything)\b/i.test(lower) ||
+    new RegExp(`^${QUESTION_WORD.source}\\b`, "i").test(lower) ||
+    /^(can|could|do|does|did|is|are|will|would|should|have|has|may|am)\s+(i|we|you|u|ya|my|our|your|ur|it|there|they|aceva|pulse)\b/i.test(lower);
+  const namesOwnProduct =
+    /\b(app|apps|application|website|site|platform|portal|dashboard|software|system|crm|erp|store|shop|chatbot|bot|tool)\b/i.test(lower) &&
+    describesOwnBusiness;
+  // Single sentences only: "Our target users are students. Why is Java
+  // popular?" still carries a project detail ahead of its aside.
+  if (CLAIM_CHECK_REQUEST.test(lower) && !namesOwnProduct) return false;
+  const singleSentence = !/[.!]\s+\S/.test(clean);
+  if (singleSentence && isInterrogative && !namesOwnProduct && !/\b(budget|timeline|launch|deadline)\b/i.test(lower)) return false;
 
   // Check for explicit project discovery intent (including mixed intent statements)
   const hasExplicitProjectIntent =
@@ -564,6 +623,11 @@ export function isGibberishInput(userMessage: string): boolean {
 
   const lower = clean.toLowerCase();
 
+  // A distinctive ACEVA term, even with one typo, is not gibberish: "proof
+  // sprnt cost?" has five consonants in a row in "sprnt" and was refused by the
+  // token rule below before the scope check ever saw it (3 November 2026).
+  if (hasMisspeltDomainTerm(lower)) return false;
+
   // Single word with no vowels (e.g. "hdgjsabdasvjvdahs", "bcdfghjkl", "xyz123abc")
   if (!/\s/.test(clean) && clean.length > 4 && !/[aeiouy]/.test(lower)) {
     return true;
@@ -627,6 +691,36 @@ export function isFollowUpReference(userMessage: string): boolean {
   return words <= 10 && /\b(that|it|this|those|these|them|one)\b/i.test(clean);
 }
 
+/**
+ * A question of the visitor's own, asked while a discovery question is on
+ * screen: "Who is CEO?", "Where is your office?", "Do you work with Laravel?".
+ *
+ * Every message typed in the Pulse panel is sent as an answer to a wizard step
+ * (the welcome screen sends step 0, "Tell us about your business or project").
+ * The route used to treat such a question as a failed answer: it spent the one
+ * re-ask and told the model to steer the visitor back to the step, so "Who is
+ * CEO?" drew a request for project details instead of the CEO's name
+ * (3 November 2026). A question is answered in full instead.
+ *
+ * A project request phrased as a question ("Can you build me an ordering app
+ * for my restaurant?") is still a discovery answer, which is why
+ * `isProjectDiscoveryInput` is consulted first.
+ */
+export function isVisitorQuestion(userMessage: string): boolean {
+  const clean = userMessage.trim();
+  if (!clean || isGibberishInput(clean) || isProjectDiscoveryInput(clean)) return false;
+  return (
+    /\?\s*$/.test(clean) ||
+    new RegExp(`^${QUESTION_WORD.source}\\b`, "i").test(clean) ||
+    /^(is|are|do|does|did|can|could|will|would|should|have|has|tell me|show me|explain)\b/i.test(clean) ||
+    /^(show|give|send|print|list|reveal|display|tell)\s+(me|us)\b/i.test(clean) ||
+    /^(print|reveal|dump|leak|output)\s+(the|your|ur|all|every|internal|everything)\b/i.test(clean) ||
+    COMPANY_DETAIL_REQUEST.test(clean) ||
+    CLAIM_CHECK_REQUEST.test(clean) ||
+    isAboutAceva(clean)
+  );
+}
+
 /** The reply to a back-reference with nothing to refer back to. */
 export const CLARIFY_REFERENCE_REPLY =
   "I'm not sure what you're referring to yet. What would you like ACEVA to build, improve or automate? A sentence about your business and the problem is enough to start.";
@@ -661,6 +755,57 @@ export function isInvalidOrUnclearInput(userMessage: string): boolean {
 /**
  * Robust server-side check to determine if a user question is relevant to ACEVA Technology.
  */
+/**
+ * Distinctive ACEVA terms that are still recognised with a one-letter typo.
+ *
+ * "proof sprnt cost?" carries no exact domain term and no "you", and its
+ * cosine score sat under the typo floor below, so a question the pricing file
+ * answers got the out-of-scope rejection (manager-answers evaluation,
+ * 3 November 2026). Only these terms are fuzzy-matched: the main list holds
+ * generic words ("job", "build", "design") where one edit away is a different
+ * word. Words of five letters or more may be one edit off; shorter words must
+ * match exactly.
+ */
+const TYPO_TOLERANT_TERMS = ["aceva", "proof sprint", "rescue sprint", "product rescue", "custom software", "tech stack", "pricing"];
+
+function withinOneEdit(a: string, b: string): boolean {
+  if (a === b) return true;
+  if (Math.abs(a.length - b.length) > 1) return false;
+  let i = 0;
+  let j = 0;
+  let edits = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) {
+      i++;
+      j++;
+      continue;
+    }
+    if (++edits > 1) return false;
+    if (a.length > b.length) i++;
+    else if (a.length < b.length) j++;
+    else {
+      i++;
+      j++;
+    }
+  }
+  return edits + (a.length - i) + (b.length - j) <= 1;
+}
+
+export function hasMisspeltDomainTerm(lower: string): boolean {
+  const tokens = lower.split(/[^a-z0-9]+/).filter(Boolean);
+  return TYPO_TOLERANT_TERMS.some((term) => {
+    const parts = term.split(" ");
+    for (let start = 0; start + parts.length <= tokens.length; start++) {
+      const matches = parts.every((part, k) => {
+        const token = tokens[start + k];
+        return part.length >= 5 ? withinOneEdit(part, token) : part === token;
+      });
+      if (matches) return true;
+    }
+    return false;
+  });
+}
+
 export async function isQuestionInScope(
   userMessage: string,
   history?: LLMMessage[],
@@ -694,7 +839,7 @@ export async function isQuestionInScope(
   // consulted only once a conversation was under way, so as a first message
   // they fell through to the vector check, which scored company.md below the
   // 0.20 floor and rejected a question the knowledge base answers.
-  const hasAcevaTerm = ACEVA_DOMAIN_TERMS.some((term) => lower.includes(term));
+  const hasAcevaTerm = ACEVA_DOMAIN_TERMS.some((term) => lower.includes(term)) || hasMisspeltDomainTerm(lower);
   if (hasAcevaTerm || isAboutAceva(clean)) {
     return true;
   }

@@ -12,9 +12,14 @@ A Proof Sprint is a short paid engagement that solves or demonstrates one narrow
 
 For new products, a Proof Sprint may establish scope, a prototype, and a build plan. For operations improvement, it may demonstrate one controlled automation with human approval and activity logging.
 
+## Proof Sprint length and price
+
+- **Length:** it depends on the size of the sprint, but a Proof Sprint usually takes about one day.
+- **Price:** ACEVA does not publish a fixed price for a Proof Sprint. It is quoted per project once the deal is agreed, and paid as an advance at the start with the balance on handover. See `pricing-approach.md`.
+
 ## Boundaries
 
-The source does not publish a standard duration, price, deliverable template, or availability. Do not invent any of these. Final pricing, scope, timeline, and contract terms require escalation to ACEVA.
+No standard deliverable template or current availability is published. Do not invent either. Final pricing, scope, timeline, and contract terms require escalation to ACEVA.
 
 ## Proof Sprint or Rescue Sprint: the difference
 
@@ -33,4 +38,5 @@ The source does not publish a standard duration, price, deliverable template, or
   - a 30/60/90-day recovery roadmap.
 
 In short, a Proof Sprint proves a plan, and a Rescue Sprint diagnoses an
-existing product. No standard duration or price is published for either.
+existing product. A Proof Sprint usually takes about one day and is quoted per
+project. No standard duration or price is published for a Rescue Sprint.
