@@ -1,6 +1,8 @@
+import { createHash } from "node:crypto";
 import { PDFDocument } from "pdf-lib";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import * as actionsRoute from "@/app/api/admin/documents/[id]/actions/route";
+import * as fileRoute from "@/app/api/admin/documents/[id]/file/route";
 import * as itemRoute from "@/app/api/admin/documents/[id]/route";
 import * as listRoute from "@/app/api/admin/documents/route";
 import { getDocument, getFile } from "@/lib/documents/store";
@@ -12,6 +14,7 @@ import {
   documentForm,
   enableAdmin,
   formRequest,
+  getRequest,
   idContext,
   jsonRequest,
   payloadFor,
@@ -117,6 +120,28 @@ describe("POST /api/admin/documents with a stamp", () => {
   it("refuses a corner that is not one of the choices", async () => {
     const response = await create({ referenceNo: "ACV/CERT/S-6", stamp: { ...STAMP, position: "middle" } }, { primary: await realPdf() });
     expect((await problems(response)).messages.stamp).toMatch(/Choose one of/);
+  });
+});
+
+describe("the admin can download the certificate with its QR", () => {
+  it("serves the stamped file as an attachment, and it is the very file the public gets", async () => {
+    const record = await createOk({ referenceNo: "ACV/CERT/D-1", stamp: STAMP }, { primary: await realPdf("certificate.pdf") });
+    const response = await fileRoute.GET(await getRequest(`${API}/${record.id}/file?role=primary&download=1`), idContext(record.id));
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toContain("application/pdf");
+    expect(response.headers.get("content-disposition")).toMatch(/^attachment;/);
+    expect(response.headers.get("content-disposition")).toContain("certificate.pdf");
+    const bytes = Buffer.from(await response.arrayBuffer());
+    expect(/aceva-verification:(ACV-[0-9A-Z-]+)/.exec((await PDFDocument.load(bytes)).getKeywords() ?? "")?.[1]).toBe(record.verificationCode);
+    // Same bytes as the stored, fingerprinted file.
+    expect(createHash("sha256").update(bytes).digest("hex")).toBe(primaryOf(record)?.sha256);
+  });
+
+  it("opens the same file in the browser when it is not a download", async () => {
+    const record = await createOk({ referenceNo: "ACV/CERT/D-2", stamp: STAMP }, { primary: await realPdf() });
+    const response = await fileRoute.GET(await getRequest(`${API}/${record.id}/file?role=primary`), idContext(record.id));
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-disposition") ?? "").not.toMatch(/^attachment/);
   });
 });
 

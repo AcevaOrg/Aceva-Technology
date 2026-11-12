@@ -111,7 +111,7 @@ async function CredentialPass({ doc, index, now, reserveDetails }: { doc: Public
               {doc.verificationCode ? "Scan to verify" : ""}
             </span>
             <div className={styles.stubActions}>
-              <DocumentActions doc={doc} compact />
+              <DocumentActions doc={doc} compact stacked />
             </div>
           </div>
         </div>

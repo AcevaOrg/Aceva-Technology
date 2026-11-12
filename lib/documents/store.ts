@@ -14,6 +14,7 @@ import {
   MAX_STAMPED_BYTES,
   PHOTO_FILE_TYPES,
   PRIMARY_FILE_TYPES,
+  isStampFit,
   isStampPages,
   isStampPosition,
   isStampSize,
@@ -215,10 +216,10 @@ function toData(value: unknown): Record<string, FieldValue> {
 function toStamp(value: unknown): FileStamp | null {
   const parsed = parseJson(value);
   if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) return null;
-  const { code, position, size, pages, at } = parsed as Record<string, unknown>;
+  const { code, position, size, pages, at, fit } = parsed as Record<string, unknown>;
   const canonical = typeof code === "string" ? normalizeVerificationCode(code) : null;
   if (!canonical || !isStampPosition(position) || !isStampSize(size) || !isStampPages(pages)) return null;
-  return { code: canonical, position, size, pages, at: asString(at) };
+  return { code: canonical, position, size, pages, at: asString(at), ...(isStampFit(fit) ? { fit } : {}) };
 }
 
 function toFiles(value: unknown): DocumentFileMeta[] {
@@ -253,6 +254,7 @@ function toRecord(row: SqlRow): DocumentRecord {
     status: asString(row.status) as DocumentStatus,
     visibility: asString(row.visibility) as DocumentVisibility,
     allowDownload: asBoolean(row.allow_download),
+    allowView: asBoolean(row.allow_view),
     featured: asBoolean(row.featured),
     sortOrder: asNumber(row.sort_order),
     holderName: asString(row.holder_name),
@@ -350,6 +352,7 @@ function assertPublishable(input: DocumentInput, files: DocumentFileMeta[]): voi
     status: input.status,
     visibility: input.visibility,
     allowDownload: input.allowDownload,
+    allowView: input.allowView,
     featured: input.featured,
     sortOrder: input.sortOrder,
     holderName: input.holderName,
@@ -423,7 +426,7 @@ async function selectDocuments(query: DocumentQuery): Promise<{ records: Documen
 
   const run = (limit: number, offset: number): Promise<SqlRow[]> => sql`
     SELECT
-      d.id::text AS id, d.category, d.title, d.summary, d.status, d.visibility, d.allow_download, d.featured,
+      d.id::text AS id, d.category, d.title, d.summary, d.status, d.visibility, d.allow_download, d.allow_view, d.featured,
       d.sort_order, d.holder_name, d.reference_no,
       to_char(d.issued_on, 'YYYY-MM-DD') AS issued_on,
       to_char(d.expires_on, 'YYYY-MM-DD') AS expires_on,
@@ -718,11 +721,11 @@ async function insertDocument(input: DocumentInput, code: string | null, primary
   const rows = await sql`
     WITH doc AS (
       INSERT INTO documents (
-        category, title, summary, status, visibility, allow_download, featured, sort_order,
+        category, title, summary, status, visibility, allow_download, allow_view, featured, sort_order,
         holder_name, reference_no, issued_on, expires_on, verification_code, data, published_at
       ) VALUES (
         ${input.category}::text, ${input.title}::text, ${input.summary}::text, ${input.status}::text,
-        ${input.visibility}::text, ${input.allowDownload}::boolean, ${input.featured}::boolean, ${input.sortOrder}::int,
+        ${input.visibility}::text, ${input.allowDownload}::boolean, ${input.allowView}::boolean, ${input.featured}::boolean, ${input.sortOrder}::int,
         ${input.holderName}::text, ${input.referenceNo}::text, ${input.issuedOn}::date, ${input.expiresOn}::date,
         ${code}::text, ${json}::jsonb,
         CASE WHEN ${input.status}::text = 'published' THEN now() ELSE NULL END
@@ -848,6 +851,7 @@ export async function updateDocument(
             status = ${input.status}::text,
             visibility = ${input.visibility}::text,
             allow_download = ${input.allowDownload}::boolean,
+            allow_view = ${input.allowView}::boolean,
             featured = ${input.featured}::boolean,
             sort_order = ${input.sortOrder}::int,
             holder_name = ${input.holderName}::text,
@@ -1075,13 +1079,13 @@ export async function duplicateDocument(id: string): Promise<DocumentRecord | nu
           SELECT * FROM documents WHERE id = ${id}::uuid
         ), copy AS (
           INSERT INTO documents (
-            category, title, summary, status, visibility, allow_download, featured, sort_order,
+            category, title, summary, status, visibility, allow_download, allow_view, featured, sort_order,
             holder_name, reference_no, issued_on, expires_on, verification_code, data
           )
           SELECT
             category, left(title, ${COPY_TITLE_ROOM}::int) || ${COPY_SUFFIX}::text, summary, 'draft',
             CASE WHEN ${personal}::boolean AND visibility = 'public' THEN 'unlisted' ELSE visibility END,
-            allow_download, false, sort_order, holder_name, '', issued_on, expires_on, ${code}::text,
+            allow_download, allow_view, false, sort_order, holder_name, '', issued_on, expires_on, ${code}::text,
             CASE WHEN ${personal}::boolean THEN data - 'consent_to_publish' ELSE data END
           FROM src
           RETURNING id

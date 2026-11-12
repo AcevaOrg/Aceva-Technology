@@ -35,6 +35,7 @@ function record(overrides: Partial<DocumentRecord> = {}): DocumentRecord {
     status: "published",
     visibility: "public",
     allowDownload: false,
+    allowView: false,
     featured: false,
     sortOrder: 0,
     holderName: "",

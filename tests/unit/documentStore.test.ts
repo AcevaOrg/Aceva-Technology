@@ -219,8 +219,8 @@ describe("ensureDocumentTables", () => {
     setSqlClientForTests(recording);
     resetDocumentTablesCache();
     await ensureDocumentTables();
-    // 3 tables + 5 indexes + the two stamp columns + the reference-number index
-    expect(seen.length).toBe(11);
+    // 3 tables + 5 indexes + the two stamp columns + the view-only column + the reference-number index
+    expect(seen.length).toBe(12);
     for (const text of seen) expect(text.trim().replace(/;\s*$/, "")).not.toContain(";");
   });
 
@@ -1631,5 +1631,37 @@ describe("module wiring", () => {
     expect(getSql()).toBe(seen);
     await getDocument(MISSING_ID);
     expect(seen).toHaveBeenCalled();
+  });
+});
+
+describe("view-only access is stored apart from download", () => {
+  it("keeps view and download separate, and reads them back", async () => {
+    const viewOnly = await seed("certification", { allowView: true, allowDownload: false });
+    expect(viewOnly).toMatchObject({ allowView: true, allowDownload: false });
+    const open = await seed("certification", { allowDownload: true });
+    expect(open).toMatchObject({ allowView: true, allowDownload: true });
+    const closed = await seed("certification", { allowView: false, allowDownload: false });
+    expect(closed).toMatchObject({ allowView: false, allowDownload: false });
+  });
+
+  it("changes with an edit", async () => {
+    const created = await seed("certification", { allowView: true, allowDownload: true });
+    const updated = await updateDocument(created.id, input("certification", { referenceNo: created.referenceNo, allowView: true, allowDownload: false }));
+    expect(updated).toMatchObject({ allowView: true, allowDownload: false });
+    const closed = await updateDocument(created.id, input("certification", { referenceNo: created.referenceNo, allowView: false, allowDownload: false }));
+    expect(closed).toMatchObject({ allowView: false, allowDownload: false });
+  });
+
+  it("a duplicate keeps the original's view and download settings", async () => {
+    const created = await seed("certification", { allowView: true, allowDownload: false });
+    const copy = await duplicateDocument(created.id);
+    expect(copy).toMatchObject({ allowView: true, allowDownload: false });
+  });
+
+  it("a row from before the setting existed reads as view off, and is still open because download is on", async () => {
+    const created = await seed("certification", { allowDownload: true });
+    await pg.db.query("UPDATE documents SET allow_view = false WHERE id = $1", [created.id]);
+    const stored = await getDocument(created.id);
+    expect(stored).toMatchObject({ allowView: false, allowDownload: true });
   });
 });

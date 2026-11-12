@@ -154,11 +154,18 @@
 .idRow:hover .idMain h3 { transform: translateX(8px); }
 
 /* ---------- compact file actions (passes and sheets) ---------- */
-.actionIcons { display: inline-flex; gap: 8px; }
+/* A labelled View button, with Download beside it as a round icon (or stacked under it, labelled, in the pass's stub). */
+.actionRow { display: inline-flex; align-items: center; gap: 8px; }
+.actionRow[data-stack] { display: flex; flex-direction: column; align-items: stretch; gap: 6px; width: 100%; }
+.actPill { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 999px; font: 600 13.5px/1 var(--d-body); white-space: nowrap; transition: background-color 0.25s var(--h-ease), color 0.25s var(--h-ease), box-shadow 0.25s var(--h-ease), transform 0.25s var(--h-ease); }
+.actPill svg { flex: none; }
+.actPillPrimary { background: var(--c-accent); color: var(--c-bg); }
+.actPillPrimary:hover { background: var(--c-fg); transform: translateY(-1px); }
+.actPillGhost { color: var(--c-fg); box-shadow: inset 0 0 0 1px var(--c-line-strong); }
+.actPillGhost:hover { box-shadow: inset 0 0 0 1px var(--c-fg); transform: translateY(-1px); }
+.actionRow[data-stack] .actPill { padding: 0 10px; font-size: 13px; }
 .actIcon { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; color: var(--c-fg); box-shadow: inset 0 0 0 1px var(--c-line-strong); transition: background-color 0.25s var(--h-ease), color 0.25s var(--h-ease), box-shadow 0.25s var(--h-ease), transform 0.25s var(--h-ease); }
-.actIcon:first-child { background: var(--c-accent); color: var(--c-bg); box-shadow: none; }
 .actIcon:hover { transform: translateY(-1px); box-shadow: inset 0 0 0 1px var(--c-fg); }
-.actIcon:first-child:hover { background: var(--c-fg); box-shadow: none; }
 .noFile[data-compact] { max-width: none; font-size: 12.5px; line-height: 1.4; text-align: center; }
 
 /* The disclosure used by passes and sheets: a slim "Details" bar with a chevron, content tucked underneath. */
@@ -221,7 +228,7 @@
 .passGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 372px), 1fr)); gap: 16px; align-items: start; }
 .pass { position: relative; border-radius: 16px; background: var(--c-raise); box-shadow: inset 0 0 0 1px var(--c-line); transition: box-shadow 0.4s var(--h-ease); }
 .pass:hover, .pass:focus-within { box-shadow: inset 0 0 0 1px var(--c-line-strong); }
-.passBody { --stub: 128px; display: grid; grid-template-columns: minmax(0, 1fr) var(--stub); }
+.passBody { --stub: 148px; display: grid; grid-template-columns: minmax(0, 1fr) var(--stub); }
 .passMain { display: flex; flex-direction: column; gap: 6px; min-width: 0; padding: 16px 16px 16px 18px; }
 /* Every pass is the same stack of fixed slots: type line, title (two lines reserved), holder, issuer, reference,
    validity text (two lines) and bar. Nothing wraps differently from one pass to the next, so a row of passes
@@ -264,7 +271,7 @@
 .stubLabel { display: block; min-height: 10px; font: 500 10px/1 var(--h-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--c-accent); white-space: nowrap; }
 /* the QR, label and button rows keep their size whether or not there is a code or a file */
 .stubQrGap { display: block; flex: none; width: 76px; height: 76px; }
-.stubActions { display: grid; place-items: center; flex: none; height: 44px; }
+.stubActions { display: grid; place-items: center; flex: none; width: 100%; height: 94px; }
 .stubActions .noFile[data-compact] { font-size: 11.5px; line-height: 1.25; }
 .stubActions .noFile[data-compact] a { display: inline; min-height: 0; padding-block: 8px; }
 
@@ -413,7 +420,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .bigslash { animation: none; }
-  .btn, .idRow::before, .idMain h3, .act, .actIcon, .pass, .sheet article, .sheet article::after, .stubQr, .meterFill, .member, .textLink, .indexLink, .filterChip { transition: none; }
+  .btn, .idRow::before, .idMain h3, .act, .actIcon, .actPill, .pass, .sheet article, .sheet article::after, .stubQr, .meterFill, .member, .textLink, .indexLink, .filterChip { transition: none; }
   .stubQr:hover::after, .stubQr:focus-visible::after { animation: none; }
   .heroGlow, .sweep, .wordIn, .accentWord::after, .loadBar { animation: none; }
   .btn::after { display: none; }

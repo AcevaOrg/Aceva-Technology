@@ -30,11 +30,16 @@ export interface PublicDocument {
   state: PublicState;
   verificationCode: string | null;
   allowDownload: boolean;
-  /** A primary file exists AND the admin allowed public download AND the record is not revoked. */
+  /**
+   * A primary file exists AND the admin allowed the public to view or download it AND the record is not revoked: the
+   * public may OPEN it. Whether they may also save it is `canDownload`.
+   */
   hasFile: boolean;
+  /** `hasFile` AND the admin allowed download: the page may show a Download button, and the file route serves an attachment. */
+  canDownload: boolean;
   /** A photo exists AND the record opts in to showing it (`show_photo`). */
   hasPhoto: boolean;
-  /** Metadata of the downloadable file; null whenever `hasFile` is false. */
+  /** Metadata of the public file; null whenever `hasFile` is false. */
   file: { filename: string; mimeType: string; sizeBytes: number; sha256: string } | null;
   featured: boolean;
   publishedAt: string | null;
@@ -133,6 +138,7 @@ export function toPublicDocument(
       verificationCode: null,
       allowDownload: false,
       hasFile: false,
+      canDownload: false,
       hasPhoto: false,
       file: null,
       featured: false,
@@ -146,7 +152,10 @@ export function toPublicDocument(
 
   const primary = record.files.find((file) => file.role === "primary");
   const hasPhoto = spec.hasPhoto && record.data.show_photo === true && record.files.some((file) => file.role === "photo");
-  const hasFile = Boolean(primary) && record.allowDownload;
+  // Open to the public when view OR download is on: download implies view, and a record saved before view existed has
+  // only download set.
+  const hasFile = Boolean(primary) && (record.allowView || record.allowDownload);
+  const canDownload = Boolean(primary) && record.allowDownload;
 
   return {
     id: record.id,
@@ -161,6 +170,7 @@ export function toPublicDocument(
     verificationCode: record.verificationCode,
     allowDownload: record.allowDownload,
     hasFile,
+    canDownload,
     hasPhoto,
     file:
       hasFile && primary

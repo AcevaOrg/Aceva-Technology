@@ -16,6 +16,7 @@ import {
 import { Button, ButtonLink } from "../Button";
 import { FileDrop, type ExistingFile } from "../FileDrop";
 import { FormSection } from "../FormSection";
+import { DownloadIcon } from "../icons";
 import { Spinner } from "../Spinner";
 import { describeAccepted, formatBytes } from "../utils";
 import ed from "./editor.module.css";
@@ -119,6 +120,19 @@ function FilesSectionImpl({
           <div className={ed.fileLinks}>
             <ButtonLink href={adminFileUrl(documentId, "primary", { version: storedPrimary.sha256 })} external variant="quiet" size="sm" aria-label={`View ${storedPrimary.filename}`}>
               View
+            </ButtonLink>
+            {/* The file as stored, so a certificate that carries the QR downloads with the QR on it. */}
+            <ButtonLink
+              href={adminFileUrl(documentId, "primary", { version: storedPrimary.sha256, download: true })}
+              external
+              download
+              variant="ghost"
+              size="sm"
+              iconLeading={<DownloadIcon width={16} height={16} />}
+              iconTrailing={false}
+              aria-label={`Download ${storedPrimary.filename}${storedPrimary.stamp ? " with the QR on it" : ""}`}
+            >
+              {storedPrimary.stamp ? "Download with QR" : "Download"}
             </ButtonLink>
           </div>
         ) : null}

@@ -325,7 +325,7 @@ test.describe("with records in the registry", () => {
 
     // the file and its fingerprint
     await expect(card.getByText(PDF_SHA256)).toBeVisible();
-    const open = card.getByRole("link", { name: /^Open/ });
+    const open = card.getByRole("link", { name: /^View/ });
     await expect(open).toHaveAttribute("href", `/api/documents/${record.id}/file?role=primary&code=${code}`);
     await expect(card.getByRole("link", { name: /^Download/ })).toHaveAttribute("href", `/api/documents/${record.id}/file?role=primary&code=${code}&download=1`);
     const file = await page.request.get(`/api/documents/${record.id}/file?role=primary&code=${code}`);

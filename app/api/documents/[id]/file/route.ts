@@ -57,6 +57,7 @@ async function serveFile(request: Request, requestId: string, params: Promise<{ 
 
   const isAdmin = await hasAdminSession(request);
   const code = query.get("code");
+  const download = wantsDownload(query.get("download"));
 
   let file: Awaited<ReturnType<typeof getFile>> = null;
   let cacheControl = "private, no-store";
@@ -64,11 +65,11 @@ async function serveFile(request: Request, requestId: string, params: Promise<{ 
     const record = await getDocument(id);
     if (!record) throw NOT_FOUND();
 
-    const decision = canAccessFile({ record, role, code, isAdmin });
+    const decision = canAccessFile({ record, role, code, isAdmin, download });
     if (!decision.allowed) throw NOT_FOUND();
 
     // A shared cache must only ever hold what an anonymous visitor could have fetched.
-    const visitorDecision = isAdmin ? canAccessFile({ record, role, code, isAdmin: false }) : decision;
+    const visitorDecision = isAdmin ? canAccessFile({ record, role, code, isAdmin: false, download }) : decision;
     cacheControl = fileCacheControl(record, visitorDecision.allowed);
 
     file = await getFile(id, role);
@@ -81,7 +82,7 @@ async function serveFile(request: Request, requestId: string, params: Promise<{ 
   if (!file) throw NOT_FOUND();
 
   const { contentType, forceDownload } = servableContentType(file.meta.mimeType);
-  const disposition = forceDownload || wantsDownload(query.get("download")) ? "attachment" : "inline";
+  const disposition = forceDownload || download ? "attachment" : "inline";
 
   return new Response(new Uint8Array(file.bytes), {
     status: 200,

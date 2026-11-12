@@ -26,7 +26,8 @@ export type FileAccessDenial =
   | "no_file" // the record has no file in that role
   | "hidden" // draft, archived, private, unlisted without the code, or a personal record without consent
   | "revoked"
-  | "download_disabled" // primary file, but the admin did not allow public download
+  | "not_shared" // primary file, but the admin allowed the public neither to view nor to download it
+  | "download_off" // viewable, but a download was asked for and the admin did not allow public download
   | "photo_hidden"; // photo exists but the record does not opt in to showing it
 
 export type FileAccessDecision = { allowed: true; via: FileAccessVia } | { allowed: false; reason: FileAccessDenial };
@@ -36,6 +37,8 @@ export interface FileAccessRequest {
   role: FileRole;
   /** The `code` query value as received (any spelling). Ignored unless it matches the record's code. */
   code?: string | null;
+  /** The request asks for the file as a download (an attachment), not for it to be shown in the browser. */
+  download?: boolean;
   /** True only when the caller has already verified an admin session. Anything else is a visitor. */
   isAdmin?: boolean;
   /** Injectable clock for the expiry maths inside `toPublicDocument`. */
@@ -65,7 +68,9 @@ export function matchesVerificationCode(stored: string | null, supplied: unknown
  *    record's own code is a "verify" lookup (public and unlisted records resolve, a personal record
  *    needs no listing consent because its holder is shown on the page anyway); presenting nothing,
  *    or the wrong code, is a "listing" view (public records only, personal ones only with consent).
- *  - The primary file additionally needs `allowDownload`; the photo needs the record's own opt-in.
+ *  - The primary file additionally needs the admin to allow viewing or downloading it, and a request for it as a
+ *    download needs `allowDownload` (view-only files are shown, never offered as an attachment). The photo needs
+ *    the record's own opt-in.
  *  - Draft, archived, private and revoked records never yield a file.
  */
 export function canAccessFile(request: FileAccessRequest): FileAccessDecision {
@@ -82,7 +87,9 @@ export function canAccessFile(request: FileAccessRequest): FileAccessDecision {
   if (projected.state === "revoked") return { allowed: false, reason: "revoked" };
 
   if (role === "primary") {
-    return projected.hasFile ? { allowed: true, via: codeMatches ? "code" : "public" } : { allowed: false, reason: "download_disabled" };
+    if (!projected.hasFile) return { allowed: false, reason: "not_shared" };
+    if (request.download === true && !projected.canDownload) return { allowed: false, reason: "download_off" };
+    return { allowed: true, via: codeMatches ? "code" : "public" };
   }
   return projected.hasPhoto ? { allowed: true, via: codeMatches ? "code" : "public" } : { allowed: false, reason: "photo_hidden" };
 }
