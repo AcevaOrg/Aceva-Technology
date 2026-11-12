@@ -161,7 +161,8 @@ describe("status actions", () => {
     const draft = await certificate();
     expect((await actOk(draft.id, "archive")).status).toBe("archived");
 
-    const published = await certificate({ status: "published", title: "Live one" });
+    // Two certificates cannot share a number, so the second names its own.
+    const published = await certificate({ status: "published", title: "Live one", referenceNo: "ACV/CERT/2026/0099" });
     expect((await actOk(published.id, "archive")).status).toBe("archived");
     expect(await actionAudit("document.archive")).toHaveLength(2);
   });
@@ -401,9 +402,9 @@ describe("duplicate", () => {
  * ------------------------------------------------------------------ */
 
 describe("POST /api/admin/documents/[id]/actions: the request", () => {
-  it("knows exactly the eight actions of the contract", () => {
+  it("knows exactly the nine actions of the contract", () => {
     expect([...DOCUMENT_ACTIONS].sort()).toEqual(
-      ["archive", "duplicate", "publish", "regenerate_code", "reinstate", "restore", "revoke", "unpublish"],
+      ["archive", "duplicate", "publish", "regenerate_code", "reinstate", "restore", "revoke", "stamp_file", "unpublish"],
     );
   });
 

@@ -236,10 +236,10 @@ describe("GET /api/verify/[code]: a record that can be shown", () => {
 
 describe("GET /api/verify/[code]: not found, and no way to tell why", () => {
   it("answers an unknown, a malformed and a hidden code with exactly the same response", async () => {
-    const draft = await seed("certification", { status: "draft" });
-    const archived = await seed("certification");
+    const draft = await seed("certification", { status: "draft", referenceNo: "HIDE-1" });
+    const archived = await seed("certification", { referenceNo: "HIDE-2" });
     await setDocumentStatus(archived.id, "archived");
-    const hidden = await seed("certification", { visibility: "private" });
+    const hidden = await seed("certification", { visibility: "private", referenceNo: "HIDE-3" });
 
     const codes = [
       UNKNOWN_CODE,

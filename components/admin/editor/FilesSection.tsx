@@ -9,6 +9,9 @@ import {
   PRIMARY_FILE_TYPES,
   type DocumentCategory,
   type DocumentFileMeta,
+  type StampPages,
+  type StampPosition,
+  type StampSize,
 } from "@/lib/documents/types";
 import { Button, ButtonLink } from "../Button";
 import { FileDrop, type ExistingFile } from "../FileDrop";
@@ -16,7 +19,8 @@ import { FormSection } from "../FormSection";
 import { Spinner } from "../Spinner";
 import { describeAccepted, formatBytes } from "../utils";
 import ed from "./editor.module.css";
-import { adminFileUrl, PHOTO_INTAKE_BYTES } from "./editorModel";
+import { adminFileUrl, PHOTO_INTAKE_BYTES, type EditorSettingKey, type EditorValues } from "./editorModel";
+import { StampOptions } from "./StampOptions";
 
 interface FilesSectionProps {
   category: DocumentCategory;
@@ -31,6 +35,9 @@ interface FilesSectionProps {
   /** The per-file cap the server enforces (`getMaxUploadBytes()`). */
   maxUploadBytes: number;
   errors: Record<string, string>;
+  /** The QR stamp controls; null for a category that is not verified by QR. */
+  stamp: { enabled: boolean; position: StampPosition; size: StampSize; pages: StampPages; hasCode: boolean; currentCode: string | null } | null;
+  onSetting: (patch: Partial<Pick<EditorValues, EditorSettingKey>>) => void;
   onPrimaryChange: (file: File | null) => void;
   onPhotoChange: (file: File | null) => void;
   onRemovePrimary: (remove: boolean) => void;
@@ -77,6 +84,8 @@ function FilesSectionImpl({
   photoBusy,
   maxUploadBytes,
   errors,
+  stamp,
+  onSetting,
   onPrimaryChange,
   onPhotoChange,
   onRemovePrimary,
@@ -114,6 +123,20 @@ function FilesSectionImpl({
           </div>
         ) : null}
         {removePrimary && stored.primary ? <RemovedNote filename={stored.primary.filename} onUndo={() => onRemovePrimary(false)} /> : null}
+        {stamp ? (
+          <StampOptions
+            hasCode={stamp.hasCode}
+            enabled={stamp.enabled}
+            position={stamp.position}
+            size={stamp.size}
+            pages={stamp.pages}
+            fileMime={primary ? primary.type || null : storedPrimary ? storedPrimary.mimeType : null}
+            storedStamp={storedPrimary && !primary ? (storedPrimary.stamp ?? null) : null}
+            currentCode={stamp.currentCode}
+            error={errors.stamp}
+            onSetting={onSetting}
+          />
+        ) : null}
       </div>
 
       {spec.hasPhoto ? (

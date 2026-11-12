@@ -9,8 +9,10 @@ import {
 import { DatabaseNotConfiguredError } from "@/lib/db";
 import { CATEGORIES, categoryFromSlug, isDocumentCategory } from "@/lib/documents/categories";
 import { inspectUpload, type InspectedUpload } from "@/lib/documents/files";
+import { StampError } from "@/lib/documents/stamp";
 import {
   DocumentCategoryChangeError,
+  DuplicateReferenceError,
   PublishBlockedError,
   StaleDocumentError,
   isDocumentId,
@@ -25,6 +27,10 @@ import {
   MAX_REQUEST_BYTES,
   PHOTO_FILE_TYPES,
   PRIMARY_FILE_TYPES,
+  isStampPages,
+  isStampPosition,
+  isStampSize,
+  type StampOptions,
   type DocumentCategory,
   type DocumentRecord,
   type DocumentStatus,
@@ -343,6 +349,16 @@ export function toApiError(error: unknown): ApiError | null {
   if (error instanceof DocumentCategoryChangeError) {
     return validationFailed({ category: "A document's category cannot be changed. Create a new document instead." });
   }
+  if (error instanceof DuplicateReferenceError) {
+    const spec = CATEGORIES[error.category];
+    const owner = error.existing ? ` by \u201c${error.existing.title}\u201d` : " by another document";
+    const message = `${spec.base.referenceNo.label} ${error.referenceNo} is already used${owner}. Each ${spec.label.toLowerCase()} needs its own number.`;
+    return validationFailed({ referenceNo: message }, message);
+  }
+  if (error instanceof StampError) {
+    // Shown against the file, because that is what has to change; the same text is the toast for the actions route.
+    return validationFailed({ primary: error.message }, error.message);
+  }
   if (isDatabaseUnavailable(error)) {
     // Only the error's name is logged: a driver message can contain the connection string.
     return new ApiError(
@@ -409,6 +425,7 @@ export type DocumentAuditAction =
   | "document.revoke"
   | "document.reinstate"
   | "document.regenerate_code"
+  | "document.stamp_file"
   | "document.duplicate";
 
 /**
@@ -591,6 +608,7 @@ export const DOCUMENT_ACTIONS = [
   "revoke",
   "reinstate",
   "regenerate_code",
+  "stamp_file",
   "duplicate",
 ] as const;
 
@@ -645,6 +663,28 @@ export function parseRevokeReason(raw: unknown): string {
     throw validationFailed({ reason: `Keep the reason under ${MAX_REVOKE_REASON_LENGTH} characters.` });
   }
   return reason;
+}
+
+/**
+ * The placement from an action body (`position`, `size`, `pages`), each optional and falling back to `fallback`
+ * (the record's current stamp, or the defaults). A value that is not one of the choices is a field error.
+ */
+export function parseStampOptions(body: Record<string, unknown>, fallback: StampOptions): StampOptions {
+  const problems: string[] = [];
+  const pick = <T extends string>(key: string, valid: (v: unknown) => v is T, current: T): T => {
+    const value = body[key];
+    if (value === undefined || value === null || value === "") return current;
+    if (valid(value)) return value;
+    problems.push(key);
+    return current;
+  };
+  const options: StampOptions = {
+    position: pick("position", isStampPosition, fallback.position),
+    size: pick("size", isStampSize, fallback.size),
+    pages: pick("pages", isStampPages, fallback.pages),
+  };
+  if (problems.length > 0) throw validationFailed({ stamp: "Choose a corner, a size and which pages the QR goes on." });
+  return options;
 }
 
 /* ------------------------------------------------------------------ *

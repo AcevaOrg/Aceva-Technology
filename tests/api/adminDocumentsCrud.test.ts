@@ -57,7 +57,7 @@ afterEach(() => {
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const CODE = /^ACV-[0-9A-HJKMNP-TV-Z]{4}-[0-9A-HJKMNP-TV-Z]{4}-[0-9A-HJKMNP-TV-Z]{4}$/;
 const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
-const FILE_META_KEYS = ["createdAt", "documentId", "filename", "id", "mimeType", "role", "sha256", "sizeBytes"];
+const FILE_META_KEYS = ["createdAt", "documentId", "filename", "id", "mimeType", "role", "sha256", "sizeBytes", "stamp"];
 
 /* ------------------------------------------------------------------ *
  * Helpers                                                              *
@@ -892,7 +892,7 @@ describe("DELETE /api/admin/documents/[id]", () => {
 
   it("leaves other records and their files alone", async () => {
     const keep = await createDoc("certification", {}, { primary: pdfFile("keep.pdf", 400, 1) });
-    const remove = await createDoc("certification", { title: "Remove me" }, { primary: pdfFile("remove.pdf", 400, 2) });
+    const remove = await createDoc("certification", { title: "Remove me", referenceNo: "ACV/CERT/2026/0098" }, { primary: pdfFile("remove.pdf", 400, 2) });
     await itemRoute.DELETE(await deleteRequest(`${API}/${remove.id}`), idContext(remove.id));
 
     expect(await countRows(database, "documents")).toBe(1);

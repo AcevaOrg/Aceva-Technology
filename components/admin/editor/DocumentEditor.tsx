@@ -515,6 +515,19 @@ export function DocumentEditor({ mode, category, record = null, maxUploadBytes, 
                 photoBusy={photoBusy}
                 maxUploadBytes={maxUploadBytes}
                 errors={errors}
+                stamp={
+                  spec.verifiable
+                    ? {
+                        enabled: values.stampEnabled,
+                        position: values.stampPosition,
+                        size: values.stampSize,
+                        pages: values.stampPages,
+                        hasCode: willHaveCode,
+                        currentCode: state.record?.verificationCode ?? null,
+                      }
+                    : null
+                }
+                onSetting={onSetting}
                 onPrimaryChange={onPrimaryChange}
                 onPhotoChange={onPhotoChange}
                 onRemovePrimary={onRemovePrimary}

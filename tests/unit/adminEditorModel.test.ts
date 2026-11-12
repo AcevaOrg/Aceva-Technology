@@ -746,3 +746,102 @@ describe("urls and small helpers", () => {
     expect(resolveCategoryParam(undefined)).toBeUndefined();
   });
 });
+
+/* ------------------------------------------------------------------ *
+ * The QR stamp controls                                                *
+ * ------------------------------------------------------------------ */
+
+describe("the QR stamp in the form", () => {
+  const CODE = "ACV-7K3M-9QXD-4TRH";
+  const file = (stamp: DocumentFileMeta["stamp"]): DocumentFileMeta => ({
+    id: "f1",
+    documentId: ID,
+    role: "primary",
+    filename: "certificate.pdf",
+    mimeType: "application/pdf",
+    sizeBytes: 1000,
+    sha256: "a".repeat(64),
+    createdAt: "2026-01-01T00:00:00.000Z",
+    stamp,
+  });
+
+  it("starts ON for a new certificate, in the bottom-right corner", () => {
+    const values = createInitialValues("certification");
+    expect(values).toMatchObject({ enableVerification: true, stampEnabled: true, stampPosition: "bottom-right", stampSize: "medium", stampPages: "first" });
+  });
+
+  it("is never on for a category that is not verified by QR", () => {
+    expect(createInitialValues("financial_report").stampEnabled).toBe(false);
+    expect(createInitialValues("company_identity").stampEnabled).toBe(false);
+  });
+
+  it("starts OFF for a stored file that has no QR, so editing something else never changes the file", () => {
+    const record = makeRecord("certification", { verificationCode: CODE, files: [file(null)] });
+    expect(createInitialValues("certification", record).stampEnabled).toBe(false);
+  });
+
+  it("starts ON, in its own placement, for a stored file that carries the QR", () => {
+    const stamp = { code: CODE, position: "top-left", size: "large", pages: "all", at: "2026-01-01T00:00:00.000Z" } as const;
+    const record = makeRecord("certification", { verificationCode: CODE, files: [file(stamp)] });
+    expect(createInitialValues("certification", record)).toMatchObject({ stampEnabled: true, stampPosition: "top-left", stampSize: "large", stampPages: "all" });
+  });
+
+  it("starts ON for a stored record that has a code but no file yet (one is about to be uploaded)", () => {
+    const record = makeRecord("certification", { verificationCode: CODE, files: [] });
+    expect(createInitialValues("certification", record).stampEnabled).toBe(true);
+  });
+
+  it("starts OFF for a stored record with no code, since there is nothing to print", () => {
+    const record = makeRecord("certification", { verificationCode: null, files: [] });
+    expect(createInitialValues("certification", record).stampEnabled).toBe(false);
+  });
+
+  it("is switched off when QR verification is switched off", () => {
+    const state = createEditorState("certification");
+    const off = editorReducer(state, { type: "setting", patch: { enableVerification: false } });
+    expect(off.values.stampEnabled).toBe(false);
+  });
+
+  it("sends the choices when on, and an explicit off when not", () => {
+    const on = buildPayload("certification", { ...createInitialValues("certification"), stampPosition: "top-right", stampSize: "small", stampPages: "last" });
+    expect(on.stamp).toEqual({ enabled: true, position: "top-right", size: "small", pages: "last" });
+    const off = buildPayload("certification", { ...createInitialValues("certification"), stampEnabled: false });
+    expect(off.stamp).toEqual({ enabled: false });
+    // Without a code there is nothing to print, so a stamp is never requested.
+    const noCode = buildPayload("certification", { ...createInitialValues("certification"), enableVerification: false, stampEnabled: true });
+    expect(noCode.stamp).toEqual({ enabled: false });
+  });
+
+  it("the payload it builds passes the server's own validation", () => {
+    const values = {
+      ...createInitialValues("certification"),
+      title: "ISO/IEC 27001",
+      holderName: "ACEVA",
+      referenceNo: "ACV/CERT/1",
+      issuedOn: "2026-01-10",
+      data: { ...createInitialValues("certification").data, direction: "held", issuing_body: "BSI" },
+    };
+    const result = validateDocumentInput(buildPayload("certification", values), { category: "certification" });
+    expect(result.ok, JSON.stringify(result.ok ? "" : result.errors)).toBe(true);
+    if (result.ok) expect(result.value.stamp).toMatchObject({ position: "bottom-right", size: "medium", pages: "first" });
+  });
+
+  it("counts a change of corner as unsaved only while the stamp is on", () => {
+    const state = createEditorState("certification");
+    const moved = editorReducer(state, { type: "setting", patch: { stampPosition: "top-left" } });
+    expect(isEditorDirty("certification", state.baseline, moved.values, NO_PENDING_FILES)).toBe(true);
+
+    const offState = editorReducer(state, { type: "setting", patch: { stampEnabled: false } });
+    const offMoved = editorReducer(offState, { type: "setting", patch: { stampPosition: "top-left" } });
+    expect(fingerprintValues("certification", offMoved.values)).toBe(fingerprintValues("certification", offState.values));
+  });
+
+  it("keeps an untouched stamp setting when the stored record changes underneath the form", () => {
+    const old = createInitialValues("certification");
+    const mine = { ...old, stampPosition: "top-left" as const };
+    const next = { ...old, stampSize: "large" as const };
+    const merged = rebaseValues(old, next, mine);
+    expect(merged.stampPosition).toBe("top-left");
+    expect(merged.stampSize).toBe("large");
+  });
+});

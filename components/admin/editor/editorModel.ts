@@ -1,10 +1,14 @@
 import { CATEGORIES, categoryFromSlug, isDocumentCategory } from "@/lib/documents/categories";
 import {
+  DEFAULT_STAMP_OPTIONS,
   MAX_PHOTO_BYTES,
   MAX_REQUEST_BYTES,
   STATUS_LABELS,
   VISIBILITY_LABELS,
   DOCUMENT_VISIBILITIES,
+  type StampPages,
+  type StampPosition,
+  type StampSize,
   type CategorySpec,
   type DocumentCategory,
   type DocumentFileMeta,
@@ -37,7 +41,17 @@ export type EditorBaseKey = (typeof BASE_KEYS)[number];
 /** What a category field holds while it is being edited: booleans stay booleans, tags stay lists, the rest is text. */
 export type EditorFieldValue = string | boolean | string[];
 
-export const SETTING_KEYS = ["status", "visibility", "allowDownload", "featured", "enableVerification"] as const;
+export const SETTING_KEYS = [
+  "status",
+  "visibility",
+  "allowDownload",
+  "featured",
+  "enableVerification",
+  "stampEnabled",
+  "stampPosition",
+  "stampSize",
+  "stampPages",
+] as const;
 export type EditorSettingKey = (typeof SETTING_KEYS)[number];
 
 export interface EditorValues {
@@ -54,6 +68,11 @@ export interface EditorValues {
   allowDownload: boolean;
   featured: boolean;
   enableVerification: boolean;
+  /** Print the QR and the code on the uploaded file (needs a verification code). */
+  stampEnabled: boolean;
+  stampPosition: StampPosition;
+  stampSize: StampSize;
+  stampPages: StampPages;
 }
 
 export type EditorMode = "create" | "edit";
@@ -147,6 +166,7 @@ export function createInitialValues(category: DocumentCategory, record?: Documen
       allowDownload: record.allowDownload,
       featured: record.featured,
       enableVerification: record.verificationCode !== null,
+      ...initialStamp(spec, record),
     };
   }
   return {
@@ -162,6 +182,29 @@ export function createInitialValues(category: DocumentCategory, record?: Documen
     allowDownload: defaultAllowDownload(spec),
     featured: false,
     enableVerification: spec.verifiable,
+    ...initialStamp(spec, null),
+  };
+}
+
+/**
+ * The stamp controls' starting point. A new record stamps its file by default (that is the point of the feature) in
+ * the default corner. A stored record shows what its file actually carries: a stamped file keeps its own placement,
+ * and a file saved before stamping existed starts OFF, so editing something else never changes the file unasked.
+ */
+function initialStamp(
+  spec: CategorySpec,
+  record: DocumentRecord | null,
+): Pick<EditorValues, "stampEnabled" | "stampPosition" | "stampSize" | "stampPages"> {
+  const stored = record?.files.find((file) => file.role === "primary") ?? null;
+  const stamp = stored?.stamp ?? null;
+  if (stamp) return { stampEnabled: true, stampPosition: stamp.position, stampSize: stamp.size, stampPages: stamp.pages };
+  // On only where a code exists or will (the same rule the form applies when something is edited).
+  const willHaveCode = record ? record.verificationCode !== null : spec.verifiable;
+  return {
+    stampEnabled: willHaveCode && !stored,
+    stampPosition: DEFAULT_STAMP_OPTIONS.position,
+    stampSize: DEFAULT_STAMP_OPTIONS.size,
+    stampPages: DEFAULT_STAMP_OPTIONS.pages,
   };
 }
 
@@ -276,6 +319,8 @@ export function reconcileValues(category: DocumentCategory, values: EditorValues
   }
 
   if (!spec.verifiable && next.enableVerification) next = { ...next, enableVerification: false };
+  // The QR on the file is the verification code printed; without a code there is nothing to print.
+  if ((!spec.verifiable || !next.enableVerification) && next.stampEnabled) next = { ...next, stampEnabled: false };
 
   return { values: next, notice };
 }
@@ -375,6 +420,10 @@ export function rebaseValues(old: EditorValues, next: EditorValues, current: Edi
     allowDownload: mergeKey("allowDownload", old, next, current),
     featured: mergeKey("featured", old, next, current),
     enableVerification: mergeKey("enableVerification", old, next, current),
+    stampEnabled: mergeKey("stampEnabled", old, next, current),
+    stampPosition: mergeKey("stampPosition", old, next, current),
+    stampSize: mergeKey("stampSize", old, next, current),
+    stampPages: mergeKey("stampPages", old, next, current),
   };
 }
 
@@ -463,6 +512,8 @@ export function fingerprintValues(category: DocumentCategory, values: EditorValu
     values.allowDownload,
     values.featured,
     values.enableVerification,
+    // The placement only counts while the stamp is on: nudging a hidden choice is not an unsaved change.
+    values.stampEnabled ? [values.stampPosition, values.stampSize, values.stampPages] : false,
     data,
   ]);
 }
@@ -574,6 +625,12 @@ export function buildPayload(category: DocumentCategory, values: EditorValues, o
   payload.allowDownload = values.allowDownload;
   payload.featured = values.featured;
   payload.enableVerification = spec.verifiable ? values.enableVerification : false;
+  // Always sent, so switching the stamp off puts the original file back. The server needs a code to stamp, so a
+  // record that will not have one never asks for it.
+  payload.stamp =
+    spec.verifiable && values.enableVerification && values.stampEnabled
+      ? { enabled: true, position: values.stampPosition, size: values.stampSize, pages: values.stampPages }
+      : { enabled: false };
   return payload;
 }
 

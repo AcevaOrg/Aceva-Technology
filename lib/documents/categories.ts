@@ -65,6 +65,7 @@ export const CATEGORIES: Record<DocumentCategory, CategorySpec> = {
     photoRequired: false,
     fileRequired: true,
     referencePrefix: "ACV/FIN",
+    uniqueReference: true,
     base: {
       title: { label: "Report title", required: true, placeholder: "FY 2025–26 Audited Financial Statements" },
       summary: { label: "Summary", required: false, placeholder: "One or two sentences on what this report covers." },
@@ -182,6 +183,7 @@ export const CATEGORIES: Record<DocumentCategory, CategorySpec> = {
     photoRequired: false,
     fileRequired: true,
     referencePrefix: "ACV/ID",
+    uniqueReference: false,
     base: {
       title: { label: "Document title", required: true, placeholder: "Certificate of Incorporation" },
       summary: { label: "Summary", required: false, placeholder: "What this document establishes." },
@@ -237,6 +239,7 @@ export const CATEGORIES: Record<DocumentCategory, CategorySpec> = {
     photoRequired: false,
     fileRequired: true,
     referencePrefix: "ACV/CERT",
+    uniqueReference: true,
     base: {
       title: { label: "Certification title", required: true, placeholder: "ISO/IEC 27001:2022 — Information Security" },
       summary: { label: "Summary", required: false, placeholder: "What was achieved or completed." },
@@ -285,6 +288,7 @@ export const CATEGORIES: Record<DocumentCategory, CategorySpec> = {
     photoRequired: false,
     fileRequired: false,
     referencePrefix: "ACV/PRG",
+    uniqueReference: true,
     base: {
       title: { label: "Profile headline", required: true, placeholder: "Head of Engineering" },
       summary: { label: "Summary", required: false, placeholder: "A line about their work with us." },
@@ -412,6 +416,7 @@ export const CATEGORIES: Record<DocumentCategory, CategorySpec> = {
     photoRequired: false,
     fileRequired: true,
     referencePrefix: "ACV/EL",
+    uniqueReference: true,
     base: {
       title: { label: "Letter title", required: true, placeholder: "Experience letter — Software Engineer" },
       summary: { label: "Summary", required: false, hidden: true },

@@ -64,6 +64,7 @@ export function errorKeyOrder(category: DocumentCategory, context: ErrorContext)
     for (const field of group.fields) keys.push(field.key);
   }
   keys.push("primary");
+  if (spec.verifiable) keys.push("stamp");
   if (spec.hasPhoto) keys.push("photo");
   const consent = consentField(spec);
   if (consent) keys.push(consent.key);
@@ -76,6 +77,7 @@ export function errorKeyOrder(category: DocumentCategory, context: ErrorContext)
 
 const SETTING_LABELS: Record<string, string> = {
   primary: "Document file",
+  stamp: "QR on the file",
   photo: "Photo",
   visibility: "Visibility",
   status: "Publication status",

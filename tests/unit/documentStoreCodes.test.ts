@@ -46,12 +46,15 @@ beforeEach(async () => {
   await pg.db.exec("TRUNCATE verification_events, document_files, documents RESTART IDENTITY CASCADE");
 });
 
+let referenceSequence = 0;
+
 function certification(overrides: Record<string, unknown> = {}): DocumentInput {
   const result = validateDocumentInput(
     {
       title: "Certificate",
       holderName: "ACEVA",
-      referenceNo: "R1",
+      // Unique within a category, so each fixture gets its own unless the test names one.
+      referenceNo: `R${(referenceSequence += 1)}`,
       issuedOn: "2026-01-01",
       data: { direction: "held", issuing_body: "BSI" },
       ...overrides,

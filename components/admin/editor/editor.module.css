@@ -57,6 +57,14 @@
 .fileLinks { display: flex; flex-wrap: wrap; gap: 8px; }
 .removed { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; padding: 10px 14px; border: 1px dashed var(--c-line-strong); border-radius: var(--a-r-sm); font-size: 13.5px; color: var(--c-muted); }
 .removed strong { color: var(--c-fg); font-weight: 600; overflow-wrap: anywhere; }
+/* the QR stamp: a switch, and when it is on, where the QR goes */
+.stampBox { display: flex; flex-direction: column; gap: 12px; padding: 14px 16px; border: 1px solid var(--c-line); border-radius: var(--a-r); background: color-mix(in srgb, var(--c-fg) 2.5%, var(--c-raise)); }
+.stampBox[data-enabled] { border-color: color-mix(in srgb, var(--c-accent) 40%, var(--c-line)); }
+.stampGrid { display: grid; gap: 14px 18px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.stampGrid > .note { grid-column: 1 / -1; }
+.stampWarn { padding: 10px 14px; border-left: 3px solid var(--warning); border-radius: var(--a-r-sm); background: color-mix(in srgb, var(--warning) 9%, transparent); font-size: 13.5px; line-height: 1.55; color: var(--c-fg); }
+.stampStatus { font: 500 12px/1.5 var(--a-mono); letter-spacing: 0.03em; color: var(--c-muted); }
+.stampStatus[data-tone="warn"] { color: var(--warning); }
 .busyLine { display: flex; align-items: center; gap: 8px; font: 500 12px/1.4 var(--a-mono); letter-spacing: 0.04em; color: var(--c-muted); }
 
 /* ---------- publishing ---------- */

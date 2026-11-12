@@ -91,10 +91,14 @@ const VALID: Record<string, Record<string, unknown>> = {
   },
 };
 
+let referenceSequence = 0;
+
 function input(category: DocumentCategory, top: Record<string, unknown> = {}, data: Record<string, unknown> = {}): DocumentInput {
   const base = VALID[category];
+  // Reference numbers are unique within a category, so a fixture that does not name its own gets a numbered one.
+  const numbered = "referenceNo" in top || !base.referenceNo ? {} : { referenceNo: `${String(base.referenceNo)}-${(referenceSequence += 1)}` };
   const result = validateDocumentInput(
-    { status: "published", enableVerification: true, allowDownload: true, ...base, ...top, data: { ...(base.data as object), ...data } },
+    { status: "published", enableVerification: true, allowDownload: true, ...base, ...numbered, ...top, data: { ...(base.data as object), ...data } },
     { category },
   );
   if (!result.ok) throw new Error(`fixture invalid: ${JSON.stringify(result.errors)}`);

@@ -98,9 +98,13 @@ const VALID: Record<DocumentCategory, Record<string, unknown>> = {
   },
 };
 
+let referenceSequence = 0;
+
 function input(category: DocumentCategory, top: Record<string, unknown> = {}, data: Record<string, unknown> = {}): DocumentInput {
   const base = VALID[category];
-  const result = validateDocumentInput({ ...base, ...top, data: { ...(base.data as object), ...data } }, { category });
+  // Reference numbers are unique within a category, so a fixture that does not name its own gets a numbered one.
+  const numbered = "referenceNo" in top || !base.referenceNo ? {} : { referenceNo: `${String(base.referenceNo)}-${(referenceSequence += 1)}` };
+  const result = validateDocumentInput({ ...base, ...numbered, ...top, data: { ...(base.data as object), ...data } }, { category });
   if (!result.ok) throw new Error(`fixture invalid: ${JSON.stringify(result.errors)}`);
   return result.value;
 }
@@ -215,7 +219,8 @@ describe("ensureDocumentTables", () => {
     setSqlClientForTests(recording);
     resetDocumentTablesCache();
     await ensureDocumentTables();
-    expect(seen.length).toBe(8);
+    // 3 tables + 5 indexes + the two stamp columns + the reference-number index
+    expect(seen.length).toBe(11);
     for (const text of seen) expect(text.trim().replace(/;\s*$/, "")).not.toContain(";");
   });
 
@@ -270,7 +275,7 @@ describe("createDocument", () => {
   it.each(CATEGORY_LIST.map((spec) => [spec.key]))("creates a %s record and reads it back", async (category) => {
     const spec = CATEGORIES[category];
     const wanted = input(category);
-    const created = await seed(category);
+    const created = await seed(category, { referenceNo: wanted.referenceNo });
     expect(created.id).toMatch(UUID_PATTERN);
     expect(created).toMatchObject({
       category,
@@ -470,7 +475,7 @@ describe("getDocument / getDocumentByCode", () => {
   it("never returns file bytes on a record", async () => {
     const created = await seed("certification");
     expect(JSON.stringify(created)).not.toMatch(/data_hex|"data":\{"type"/);
-    for (const file of created.files) expect(Object.keys(file).sort()).toEqual(["createdAt", "documentId", "filename", "id", "mimeType", "role", "sha256", "sizeBytes"]);
+    for (const file of created.files) expect(Object.keys(file).sort()).toEqual(["createdAt", "documentId", "filename", "id", "mimeType", "role", "sha256", "sizeBytes", "stamp"]);
   });
 });
 
