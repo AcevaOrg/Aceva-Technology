@@ -50,6 +50,31 @@ async function stampedPages(bytes: Buffer): Promise<number[]> {
     .filter((index) => index >= 0);
 }
 
+/** The stamp's drawing instructions (its own small page, embedded in the document). */
+async function stampArtwork(bytes: Buffer): Promise<string> {
+  const doc = await PDFDocument.load(bytes);
+  for (const [, object] of doc.context.enumerateIndirectObjects()) {
+    if (!(object instanceof PDFStream) || String(object.dict.get(PDFName.of("Subtype"))) !== "/Form") continue;
+    return Buffer.from(object instanceof PDFRawStream ? decodePDFRawStream(object).decode() : object.getContents()).toString("latin1");
+  }
+  throw new Error("no stamp artwork found");
+}
+
+/** The size of the stamp artwork's own drawing area; anything drawn outside it is clipped by the viewer. */
+async function stampBox(bytes: Buffer): Promise<{ width: number; height: number }> {
+  const doc = await PDFDocument.load(bytes);
+  for (const [, object] of doc.context.enumerateIndirectObjects()) {
+    if (!(object instanceof PDFStream) || String(object.dict.get(PDFName.of("Subtype"))) !== "/Form") continue;
+    const box = String(object.dict.get(PDFName.of("BBox")))
+      .replace(/[[\]]/g, "")
+      .trim()
+      .split(/\s+/)
+      .map(Number);
+    return { width: box[2] - box[0], height: box[3] - box[1] };
+  }
+  throw new Error("no stamp artwork found");
+}
+
 /** Rebuilds the stamp's QR from its vector rectangles and reads it, like a phone would. */
 async function readStampedQr(bytes: Buffer): Promise<string | null> {
   const doc = await PDFDocument.load(bytes);
@@ -144,14 +169,16 @@ describe("stampFile: a PDF", () => {
 });
 
 describe("stampFile: images become a one-page PDF", () => {
-  it("turns a PNG into a PDF named .pdf, keeping the picture's shape", async () => {
+  it("turns a PNG into a PDF named .pdf, keeping the picture's shape, with the QR in a strip beneath it", async () => {
     const { upload: out } = await stampFile(upload("scan.2026.png", "image/png", TINY_PNG), CODE, OPTIONS);
     expect(out.mimeType).toBe("application/pdf");
     expect(out.filename).toBe("scan.2026.pdf");
     const doc = await PDFDocument.load(out.bytes);
     expect(doc.getPageCount()).toBe(1);
     const { width, height } = doc.getPage(0).getSize();
-    expect(width / height).toBeCloseTo(40 / 30, 2);
+    // The picture (40x30, fitted to A4 landscape: 793x595) keeps its shape; the strip is added underneath it.
+    expect(width).toBeCloseTo(793, 0);
+    expect(height).toBeGreaterThan(595);
     expect(await readStampedQr(out.bytes)).toBe(verificationUrl(CODE));
   });
 
@@ -209,6 +236,57 @@ describe("stampFile: what it refuses, in words an admin can act on", () => {
   });
 });
 
+describe("the stamp's look", () => {
+  const numbers = (text: string, pattern: RegExp) => [...text.matchAll(pattern)].map((match) => match.slice(1).map(Number));
+
+  it("draws no backing and no outline, so it never cuts into a printed frame", async () => {
+    const art = await stampArtwork((await stampFile(await pdf(), CODE, OPTIONS)).upload.bytes);
+    // A stroked path needs a stroke colour (RG) and a paint operator that strokes (S, s, B, b).
+    expect(art).not.toMatch(/\sRG\s/);
+    expect(art).not.toMatch(/\n(?:S|s|B|b|B\*|b\*)\n/);
+    // No white tile behind the block (the one fill left is the dark QR modules).
+    expect(art).not.toMatch(/\n1 1 1 rg\n/);
+    expect(art).toMatch(/\nf\n/);
+  });
+
+  it.each(["small", "medium", "large"] as const)("the %s block has straight edges: the code spans exactly the QR's width, flush to its left", async (size) => {
+    const art = await stampArtwork((await stampFile(await pdf(), CODE, { ...OPTIONS, size })).upload.bytes);
+    const rects = numbers(art, /(-?[\d.]+) (-?[\d.]+) (-?[\d.]+) (-?[\d.]+) re/g);
+    const left = Math.min(...rects.map(([x]) => x));
+    const right = Math.max(...rects.map(([x, , w]) => x + w));
+    const lines = numbers(art, /1 0 0 1 (-?[\d.]+) (-?[\d.]+) Tm/g);
+    const sizes = numbers(art, /\/[A-Za-z0-9_-]+ (-?[\d.]+) Tf/g).map(([value]) => value);
+    expect(lines.length).toBe(2);
+    // Both lines start on the QR's left edge...
+    for (const [x] of lines) expect(x).toBeCloseTo(left, 2);
+    // ...and the code (Courier: 0.6 em per character) ends just inside its right edge: set to 97% of the QR's width, so
+    // a font a viewer substitutes for Courier cannot run past it.
+    const codeWidth = CODE.length * 0.6 * sizes[0];
+    expect(left + codeWidth).toBeLessThanOrEqual(right + 1e-6);
+    expect(codeWidth).toBeGreaterThanOrEqual((right - left) * 0.95);
+  });
+
+  it("keeps empty room beyond the block, so a line that comes out slightly wide is not clipped in half", async () => {
+    const stamped = (await stampFile(await pdf(), CODE, OPTIONS)).upload.bytes;
+    const art = await stampArtwork(stamped);
+    const box = await stampBox(stamped);
+    const rects = numbers(art, /(-?[\d.]+) (-?[\d.]+) (-?[\d.]+) (-?[\d.]+) re/g);
+    const qrRight = Math.max(...rects.map(([x, , w]) => x + w));
+    const qrBottom = Math.min(...rects.map(([, y]) => y));
+    expect(box.width - qrRight).toBeGreaterThanOrEqual(4);
+    // Below the QR sit two lines of text, and below those the same room again.
+    expect(qrBottom).toBeGreaterThan(box.height * 0.2);
+  });
+
+  it("keeps the printed code legible at every size", async () => {
+    for (const size of ["small", "medium", "large"] as const) {
+      const art = await stampArtwork((await stampFile(await pdf(), CODE, { ...OPTIONS, size })).upload.bytes);
+      const codeSize = numbers(art, /\/[A-Za-z0-9_-]+ (-?[\d.]+) Tf/g)[0][0];
+      expect(codeSize).toBeGreaterThanOrEqual(5.5);
+    }
+  });
+});
+
 describe("placement maths", () => {
   const page = { width: 595, height: 842 };
   const panel = { width: 87, height: 104 };
@@ -222,6 +300,49 @@ describe("placement maths", () => {
     expect(tl.y + tl.height).toBeLessThan(page.height);
     expect(placePanel(page, panel, "bottom-left").x).toBe(tl.x);
     expect(placePanel(page, panel, "top-right").y).toBe(tl.y);
+  });
+
+  it("puts every corner the same distance in from the edges it touches, so the QR lines up wherever it goes", () => {
+    const block = { width: 78, height: 102 };
+    const spots = Object.fromEntries((["bottom-right", "bottom-left", "top-right", "top-left"] as const).map((corner) => [corner, placePanel(page, block, corner)]));
+    const gap = (corner: keyof typeof spots) => ({
+      left: spots[corner].x,
+      right: page.width - (spots[corner].x + spots[corner].width),
+      bottom: spots[corner].y,
+      top: page.height - (spots[corner].y + spots[corner].height),
+    });
+    expect(gap('bottom-right').right).toBeCloseTo(gap('top-right').right, 6);
+    expect(gap('bottom-left').left).toBeCloseTo(gap('top-left').left, 6);
+    expect(gap('bottom-right').bottom).toBeCloseTo(gap('bottom-left').bottom, 6);
+    expect(gap('top-right').top).toBeCloseTo(gap('top-left').top, 6);
+    // The same distance on both edges of a corner, and far enough in to clear a printed border.
+    expect(gap('bottom-right').right).toBeCloseTo(gap('bottom-right').bottom, 6);
+    expect(gap('bottom-right').right).toBeGreaterThanOrEqual(30);
+  });
+
+  it("lines the block up with the margin, not the empty room kept beside and below it", () => {
+    const withBleed = { width: 83, height: 107, bleed: 5 };
+    const right = placePanel(page, withBleed, "bottom-right");
+    const left = placePanel(page, withBleed, "top-left");
+    // The block ends `bleed` short of the artwork's right and bottom edges; its distance to the page edge is the margin.
+    const blockRightGap = page.width - (right.x + right.width - withBleed.bleed);
+    const blockBottomGap = right.y + withBleed.bleed;
+    const blockLeftGap = left.x;
+    const blockTopGap = page.height - (left.y + left.height);
+    expect(blockRightGap).toBeCloseTo(blockLeftGap, 6);
+    expect(blockBottomGap).toBeCloseTo(blockTopGap, 6);
+    expect(blockRightGap).toBeCloseTo(blockBottomGap, 6);
+    // And the artwork itself stays on the page.
+    expect(right.x + right.width).toBeLessThan(page.width);
+    expect(right.y).toBeGreaterThan(0);
+  });
+
+  it("stays wholly on the page, even a tiny one", () => {
+    const spot = placePanel({ width: 120, height: 90 }, { width: 78, height: 102 }, "top-left");
+    expect(spot.x).toBeGreaterThan(0);
+    expect(spot.y).toBeGreaterThan(0);
+    expect(spot.y + spot.height).toBeLessThan(90);
+    expect(spot.x + spot.width).toBeLessThan(120);
   });
 
   it("never enlarges the panel, and shrinks it on a small page", () => {

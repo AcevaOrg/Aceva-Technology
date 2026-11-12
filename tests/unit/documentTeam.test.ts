@@ -36,6 +36,7 @@ function person(name: string, fields: Record<string, FieldValue> = {}, overrides
     state: "valid",
     verificationCode: null,
     allowDownload: false,
+    canDownload: false,
     hasFile: false,
     hasPhoto: false,
     file: null,

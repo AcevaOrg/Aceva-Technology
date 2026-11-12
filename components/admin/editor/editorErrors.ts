@@ -70,7 +70,7 @@ export function errorKeyOrder(category: DocumentCategory, context: ErrorContext)
   if (consent) keys.push(consent.key);
   keys.push("visibility");
   if (context.mode === "edit") keys.push("status");
-  keys.push("allowDownload", "featured");
+  keys.push("allowView", "allowDownload", "featured");
   if (context.verificationSwitch) keys.push("enableVerification");
   return keys;
 }
@@ -81,6 +81,7 @@ const SETTING_LABELS: Record<string, string> = {
   photo: "Photo",
   visibility: "Visibility",
   status: "Publication status",
+  allowView: "Allow public view",
   allowDownload: "Allow public download",
   featured: "Feature on the Documents page",
   enableVerification: "QR verification",

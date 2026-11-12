@@ -42,6 +42,7 @@ function record(category: DocumentCategory, overrides: Partial<DocumentRecord> =
     status: "published",
     visibility: "public",
     allowDownload: true,
+    allowView: false,
     featured: false,
     sortOrder: 0,
     holderName: "Holder",
@@ -79,9 +80,39 @@ describe("canAccessFile: the primary file", () => {
     expect(decide({ record: record("certification") })).toEqual({ allowed: true, via: "public" });
   });
 
-  it("refuses when the admin has not allowed public download", () => {
-    const decision = decide({ record: record("certification", { allowDownload: false }), code: CODE });
-    expect(reason(decision)).toBe("download_disabled");
+  it("refuses when the admin has allowed the public neither to view nor to download", () => {
+    const decision = decide({ record: record("certification", { allowDownload: false, allowView: false }), code: CODE });
+    expect(reason(decision)).toBe("not_shared");
+  });
+
+  describe("view-only", () => {
+    const viewOnly = () => record("certification", { allowDownload: false, allowView: true });
+
+    it("shows the file to a visitor, with or without the code", () => {
+      expect(decide({ record: viewOnly() })).toEqual({ allowed: true, via: "public" });
+      expect(decide({ record: viewOnly(), code: CODE })).toEqual({ allowed: true, via: "code" });
+    });
+
+    it("refuses the same file as a download, naming a reason of its own", () => {
+      expect(reason(decide({ record: viewOnly(), download: true }))).toBe("download_off");
+      expect(reason(decide({ record: viewOnly(), download: true, code: CODE }))).toBe("download_off");
+    });
+
+    it("an admin may still download it", () => {
+      expect(decide({ record: viewOnly(), download: true, isAdmin: true })).toEqual({ allowed: true, via: "admin" });
+    });
+
+    it("a download-allowed file is open to view and to download", () => {
+      const open = record("certification", { allowDownload: true, allowView: false });
+      expect(decide({ record: open })).toEqual({ allowed: true, via: "public" });
+      expect(decide({ record: open, download: true })).toEqual({ allowed: true, via: "public" });
+    });
+
+    it("never lets a view-only setting open a draft, an archived or a private record", () => {
+      for (const overrides of [{ status: "draft" }, { status: "archived" }, { visibility: "private" }] as const) {
+        expect(reason(decide({ record: record("certification", { allowDownload: false, allowView: true, ...overrides }) }))).toBe("hidden");
+      }
+    });
   });
 
   it.each(["draft", "archived"] as const)("never serves a %s record, even with its code", (status) => {

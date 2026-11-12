@@ -32,6 +32,7 @@ interface PublishingSectionProps {
   hasCode: boolean;
   status: DocumentStatus;
   visibility: DocumentVisibility;
+  allowView: boolean;
   allowDownload: boolean;
   featured: boolean;
   enableVerification: boolean;
@@ -58,6 +59,7 @@ function PublishingSectionImpl({
   hasCode,
   status,
   visibility,
+  allowView,
   allowDownload,
   featured,
   enableVerification,
@@ -78,6 +80,7 @@ function PublishingSectionImpl({
 
   const setVisibility = useCallback((next: DocumentVisibility) => onSetting({ visibility: next }), [onSetting]);
   const setStatus = useCallback((next: DocumentStatus) => onSetting({ status: next }), [onSetting]);
+  const setView = useCallback((next: boolean) => onSetting({ allowView: next }), [onSetting]);
   const setDownload = useCallback((next: boolean) => onSetting({ allowDownload: next }), [onSetting]);
   const setFeatured = useCallback((next: boolean) => onSetting({ featured: next }), [onSetting]);
   const setVerification = useCallback((next: boolean) => onSetting({ enableVerification: next }), [onSetting]);
@@ -159,11 +162,27 @@ function PublishingSectionImpl({
 
       <div className={ed.switchCell}>
         <Switch
+          id={settingDomId("allowView")}
+          checked={allowView}
+          onChange={setView}
+          label="Allow public view"
+          hint="Visitors can open the document file in their browser from the listing and the verify page."
+        />
+        {errors.allowView ? <InlineError message={errors.allowView} /> : null}
+      </div>
+
+      <div className={ed.switchCell}>
+        <Switch
           id={settingDomId("allowDownload")}
           checked={allowDownload}
           onChange={setDownload}
+          disabled={!allowView}
           label="Allow public download"
-          hint="Visitors can open the document file from the listing and the verify page."
+          hint={
+            allowView
+              ? "Visitors also get a Download button to keep a copy. Leave it off for view-only. A browser's own viewer can still save what it shows, so this discourages copying rather than preventing it."
+              : "Turn on public view first: a file visitors cannot open cannot be downloaded."
+          }
         />
         {errors.allowDownload ? <InlineError message={errors.allowDownload} /> : null}
       </div>

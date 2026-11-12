@@ -70,11 +70,26 @@ export const STAMP_POSITION_LABELS: Record<StampPosition, string> = {
 export const STAMP_SIZE_LABELS: Record<StampSize, string> = { small: "Small", medium: "Medium", large: "Large" };
 export const STAMP_PAGE_LABELS: Record<StampPages, string> = { first: "First page", last: "Last page", all: "Every page" };
 
+/**
+ * How the stamp ended up on the page, compared with the corner the admin chose:
+ * as-chosen = exactly there; moved = slid or switched to the nearest clear spot because the corner had text, a footer
+ * or a graphic on it; strip = the page had no clear space (or could not be read), so a small strip was added to it.
+ * For a file with several stamped pages, the most adjusted of them.
+ */
+export const STAMP_FITS = ["as-chosen", "moved", "strip"] as const;
+export type StampFit = (typeof STAMP_FITS)[number];
+
+export function isStampFit(value: unknown): value is StampFit {
+  return typeof value === "string" && (STAMP_FITS as readonly string[]).includes(value);
+}
+
 /** What a stored file was stamped with. `code` is the verification code that is printed on it. */
 export interface FileStamp extends StampOptions {
   code: string;
   /** ISO timestamp of when the stamp was drawn. */
   at: string;
+  /** Where it landed relative to the chosen corner. Absent on a stamp drawn before auto-fit existed. */
+  fit?: StampFit;
 }
 
 export function isStampPosition(value: unknown): value is StampPosition {
@@ -112,8 +127,18 @@ export interface DocumentRecord {
   summary: string;
   status: DocumentStatus;
   visibility: DocumentVisibility;
-  /** Whether the public (listing or verify page) may open/download the primary file. */
+  /**
+   * Whether the public (listing or verify page) may DOWNLOAD the primary file: a Download button, and the file served
+   * as an attachment. Download implies view, since a file that can be saved can be opened.
+   */
   allowDownload: boolean;
+  /**
+   * Whether the public may OPEN the primary file in their browser (view-only). The file is open to the public when
+   * this OR `allowDownload` is on, so a record saved before this setting existed (view false, download true) behaves
+   * exactly as it always did. A browser's own PDF viewer has a save button, so view-only discourages copying; it
+   * cannot prevent it.
+   */
+  allowView: boolean;
   featured: boolean;
   sortOrder: number;
   /** Person or entity the record is about. "" when the category has none. */

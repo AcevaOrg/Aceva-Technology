@@ -39,6 +39,13 @@ interface StampOptionsProps {
 
 const STAMPABLE = new Set(["application/pdf", "image/png", "image/jpeg"]);
 
+/** What to add to the status line when the QR is not exactly where the corner choice would put it. */
+const FIT_NOTES: Record<NonNullable<FileStamp["fit"]>, string> = {
+  "as-chosen": "",
+  moved: ", moved to clear the text on the page",
+  strip: ", in a strip added to the page so it covers nothing",
+};
+
 function choices<T extends string>(values: readonly T[], labels: Record<T, string>): SegmentedOption<T>[] {
   return values.map((value) => ({ value, label: labels[value] }));
 }
@@ -70,7 +77,7 @@ function StampOptionsImpl({ hasCode, enabled, position, size, pages, fileMime, s
         label="Print the QR code and verification code on this file"
         hint={
           hasCode
-            ? "Added when you save, with this document's own code, on a white panel so it scans on any page. Your original file is kept, so changing the code or the corner never stacks a second QR."
+            ? "Added when you save, with this document's own code, printed straight onto the page with no frame or background. It fits itself in: if the corner you choose has text, a footer or a graphic on it, the QR moves to the nearest clear spot. Your original file is kept, so changing the code or the corner never stacks a second QR."
             : "Turn on QR verification under Publishing first. The code is what gets printed on the file."
         }
       />
@@ -94,7 +101,7 @@ function StampOptionsImpl({ hasCode, enabled, position, size, pages, fileMime, s
             <SegmentedControl<StampPages> options={pageChoices} value={pages} onChange={setPages} label="Pages" />
           </FormField>
           <p className={ed.note}>
-            Images (PNG, JPEG) are saved as a one-page PDF so the QR can sit on them. If the corner covers something, pick another and save again.
+            This is the corner it starts from. If the page has no clear room at all, a small strip is added to it for the QR, so the QR never covers your content. Images (PNG, JPEG) are saved as a one-page PDF with that strip, because what is inside a picture cannot be read. The QR has no background, so on a dark or busy corner pick another and save again.
           </p>
         </div>
       ) : null}
@@ -103,7 +110,7 @@ function StampOptionsImpl({ hasCode, enabled, position, size, pages, fileMime, s
         <p className={ed.stampStatus} data-tone={outOfDate ? "warn" : undefined} role="status">
           {outOfDate
             ? "The QR on the stored file is for an older code. Save to refresh it."
-            : `The stored file carries this document's QR (${STAMP_POSITION_LABELS[storedStamp.position].toLowerCase()}, ${STAMP_SIZE_LABELS[storedStamp.size].toLowerCase()}, ${STAMP_PAGE_LABELS[storedStamp.pages].toLowerCase()}).`}
+            : `The stored file carries this document's QR (${STAMP_POSITION_LABELS[storedStamp.position].toLowerCase()}, ${STAMP_SIZE_LABELS[storedStamp.size].toLowerCase()}, ${STAMP_PAGE_LABELS[storedStamp.pages].toLowerCase()})${FIT_NOTES[storedStamp.fit ?? "as-chosen"]}.`}
         </p>
       ) : null}
     </div>

@@ -44,6 +44,7 @@ export type EditorFieldValue = string | boolean | string[];
 export const SETTING_KEYS = [
   "status",
   "visibility",
+  "allowView",
   "allowDownload",
   "featured",
   "enableVerification",
@@ -65,6 +66,9 @@ export interface EditorValues {
   data: Record<string, EditorFieldValue>;
   status: DocumentStatus;
   visibility: DocumentVisibility;
+  /** The public may open the document file in their browser. */
+  allowView: boolean;
+  /** The public may also download it. Needs `allowView`. */
   allowDownload: boolean;
   featured: boolean;
   enableVerification: boolean;
@@ -163,6 +167,8 @@ export function createInitialValues(category: DocumentCategory, record?: Documen
       data,
       status: record.status,
       visibility: record.visibility,
+      // A record saved before view-only existed has only download set; downloading implies viewing.
+      allowView: record.allowView || record.allowDownload,
       allowDownload: record.allowDownload,
       featured: record.featured,
       enableVerification: record.verificationCode !== null,
@@ -179,6 +185,7 @@ export function createInitialValues(category: DocumentCategory, record?: Documen
     data,
     status: "draft",
     visibility: spec.defaultVisibility,
+    allowView: defaultAllowDownload(spec),
     allowDownload: defaultAllowDownload(spec),
     featured: false,
     enableVerification: spec.verifiable,
@@ -318,6 +325,9 @@ export function reconcileValues(category: DocumentCategory, values: EditorValues
     notice = `Visibility changed to ${VISIBILITY_LABELS[fallback].label}: a person can only be listed publicly with their recorded consent.`;
   }
 
+  // A file that can be downloaded can be viewed (a form loaded from an older record may say otherwise).
+  if (next.allowDownload && !next.allowView) next = { ...next, allowView: true };
+
   if (!spec.verifiable && next.enableVerification) next = { ...next, enableVerification: false };
   // The QR on the file is the verification code printed; without a code there is nothing to print.
   if ((!spec.verifiable || !next.enableVerification) && next.stampEnabled) next = { ...next, stampEnabled: false };
@@ -417,6 +427,7 @@ export function rebaseValues(old: EditorValues, next: EditorValues, current: Edi
     data,
     status: mergeKey("status", old, next, current),
     visibility: mergeKey("visibility", old, next, current),
+    allowView: mergeKey("allowView", old, next, current),
     allowDownload: mergeKey("allowDownload", old, next, current),
     featured: mergeKey("featured", old, next, current),
     enableVerification: mergeKey("enableVerification", old, next, current),
@@ -443,8 +454,13 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
       if (state.values[action.key] === action.value) return state;
       return edited(state, { ...state.values, [action.key]: action.value });
     }
-    case "setting":
-      return edited(state, { ...state.values, ...action.patch });
+    case "setting": {
+      const next = { ...state.values, ...action.patch };
+      // Download needs view: switching download on switches view on, and taking view away takes download with it.
+      if (action.patch.allowView === false) next.allowDownload = false;
+      else if (action.patch.allowDownload === true) next.allowView = true;
+      return edited(state, next);
+    }
     case "rebase": {
       const baseline = createInitialValues(state.category, action.record);
       return {
@@ -509,6 +525,7 @@ export function fingerprintValues(category: DocumentCategory, values: EditorValu
     values.expiresOn.trim(),
     values.status,
     values.visibility,
+    values.allowView,
     values.allowDownload,
     values.featured,
     values.enableVerification,
@@ -622,6 +639,7 @@ export function buildPayload(category: DocumentCategory, values: EditorValues, o
   payload.data = buildDataPayload(category, values.data);
   if (options.status !== undefined) payload.status = options.status;
   payload.visibility = values.visibility;
+  payload.allowView = values.allowView;
   payload.allowDownload = values.allowDownload;
   payload.featured = values.featured;
   payload.enableVerification = spec.verifiable ? values.enableVerification : false;

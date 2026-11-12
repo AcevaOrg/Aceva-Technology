@@ -86,6 +86,10 @@ async function createTables(sql: SqlClient): Promise<void> {
   await sql`ALTER TABLE document_files ADD COLUMN IF NOT EXISTS source_data bytea`;
   await sql`ALTER TABLE document_files ADD COLUMN IF NOT EXISTS stamp jsonb`;
 
+  // View-only access to the document file, separate from download. Existing rows read false, which changes nothing:
+  // the public may open a file when allow_view OR allow_download is on.
+  await sql`ALTER TABLE documents ADD COLUMN IF NOT EXISTS allow_view boolean NOT NULL DEFAULT false`;
+
   await createReferenceIndex(sql);
 }
 

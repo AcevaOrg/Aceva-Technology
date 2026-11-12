@@ -539,6 +539,7 @@ export function DocumentEditor({ mode, category, record = null, maxUploadBytes, 
                 hasCode={hasCode}
                 status={values.status}
                 visibility={values.visibility}
+                allowView={values.allowView}
                 allowDownload={values.allowDownload}
                 featured={values.featured}
                 enableVerification={values.enableVerification}

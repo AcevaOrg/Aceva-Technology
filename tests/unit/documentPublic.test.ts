@@ -67,6 +67,7 @@ function makeRecord(category: DocumentCategory, overrides: Partial<DocumentRecor
     status: "published",
     visibility: "public",
     allowDownload: true,
+    allowView: false,
     featured: true,
     sortOrder: 3,
     holderName: "Aisha Khan",
@@ -310,6 +311,7 @@ describe("toPublicDocument: revoked records collapse", () => {
       verificationCode: null,
       allowDownload: false,
       hasFile: false,
+      canDownload: false,
       hasPhoto: false,
       file: null,
       featured: false,
@@ -518,5 +520,34 @@ describe("toPublicDocument: values and base fields", () => {
   it("defaults to the current time", () => {
     const old = makeRecord("certification", { expiresOn: "2001-01-01" });
     expect(toPublicDocument(old, "verify")?.state).toBe("expired");
+  });
+});
+
+describe("toPublicDocument: view and download are separate", () => {
+  const withFile = (overrides: Partial<DocumentRecord>) =>
+    makeRecord("certification", { visibility: "public", files: [{ id: "f", documentId: "d", role: "primary", filename: "c.pdf", mimeType: "application/pdf", sizeBytes: 10, sha256: "a".repeat(64), createdAt: "2026-01-01T00:00:00.000Z" }], ...overrides });
+
+  it("a view-only file is public but cannot be downloaded", () => {
+    const doc = toPublicDocument(withFile({ allowView: true, allowDownload: false }), "listing", NOW);
+    expect(doc).toMatchObject({ hasFile: true, canDownload: false, allowDownload: false });
+    expect(doc?.file?.filename).toBe("c.pdf");
+  });
+
+  it("a downloadable file is public and can be downloaded", () => {
+    expect(toPublicDocument(withFile({ allowView: true, allowDownload: true }), "listing", NOW)).toMatchObject({ hasFile: true, canDownload: true });
+  });
+
+  it("a record saved before view-only existed (download on, view off) keeps working as it did", () => {
+    expect(toPublicDocument(withFile({ allowView: false, allowDownload: true }), "listing", NOW)).toMatchObject({ hasFile: true, canDownload: true });
+  });
+
+  it("with neither on there is no public file at all", () => {
+    const doc = toPublicDocument(withFile({ allowView: false, allowDownload: false }), "listing", NOW);
+    expect(doc).toMatchObject({ hasFile: false, canDownload: false, file: null });
+  });
+
+  it("a record with no file offers nothing, whatever the switches say", () => {
+    const doc = toPublicDocument(makeRecord("certification", { visibility: "public", allowView: true, allowDownload: true, files: [] }), "listing", NOW);
+    expect(doc).toMatchObject({ hasFile: false, canDownload: false });
   });
 });

@@ -15,7 +15,7 @@ import { useToast } from "../Toast";
 import ed from "./editor.module.css";
 import { requestJson } from "./editorApi";
 import { interpretActionResponse, type ApiFailure } from "./editorErrors";
-import { adminQrUrl, isDocumentIdLike } from "./editorModel";
+import { adminFileUrl, adminQrUrl, isDocumentIdLike } from "./editorModel";
 import { formatDateTimeUtc } from "./editorPreview";
 
 type ActionName = "archive" | "restore" | "revoke" | "reinstate" | "regenerate_code" | "stamp_file" | "duplicate";
@@ -184,7 +184,20 @@ export function VerificationPanel({ record, publicUrl }: VerificationPanelProps)
                         : "Out of date: the file shows an older code"
                       : "Not on the file yet"}
                   </p>
-                  {!stampIsCurrent && !revoked ? (
+                  {fileStamp ? (
+                    <ButtonLink
+                      href={adminFileUrl(id, "primary", { download: true, version: primaryFile.sha256 })}
+                      external
+                      download
+                      variant="ghost"
+                      size="sm"
+                      iconLeading={<DownloadIcon width={16} height={16} />}
+                      iconTrailing={false}
+                    >
+                      Download with QR
+                    </ButtonLink>
+                  ) : null}
+                  {!revoked ? (
                     <Button
                       variant="ghost"
                       size="sm"
@@ -194,7 +207,7 @@ export function VerificationPanel({ record, publicUrl }: VerificationPanelProps)
                       onClick={() => void run("stamp_file")}
                       iconLeading={<QrIcon width={16} height={16} />}
                     >
-                      {fileStamp ? "Refresh QR on file" : "Add QR to file"}
+                      {!fileStamp ? "Add QR to file" : stampIsCurrent ? "Redraw QR" : "Refresh QR on file"}
                     </Button>
                   ) : null}
                 </div>

@@ -40,7 +40,10 @@ export type DocumentInput = {
   summary: string;
   status: DocumentStatus;
   visibility: DocumentVisibility;
+  /** The public may download the document file. Implies `allowView`. */
   allowDownload: boolean;
+  /** The public may open the document file in their browser. Always true when `allowDownload` is. */
+  allowView: boolean;
   featured: boolean;
   /** Integer within -9999..9999. */
   sortOrder: number;
@@ -438,7 +441,7 @@ function has(source: Record<string, unknown>, key: string): boolean {
  * Validates and normalises a create/update payload for one category.
  *
  * Update semantics when `existing` is given:
- *  - the workflow settings `status`, `visibility`, `allowDownload`, `featured`, `sortOrder` and
+ *  - the workflow settings `status`, `visibility`, `allowDownload`, `allowView`, `featured`, `sortOrder` and
  *    `enableVerification` keep the existing record's value when omitted, because they are changed
  *    from list actions as often as from the editor and an editor that omits them must not reset them;
  *  - the content (`title`, `summary`, `holderName`, `referenceNo`, `issuedOn`, `expiresOn` and the
@@ -552,7 +555,7 @@ export function validateDocumentInput(
     errors.visibility = "Listing a person publicly needs their consent. Confirm it, or choose Unlisted or Private.";
   }
 
-  const flag = (key: "allowDownload" | "featured" | "enableVerification", fallback: boolean): boolean => {
+  const flag = (key: "allowDownload" | "allowView" | "featured" | "enableVerification", fallback: boolean): boolean => {
     if (!has(raw, key)) return fallback;
     const parsed = parseBooleanLike(raw[key]);
     if (parsed === undefined) {
@@ -562,6 +565,9 @@ export function validateDocumentInput(
     return parsed;
   };
   const allowDownload = flag("allowDownload", existing?.allowDownload ?? false);
+  // A file that can be downloaded can be viewed, so download switches view on. (A record saved before view existed has
+  // view false and download true: it keeps both, and is stored with view on from its next save.)
+  const allowView = flag("allowView", existing?.allowView ?? false) || allowDownload;
   const featured = flag("featured", existing?.featured ?? false);
   const enableVerification = flag("enableVerification", existing ? existing.verificationCode !== null : spec.verifiable);
 
@@ -585,6 +591,7 @@ export function validateDocumentInput(
       status,
       visibility,
       allowDownload,
+      allowView,
       featured,
       sortOrder,
       holderName: text.holderName,

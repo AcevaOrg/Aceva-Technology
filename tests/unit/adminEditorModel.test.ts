@@ -58,6 +58,7 @@ function makeRecord(category: DocumentCategory, overrides: Partial<DocumentRecor
     status: "draft",
     visibility: CATEGORIES[category].defaultVisibility,
     allowDownload: false,
+    allowView: false,
     featured: false,
     sortOrder: 0,
     holderName: "",
@@ -843,5 +844,52 @@ describe("the QR stamp in the form", () => {
     const merged = rebaseValues(old, next, mine);
     expect(merged.stampPosition).toBe("top-left");
     expect(merged.stampSize).toBe("large");
+  });
+});
+
+
+/* ------------------------------------------------------------------ *
+ * Public view and download                                             *
+ * ------------------------------------------------------------------ */
+
+describe("public view and download in the form", () => {
+  it("a new certificate starts open to view and download; a personal record starts closed", () => {
+    expect(createInitialValues("certification")).toMatchObject({ allowView: true, allowDownload: true });
+    expect(createInitialValues("program_record")).toMatchObject({ allowView: false, allowDownload: false });
+  });
+
+  it("switching download off leaves the file viewable", () => {
+    const state = createEditorState("certification");
+    const next = editorReducer(state, { type: "setting", patch: { allowDownload: false } });
+    expect(next.values).toMatchObject({ allowView: true, allowDownload: false });
+  });
+
+  it("switching view off takes download with it", () => {
+    const state = createEditorState("certification");
+    const next = editorReducer(state, { type: "setting", patch: { allowView: false } });
+    expect(next.values).toMatchObject({ allowView: false, allowDownload: false });
+  });
+
+  it("switching download on switches view on", () => {
+    const closed = editorReducer(createEditorState("certification"), { type: "setting", patch: { allowView: false } });
+    const next = editorReducer(closed, { type: "setting", patch: { allowDownload: true } });
+    expect(next.values).toMatchObject({ allowView: true, allowDownload: true });
+  });
+
+  it("a record saved before view-only existed shows view on, because it was downloadable", () => {
+    const legacy = makeRecord("certification", { allowView: false, allowDownload: true });
+    expect(createInitialValues("certification", legacy)).toMatchObject({ allowView: true, allowDownload: true });
+  });
+
+  it("sends both settings, and what it sends passes the server's own validation", () => {
+    const values = { ...createInitialValues("certification"), allowDownload: false };
+    const payload = buildPayload("certification", values);
+    expect(payload).toMatchObject({ allowView: true, allowDownload: false });
+  });
+
+  it("counts a change of view or download as unsaved", () => {
+    const state = createEditorState("certification");
+    const next = editorReducer(state, { type: "setting", patch: { allowDownload: false } });
+    expect(isEditorDirty("certification", state.baseline, next.values, noFiles)).toBe(true);
   });
 });

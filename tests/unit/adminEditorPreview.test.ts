@@ -178,12 +178,19 @@ describe("projectPreview", () => {
     expect(projection.note).toBeTruthy();
   });
 
-  it("only offers the file when public download is allowed", () => {
+  it("only offers the file when the public may view or download it", () => {
     const primary = { filename: "c.pdf", mimeType: "application/pdf", sizeBytes: 100 };
-    const closed = projectPreview(previewRecord("certification", { ...certValues, allowDownload: false }, { ...none, primary }), NOW);
-    const open = projectPreview(previewRecord("certification", { ...certValues, allowDownload: true }, { ...none, primary }), NOW);
+    const closed = projectPreview(previewRecord("certification", { ...certValues, allowView: false, allowDownload: false }, { ...none, primary }), NOW);
+    const open = projectPreview(previewRecord("certification", { ...certValues, allowView: true, allowDownload: true }, { ...none, primary }), NOW);
     expect(closed.kind === "listing" && closed.doc.file).toBeNull();
     expect(open.kind === "listing" && open.doc.file?.filename).toBe("c.pdf");
+  });
+
+  it("shows a view-only file to visitors, with no download offered", () => {
+    const primary = { filename: "c.pdf", mimeType: "application/pdf", sizeBytes: 100 };
+    const viewOnly = projectPreview(previewRecord("certification", { ...certValues, allowView: true, allowDownload: false }, { ...none, primary }), NOW);
+    expect(viewOnly.kind === "listing" && viewOnly.doc.file?.filename).toBe("c.pdf");
+    expect(viewOnly.kind === "listing" && viewOnly.doc.canDownload).toBe(false);
   });
 });
 

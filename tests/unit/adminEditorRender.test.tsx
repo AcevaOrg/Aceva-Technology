@@ -34,6 +34,7 @@ function record(category: keyof typeof CATEGORIES, overrides: Partial<DocumentRe
     status: "draft",
     visibility: CATEGORIES[category].defaultVisibility,
     allowDownload: false,
+    allowView: false,
     featured: false,
     sortOrder: 0,
     holderName: "Aisha Khan",

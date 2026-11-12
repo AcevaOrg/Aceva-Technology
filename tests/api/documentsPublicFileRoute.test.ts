@@ -424,3 +424,53 @@ describe("stored records stay what the privacy rules assume", () => {
     expect([fresh.status, fresh.visibility, fresh.allowDownload]).toEqual(["published", "public", true]);
   });
 });
+
+/* ------------------------------------------------------------------ *
+ * View-only: shown in the browser, never offered as a download         *
+ * ------------------------------------------------------------------ */
+
+describe("GET /api/documents/[id]/file: view-only files", () => {
+  const viewOnly = () => seed("certification", { allowDownload: false, allowView: true });
+
+  it("shows a view-only file in the browser, inline", async () => {
+    const { record, primary } = await viewOnly();
+    const response = await ask(record.id);
+    expect(response.status).toBe(200);
+    expect(Buffer.from(await response.arrayBuffer()).equals(primary.bytes)).toBe(true);
+    expect(response.headers.get("content-disposition")).toMatch(/^inline;/);
+  });
+
+  it("refuses the same file as a download, with the very same 404 as any other refusal", async () => {
+    const { record } = await viewOnly();
+    const refused = await ask(record.id, "download=1");
+    expect(refused.status).toBe(404);
+    expect(await errorShape(refused)).toEqual(await errorShape(await ask(MISSING_ID, "download=1")));
+  });
+
+  it("still lets the admin download it", async () => {
+    const { record } = await viewOnly();
+    const response = await ask(record.id, "download=1", { cookie: await adminCookie() });
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-disposition")).toMatch(/^attachment;/);
+  });
+
+  it("opens and downloads a record saved before view-only existed (download on, view off)", async () => {
+    const { record } = await seed("certification");
+    await db.query("UPDATE documents SET allow_view = false WHERE id = $1", [record.id]);
+    expect((await ask(record.id)).status).toBe(200);
+    expect((await ask(record.id, "download=1")).status).toBe(200);
+  });
+
+  it("refuses everything when neither view nor download is allowed", async () => {
+    const { record } = await seed("certification", { allowDownload: false, allowView: false });
+    expect((await ask(record.id)).status).toBe(404);
+    expect((await ask(record.id, "download=1")).status).toBe(404);
+  });
+
+  it("does not open a view-only draft, private or archived record", async () => {
+    const draft = await seed("certification", { allowDownload: false, allowView: true, status: "draft" });
+    const hidden = await seed("certification", { allowDownload: false, allowView: true, visibility: "private" });
+    expect((await ask(draft.record.id)).status).toBe(404);
+    expect((await ask(hidden.record.id)).status).toBe(404);
+  });
+});

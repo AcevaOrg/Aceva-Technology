@@ -32,6 +32,7 @@ function record(category: DocumentCategory, overrides: Partial<DocumentRecord> =
     status: "published",
     visibility: "public",
     allowDownload: true,
+    allowView: false,
     featured: false,
     sortOrder: 0,
     holderName: "Holder",

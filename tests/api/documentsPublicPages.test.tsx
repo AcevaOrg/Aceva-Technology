@@ -45,6 +45,7 @@ function record(category: DocumentCategory, overrides: Partial<DocumentRecord> =
     status: "published",
     visibility: "public",
     allowDownload: true,
+    allowView: false,
     featured: false,
     sortOrder: 0,
     holderName: "",
@@ -318,13 +319,13 @@ describe("FinancialLedger", () => {
     expect(face).not.toContain("Published 12 Mar 2026");
   });
 
-  it("uses icon-only actions whose accessible names are the full View and Download labels", () => {
+  it("has a labelled View button of its own, with Download beside it, both named in full for a screen reader", () => {
     const out = html(<FinancialLedger docs={[report]} />);
     expect(out).toContain('aria-label="View FY 2025–26 Audited Statements (PDF, 1.3 MB, opens in a new tab)"');
     expect(out).toContain('aria-label="Download FY 2025–26 Audited Statements (PDF, 1.3 MB)"');
-    expect(out).toContain('title="View"');
-    // no text buttons any more: that is what made the old row so wide
-    expect(out).not.toMatch(/>View <svg/);
+    // View says "View" in words, as a button; Download is the round icon next to it in the narrow sheet.
+    expect(out).toMatch(/<a [^>]*actPillPrimary[^>]*>[^]*?<span>View<\/span><\/a>/);
+    expect(out).toMatch(/<a [^>]*class="[^"]*actIcon[^"]*"[^>]*download/);
   });
 
   it("labels an unaudited report, and falls back to the publish year when no fiscal year is set", () => {
@@ -384,7 +385,7 @@ describe("FinancialLedger", () => {
     it("keeps the file bar the same shape with and without a file", () => {
       const [fullSheet, bareSheet] = sheets([full, bare]);
       const foot = (sheet: string) => sheet.slice(sheet.indexOf("sheetFoot"));
-      expect(foot(fullSheet)).toContain("actionIcons");
+      expect(foot(fullSheet)).toContain("actionRow");
       expect(foot(bareSheet)).toContain("On request.");
       // both live in the one fixed-height bar
       for (const sheet of [fullSheet, bareSheet]) expect(sheet.match(/sheetFoot/g)).toHaveLength(1);
@@ -450,10 +451,15 @@ describe("CertificateGrid", () => {
     expect(face).not.toContain("External credential");
   });
 
-  it("uses icon-only file actions named exactly like the full-size buttons", async () => {
+  it("gives the pass a labelled View button and a labelled Download button, named exactly like the full-size ones", async () => {
     const out = await renderAsync(<CertificateGrid docs={[certification({ allowDownload: true })]} />);
     expect(out).toMatch(/aria-label="View ISO\/IEC 27001:2022 \(PDF, [\d.]+ (KB|MB), opens in a new tab\)"/);
     expect(out).toMatch(/aria-label="Download ISO\/IEC 27001:2022 \(PDF, [\d.]+ (KB|MB)\)"/);
+    expect(out).toContain("<span>View</span>");
+    expect(out).toContain("<span>Download</span>");
+    // Two separate links: View opens the file in a tab, Download carries the download attribute.
+    expect(out).toMatch(/<a [^>]*href="[^"]*role=primary"[^>]*target="_blank"/);
+    expect(out).toMatch(/<a [^>]*href="[^"]*download=1"[^>]*download/);
   });
 
   it("draws the validity bar from real dates: running, expired and open-ended", async () => {
@@ -534,7 +540,7 @@ describe("CertificateGrid", () => {
       expect(barePass).not.toContain("Scan to verify");
       expect(barePass).not.toContain("Verify this certificate");
       // the file bar is one fixed-height slot with icons or with the "on request" line
-      expect(fullPass).toMatch(/stubActions[^>]*><div class="[^"]*actionIcons/);
+      expect(fullPass).toMatch(/stubActions[^>]*><div class="[^"]*actionRow/);
       expect(barePass).toMatch(/stubActions[^>]*><p class="[^"]*noFile[^"]*" data-compact/);
       expect(barePass).toContain("On request.");
     });
@@ -816,5 +822,43 @@ describe("Seal", () => {
     expect(html(<Seal kind="revoked" />)).toContain("<polygon");
     expect(html(<Seal kind="valid" />)).toContain("M38 62 L53 77 L83 43");
     expect(html(<Seal kind="valid" size={44} />)).toMatch(/compact/);
+  });
+});
+
+describe("view-only files on the public pages", () => {
+  const viewOnly = (overrides: Partial<DocumentRecord> = {}) => certification({ allowDownload: false, allowView: true, ...overrides });
+
+  it("the certificate pass shows a View button and no Download button", async () => {
+    const out = await renderAsync(<CertificateGrid docs={[viewOnly()]} />);
+    expect(out).toContain("<span>View</span>");
+    expect(out).not.toContain("<span>Download</span>");
+    expect(out).not.toContain("download=1");
+    expect(out).toMatch(/aria-label="View ISO\/IEC 27001:2022 \(PDF, [\d.]+ (KB|MB), opens in a new tab\)"/);
+    expect(out).not.toContain("On request.");
+  });
+
+  it("the report sheet shows View alone", () => {
+    const report = doc("financial_report", { title: "FY report", allowDownload: false, allowView: true, data: { report_type: "annual_report", fiscal_year: "2025", period: "full_year", currency: "PKR" } }, "listing");
+    const out = html(<FinancialLedger docs={[report]} />);
+    expect(out).toContain("<span>View</span>");
+    expect(out).not.toMatch(/class="[^"]*actIcon/);
+    expect(out).not.toContain("download=1");
+  });
+
+  it("the verify page offers View, and Download only when it is allowed", () => {
+    const code = "ACV-7K3M-9QXD-4TRH";
+    const viewOnlyDoc = doc("certification", { allowDownload: false, allowView: true, verificationCode: code }, "verify");
+    const open = doc("certification", { allowDownload: true, allowView: true, verificationCode: code }, "verify");
+    const viewOnlyPage = html(<VerifyResult rawCode={code} outcome={result(viewOnlyDoc, "valid")} />);
+    const openPage = html(<VerifyResult rawCode={code} outcome={result(open, "valid")} />);
+    expect(viewOnlyPage).toMatch(/aria-label="View [^"]*opens in a new tab/);
+    expect(viewOnlyPage).not.toMatch(/aria-label="Download /);
+    expect(openPage).toMatch(/aria-label="Download /);
+  });
+
+  it("a file the admin has not shared still shows 'On request'", async () => {
+    const out = await renderAsync(<CertificateGrid docs={[certification({ allowDownload: false, allowView: false })]} />);
+    expect(out).toContain("On request.");
+    expect(out).not.toContain("<span>View</span>");
   });
 });

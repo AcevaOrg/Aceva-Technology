@@ -62,13 +62,15 @@ function FileBlock({ doc, code }: { doc: PublicDocument; code: string }) {
             href={fileHref(doc.id, "primary", { code })}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={`Open ${file.filename} (${detail}, opens in a new tab)`}
+            aria-label={`View ${file.filename} (${detail}, opens in a new tab)`}
           >
-            Open
+            View
           </a>
-          <a className={`${styles.act} ${styles.actGhost}`} href={fileHref(doc.id, "primary", { code, download: true })} download aria-label={`Download ${file.filename} (${detail})`}>
-            Download
-          </a>
+          {doc.canDownload ? (
+            <a className={`${styles.act} ${styles.actGhost}`} href={fileHref(doc.id, "primary", { code, download: true })} download aria-label={`Download ${file.filename} (${detail})`}>
+              Download
+            </a>
+          ) : null}
         </div>
       </div>
       <div className={styles.hash}>

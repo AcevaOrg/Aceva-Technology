@@ -88,6 +88,7 @@ function makeRecord(category: DocumentCategory, overrides: Partial<DocumentRecor
     status: "draft",
     visibility: CATEGORIES[category].defaultVisibility,
     allowDownload: false,
+    allowView: false,
     featured: false,
     sortOrder: 0,
     holderName: input.holderName,
@@ -834,7 +835,7 @@ describe("the request body", () => {
       ),
     );
     expect(Object.keys(value).sort()).toEqual(
-      ["allowDownload", "category", "data", "enableVerification", "expiresOn", "featured", "holderName", "issuedOn", "referenceNo", "sortOrder", "status", "summary", "title", "visibility"].sort(),
+      ["allowDownload", "allowView", "category", "data", "enableVerification", "expiresOn", "featured", "holderName", "issuedOn", "referenceNo", "sortOrder", "status", "summary", "title", "visibility"].sort(),
     );
     expect(value.data).not.toHaveProperty("rogue");
     expect(value.data).not.toHaveProperty("<script>");
@@ -1168,5 +1169,55 @@ describe("team profiles: hierarchy_level, role_title, program_name, reports_to",
       expect(result.errors.hierarchy_level).toMatch(/required/i);
       expect(result.errors.role_title).toMatch(/required/i);
     }
+  });
+});
+
+/* ------------------------------------------------------------------ *
+ * View and download                                                    *
+ * ------------------------------------------------------------------ */
+
+describe("allowView and allowDownload", () => {
+  it("download switches view on, since a file that can be saved can be opened", () => {
+    const value = valueOf(run("certification", { allowDownload: true, allowView: false }));
+    expect(value).toMatchObject({ allowDownload: true, allowView: true });
+  });
+
+  it("view alone is view-only", () => {
+    expect(valueOf(run("certification", { allowView: true, allowDownload: false }))).toMatchObject({ allowView: true, allowDownload: false });
+  });
+
+  it("neither means the file is not public", () => {
+    expect(valueOf(run("certification", { allowView: false, allowDownload: false }))).toMatchObject({ allowView: false, allowDownload: false });
+  });
+
+  it("accepts the usual yes/no spellings", () => {
+    expect(valueOf(run("certification", { allowView: "yes", allowDownload: "no" }))).toMatchObject({ allowView: true, allowDownload: false });
+  });
+
+  it("rejects something that is not yes or no", () => {
+    expect(errorsOf(run("certification", { allowView: "maybe" })).allowView).toMatch(/yes or no/i);
+  });
+
+  it("keeps an existing record's settings when the request leaves them out", () => {
+    const existing = makeRecord("certification", { allowView: true, allowDownload: false });
+    const body = { ...payload("certification") };
+    delete body.allowView;
+    delete body.allowDownload;
+    const value = valueOf(validateDocumentInput(body, { category: "certification", existing }));
+    expect(value).toMatchObject({ allowView: true, allowDownload: false });
+  });
+
+  it("stores a record saved before view-only existed (download on, view off) with view on from its next save", () => {
+    const legacy = makeRecord("certification", { allowView: false, allowDownload: true });
+    const body = { ...payload("certification") };
+    delete body.allowView;
+    delete body.allowDownload;
+    expect(valueOf(validateDocumentInput(body, { category: "certification", existing: legacy }))).toMatchObject({ allowView: true, allowDownload: true });
+  });
+
+  it("turning download off on a legacy record leaves it view-only only if view was asked for", () => {
+    const legacy = makeRecord("certification", { allowView: false, allowDownload: true });
+    expect(valueOf(run("certification", { allowDownload: false }, {}, legacy))).toMatchObject({ allowView: false, allowDownload: false });
+    expect(valueOf(run("certification", { allowDownload: false, allowView: true }, {}, legacy))).toMatchObject({ allowView: true, allowDownload: false });
   });
 });
