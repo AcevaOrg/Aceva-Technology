@@ -16,6 +16,8 @@ type Variant =
   | "careers"
   | "insights"
   | "faq"
+  | "documents"
+  | "verify"
   | "contact"
   | "mobile"
   | "legal"
@@ -36,6 +38,8 @@ function variantFor(pathname: string): Variant {
   if (pathname === "/careers") return "careers";
   if (pathname === "/insights") return "insights";
   if (pathname === "/faq") return "faq";
+  if (pathname === "/documents") return "documents";
+  if (pathname === "/verify" || pathname.startsWith("/verify/")) return "verify";
   if (pathname === "/contact") return "contact";
   if (pathname === "/mobile") return "mobile";
   if (pathname.startsWith("/legal/")) return "legal";
@@ -130,6 +134,22 @@ export default function AmbientBackground() {
         <Layer>
           <div style={{ position: "absolute", top: "5%", left: "12%", width: "46vw", height: "46vw", maxWidth: 620, maxHeight: 620, borderRadius: "50%", background: "radial-gradient(circle,rgba(59,124,255,.11),transparent 64%)", animation: "acBgGlow 24s ease-in-out infinite" }} />
           <div style={{ position: "absolute", bottom: 0, right: "6%", width: "40vw", height: "40vw", maxWidth: 540, maxHeight: 540, borderRadius: "50%", background: "radial-gradient(circle,rgba(30,79,217,.13),transparent 64%)", animation: "acBgGlowAlt 28s ease-in-out infinite" }} />
+        </Layer>
+      )}
+      {variant === "documents" && (
+        <Layer>
+          {/* ruled ledger lines drifting upward, with one slow pass of light, like a page being read */}
+          <div style={{ position: "absolute", top: "-30%", left: 0, width: "100%", height: "180%", backgroundImage: "repeating-linear-gradient(0deg,rgba(127,178,255,.05) 0 1px,transparent 1px 72px)", animation: "acBgUp 36s linear infinite" }} />
+          <div style={{ position: "absolute", top: 0, left: "9%", width: 1, height: "100%", background: "linear-gradient(180deg,transparent,rgba(127,178,255,.2),transparent)", animation: "acBgSweepDown 16s ease-in-out infinite" }} />
+          <div style={{ position: "absolute", bottom: "-30%", right: "-10%", width: "52vw", height: "52vw", maxWidth: 700, maxHeight: 700, borderRadius: "50%", background: "radial-gradient(circle,rgba(30,79,217,.12),transparent 64%)", animation: "acBgGlow 30s ease-in-out infinite" }} />
+        </Layer>
+      )}
+      {variant === "verify" && (
+        <Layer>
+          {/* concentric rings pulsing from the middle, the scan being read */}
+          <div style={{ position: "absolute", top: "30%", left: "50%", width: "40vw", height: "40vw", maxWidth: 520, maxHeight: 520, margin: "calc(min(40vw,520px) / -2) 0 0 calc(min(40vw,520px) / -2)", border: "1px solid rgba(59,124,255,.2)", borderRadius: "50%", animation: "acBgRadar 12s ease-out infinite" }} />
+          <div style={{ position: "absolute", top: "30%", left: "50%", width: "40vw", height: "40vw", maxWidth: 520, maxHeight: 520, margin: "calc(min(40vw,520px) / -2) 0 0 calc(min(40vw,520px) / -2)", border: "1px solid rgba(59,124,255,.14)", borderRadius: "50%", animation: "acBgRadar 12s ease-out infinite 6s" }} />
+          <div style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "22vh", background: "linear-gradient(180deg,transparent,rgba(59,124,255,.08),transparent)", animation: "acBgSweepDown 14s linear infinite" }} />
         </Layer>
       )}
       {variant === "contact" && (

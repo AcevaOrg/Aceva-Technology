@@ -5,6 +5,7 @@ import {
   type ApiErrorBody,
   type ApiErrorCode,
   type ApiFieldErrors,
+  type ApiFieldMessages,
 } from "./errorCodes";
 
 /**
@@ -22,6 +23,9 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   INVALID_JSON: 400,
   VALIDATION_FAILED: 400,
   FORBIDDEN_ORIGIN: 403,
+  UNAUTHENTICATED: 401,
+  NOT_FOUND: 404,
+  CONFLICT: 409,
   RATE_LIMITED: 429,
   SPAM_REJECTED: 400,
   DISPOSABLE_EMAIL: 400,
@@ -42,6 +46,8 @@ export interface ApiErrorOptions {
   message?: string;
   /** Field flags for VALIDATION_FAILED. */
   errors?: ApiFieldErrors;
+  /** Display-safe reason per invalid field (admin console). Serialised as `fieldMessages`. */
+  fieldMessages?: ApiFieldMessages;
   /** Sets both the body's `retryAfter` and the Retry-After header, in seconds. */
   retryAfter?: number;
   /** Extra response headers, e.g. `Allow` on a 405. */
@@ -86,6 +92,7 @@ export function apiError(code: ApiErrorCode, requestId: string, options: ApiErro
     requestId,
   };
   if (options.errors && Object.keys(options.errors).length > 0) body.errors = options.errors;
+  if (options.fieldMessages && Object.keys(options.fieldMessages).length > 0) body.fieldMessages = options.fieldMessages;
   if (typeof options.retryAfter === "number") body.retryAfter = Math.max(0, Math.ceil(options.retryAfter));
 
   const headers: Record<string, string> = {
@@ -206,7 +213,17 @@ export function assertSameOrigin(request: Request): void {
   const origin = request.headers.get("origin");
   if (!origin) return; // Non-browser clients omit it; other guards still apply.
   try {
-    if (new URL(origin).origin !== new URL(request.url).origin) {
+    const originUrl = new URL(origin);
+    // `request.url` is not always what the browser typed: `next dev --hostname 127.0.0.1` (and `next start`)
+    // rebuild it with the host name "localhost", so a page opened at http://127.0.0.1:3100 sends an Origin
+    // that can never equal it. The Host header is what the browser actually connected to, and a
+    // cross-site page cannot make a browser send a Host that differs from the URL it is posting to, so
+    // an Origin whose host equals Host is still same-origin.
+    const requestUrl = new URL(request.url);
+    const sameAsUrl = originUrl.origin === requestUrl.origin;
+    // The scheme must still match, so an http:// page cannot pass for the https:// site on the same host.
+    const sameAsHost = originUrl.protocol === requestUrl.protocol && originUrl.host === request.headers.get("host");
+    if (!sameAsUrl && !sameAsHost) {
       throw new ApiError("FORBIDDEN_ORIGIN", {}, { origin });
     }
   } catch (error) {

@@ -150,3 +150,6 @@ vite.config.ts.timestamp-*
 # local import source for scripts/import-directions.ts.
 knowledge/savedDirections.json
 .neon
+
+# Embedded dev database (ACEVA_LOCAL_DB=1) — never commit
+.local-db/

@@ -32,7 +32,7 @@
 .page [hidden] { display: none !important; }
 .page :focus-visible { outline: 2px solid var(--c-accent, var(--x-ice)); outline-offset: 3px; border-radius: 6px; }
 /* The ambient background is opaque-covered here but still animates; stop it from running. */
-:global(div):has(> main[data-main] > .page) > :global([data-bg]) { display: none; }
+:global(div):has(> main[data-main] > .page) > :global([data-site-chrome]) > :global([data-bg]) { display: none; }
 /* Anchor jumps and keyboard focus must clear the header pill and the docked index. */
 :global(html):has(main[data-main] > .page) { scroll-padding-top: 150px; }
 @media (max-width: 767px) {

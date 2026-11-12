@@ -12,7 +12,7 @@ export const TITLE_SUFFIX = ` — ${SITE_NAME}`;
  * Routes that must never be indexed. The sitemap filters against this set so a page
  * can never be submitted to search engines and marked `noindex` at the same time.
  */
-export const NOINDEX_ROUTES = new Set<string>(["/insights", "/testimonials", "/mobile"]);
+export const NOINDEX_ROUTES = new Set<string>(["/insights", "/testimonials", "/mobile", "/verify"]);
 
 /**
  * Served by `app/opengraph-image.png` via the file convention. That convention only

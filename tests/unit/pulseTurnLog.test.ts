@@ -14,6 +14,17 @@ import {
   logChatTurn,
   recordChatTurn,
 } from "@/lib/pulse/turnLog";
+import { clearEnvCache } from "@/lib/pulse/env";
+
+/**
+ * The two "normal runtime" tests below need a connection string to exist, but the driver is mocked,
+ * so any placeholder will do. Without this they only passed on a machine whose .env.local happened
+ * to hold DATABASE_URL, and failed on a fresh checkout or in CI.
+ */
+function stubPlaceholderDatabaseUrl(): void {
+  vi.stubEnv("DATABASE_URL", "postgresql://placeholder:placeholder@localhost/placeholder");
+  clearEnvCache();
+}
 const NUL = String.fromCharCode(0);
 const BEL = String.fromCharCode(7);
 const ESC = String.fromCharCode(27);
@@ -214,6 +225,7 @@ describe("database isolation, proven against a mocked driver", () => {
     sqlMock.mockClear();
     vi.stubEnv("VITEST", "");
     vi.stubEnv("NODE_ENV", "production");
+    stubPlaceholderDatabaseUrl();
     try {
       expect(isTurnLogSuppressed()).toBe(false);
 
@@ -231,6 +243,7 @@ describe("database isolation, proven against a mocked driver", () => {
       expect(sqlMock.mock.calls.length).toBeGreaterThanOrEqual(2);
     } finally {
       vi.unstubAllEnvs();
+      clearEnvCache();
     }
   });
 
@@ -238,6 +251,7 @@ describe("database isolation, proven against a mocked driver", () => {
     sqlMock.mockClear();
     vi.stubEnv("VITEST", "");
     vi.stubEnv("NODE_ENV", "production");
+    stubPlaceholderDatabaseUrl();
     try {
       await recordChatTurn({
         sessionId: "sess" + NUL + "ion",
@@ -260,6 +274,7 @@ describe("database isolation, proven against a mocked driver", () => {
       expect(text).toContain("session");
     } finally {
       vi.unstubAllEnvs();
+      clearEnvCache();
     }
   });
 });

@@ -17,6 +17,10 @@ export const API_ERROR_CODES = [
   "INVALID_JSON",
   "VALIDATION_FAILED",
   "FORBIDDEN_ORIGIN",
+  // Admin console and document records
+  "UNAUTHENTICATED",
+  "NOT_FOUND",
+  "CONFLICT",
   // Abuse controls
   "RATE_LIMITED",
   "SPAM_REJECTED",
@@ -41,6 +45,13 @@ export type ApiErrorCode = (typeof API_ERROR_CODES)[number];
 export type ApiFieldErrors = Record<string, boolean>;
 
 /**
+ * Optional per-field explanations that ride beside `errors`. The contact form
+ * only needs flags, but the admin editor validates dozens of fields and a bare
+ * flag cannot say "Expiry date must be after the issue date".
+ */
+export type ApiFieldMessages = Record<string, string>;
+
+/**
  * The body every failing endpoint returns. No other error shape is emitted.
  *
  * `{ ok, error, code, retryAfter }` is the contract clients code against.
@@ -58,6 +69,8 @@ export interface ApiErrorBody {
   retryAfter?: number;
   /** Present only for VALIDATION_FAILED. */
   errors?: ApiFieldErrors;
+  /** Present only for VALIDATION_FAILED from the admin console: field name → display-safe reason. */
+  fieldMessages?: ApiFieldMessages;
   /** `true` when retrying the identical request may succeed. */
   retryable: boolean;
   /** Correlates this response with the server log line that explains it. */
@@ -82,6 +95,12 @@ export const API_ERROR_MESSAGES: Record<ApiErrorCode, string> = {
   VALIDATION_FAILED: "Please check your details — some required fields are missing or incorrect.",
   // Shown when the request comes from outside the website (blocked by security).
   FORBIDDEN_ORIGIN: "This request was blocked. Please use the form on our website.",
+  // Admin console: no valid session cookie, or the pass key was wrong.
+  UNAUTHENTICATED: "Sign in with the admin pass key to continue.",
+  // A record, file or verification code that does not exist (or is not visible to the caller).
+  NOT_FOUND: "We could not find that record.",
+  // The request is valid but clashes with current state (duplicate reference, stale edit).
+  CONFLICT: "That change conflicts with the current state of the record.",
   // Shown when someone submits too many times in a short period.
   RATE_LIMITED: "You have sent too many messages. Please wait a minute and try again.",
   // Shown when the message looks automated or spammy.
@@ -204,4 +223,16 @@ export function resolveApiFieldErrors(value: unknown): ApiFieldErrors {
     if (flag === true) fields[key] = true;
   }
   return fields;
+}
+
+/** Reads the per-field explanation map, tolerating bodies that omit or malform it. */
+export function resolveApiFieldMessages(value: unknown): ApiFieldMessages {
+  if (!value || typeof value !== "object") return {};
+  const raw = (value as Record<string, unknown>).fieldMessages;
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+  const messages: ApiFieldMessages = {};
+  for (const [key, text] of Object.entries(raw as Record<string, unknown>)) {
+    if (typeof text === "string" && text.trim()) messages[key] = text;
+  }
+  return messages;
 }

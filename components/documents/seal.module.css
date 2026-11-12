@@ -1,0 +1,128 @@
+/*
+ * The verification seal. Colour comes from one custom property, --seal, set per verdict:
+ *   valid    the surface accent (ice on ink, blue on paper)
+ *   expired  amber, the site's --warning
+ *   revoked  red, the site's --error
+ *   others   the surface's muted text colour
+ * Every shape rests in its FINISHED state; keyframes only animate away from an undrawn one
+ * ("backwards" fill), so reduced motion and print simply show the completed seal.
+ */
+
+.seal {
+  --seal: var(--c-accent, #8fa8ff);
+  display: block;
+  flex: none;
+  overflow: visible;
+}
+
+.valid { --seal: var(--c-accent, #8fa8ff); }
+.expired { --seal: var(--warning, #e0a93b); }
+.revoked { --seal: var(--error, #e0503b); }
+.not_found,
+.rate_limited,
+.unavailable { --seal: var(--c-muted, #9aa1b2); }
+
+/* amber and red lose contrast on light paper, so they are darkened there */
+.seal[data-tone="paper"].expired { --seal: color-mix(in srgb, var(--warning, #e0a93b) 58%, #000); }
+.seal[data-tone="paper"].revoked { --seal: color-mix(in srgb, var(--error, #e0503b) 86%, #000); }
+
+.disc { fill: color-mix(in srgb, var(--seal) 10%, transparent); }
+
+.ring {
+  stroke: var(--seal);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  animation: ringDraw 1s var(--h-ease, cubic-bezier(0.16, 1, 0.3, 1)) 0.05s backwards;
+}
+
+/* the soft pulse that says "live", valid seals only */
+.halo {
+  stroke: var(--seal);
+  stroke-width: 1.5;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.valid .halo { animation: pulse 3.4s ease-out 1.9s infinite; }
+
+.draw {
+  stroke: var(--seal);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  animation: glyphDraw 0.75s var(--h-ease, cubic-bezier(0.16, 1, 0.3, 1)) 0.8s backwards;
+}
+
+.ghost {
+  stroke: var(--seal);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.28;
+}
+
+.slash {
+  fill: var(--seal);
+  opacity: 0.92;
+  transform-box: fill-box;
+  transform-origin: top center;
+  animation: slashIn 0.6s var(--h-ease, cubic-bezier(0.16, 1, 0.3, 1)) 0.7s backwards;
+}
+
+.question {
+  fill: var(--seal);
+  font: 500 58px/1 var(--h-display, "Space Grotesk", sans-serif);
+}
+
+.bar { fill: var(--seal); }
+
+.dot {
+  fill: var(--seal);
+  animation: blink 1.4s ease-in-out infinite;
+}
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* small seals sit beside text in lists: heavier strokes, and nothing moves */
+.compact .ring { stroke-width: 5; animation: none; }
+.compact .draw { stroke-width: 11; animation: none; }
+.compact .ghost { stroke-width: 11; }
+.compact .halo,
+.compact .dot { animation: none; }
+.compact .slash { animation: none; }
+.compact .question { font-size: 62px; }
+
+@keyframes ringDraw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes glyphDraw {
+  0% { stroke-dashoffset: 1; opacity: 0; }
+  8% { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 1; }
+}
+@keyframes slashIn {
+  from { transform: scaleY(0); opacity: 0; }
+  to { transform: scaleY(1); opacity: 0.92; }
+}
+@keyframes pulse {
+  0% { opacity: 0.5; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.34); }
+}
+@keyframes blink {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ring,
+  .draw,
+  .slash,
+  .dot,
+  .valid .halo { animation: none; }
+  .halo { display: none; }
+}

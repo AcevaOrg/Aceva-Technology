@@ -22,6 +22,15 @@ export const RATE_LIMIT_RULES = {
   "pulse-save-direction": 5,
   // Each send is an outbound email, so this is deliberately tight.
   "pulse-email-blueprint": 3,
+  // Pass-key attempts. Deliberately tight; lib/admin/throttle.ts adds a persistent lockout on top,
+  // because this in-process counter resets on every cold start and is per serverless instance.
+  "admin-login": 5,
+  // Authenticated admin mutations and reads (uploads, edits, QR renders).
+  "admin-api": 120,
+  // Public certificate/ID lookups by code or QR scan.
+  "verify-lookup": 30,
+  // Public document/photo downloads.
+  "documents-file": 60,
 } as const;
 
 export type RateLimitScope = keyof typeof RATE_LIMIT_RULES;

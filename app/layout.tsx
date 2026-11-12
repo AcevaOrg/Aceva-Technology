@@ -8,6 +8,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import MobileCtaBar from "@/components/layout/MobileCtaBar";
 import AmbientBackground from "@/components/layout/AmbientBackground";
+import SiteChrome from "@/components/layout/SiteChrome";
 import BackToTopButton from "@/components/layout/BackToTopButton";
 import { PulseProvider, PulseOverlay, FloatingPulseButton } from "@/components/pulse";
 
@@ -134,16 +135,20 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         </a>
         <PulseProvider>
           <div style={{ minHeight: "100vh", background: "#0A0A0C", overflowX: "hidden" }}>
-            <AmbientBackground />
-            <Header />
+            <SiteChrome>
+              <AmbientBackground />
+              <Header />
+            </SiteChrome>
             <main id="main-content" tabIndex={-1} data-main style={{ position: "relative", zIndex: 1 }}>
               {children}
             </main>
-            <Footer />
-            <BackToTopButton />
-            <MobileCtaBar />
-            <FloatingPulseButton />
-            <PulseOverlay />
+            <SiteChrome>
+              <Footer />
+              <BackToTopButton />
+              <MobileCtaBar />
+              <FloatingPulseButton />
+              <PulseOverlay />
+            </SiteChrome>
           </div>
         </PulseProvider>
       </body>

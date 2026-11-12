@@ -43,7 +43,7 @@
  * The shared header pill is 72% dark glass, which turns a muddy grey over the paper
  * sections. On the homepage only, make the glass denser so nav text keeps its contrast.
  */
-:global(div):has(> main[data-main] > .root) > :global(header) > :global(div) {
+:global(div):has(> main[data-main] > .root) > :global([data-site-chrome]) > :global(header) > :global(div) {
   background: rgba(10, 11, 14, 0.92);
   /* at this density the blur is invisible, but re-blurring the live hero canvas every frame is not free */
   -webkit-backdrop-filter: none;

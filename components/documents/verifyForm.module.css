@@ -1,0 +1,94 @@
+/*
+ * The verification code form, shared by /verify (hero) and the "Verified by QR" panels (panel).
+ * It reads the surface variables (--c-*) of whatever it is placed on, so one stylesheet serves
+ * ink and paper alike. Controls are 52px+ tall; the focus ring is the surface accent.
+ */
+
+.form { display: grid; gap: 10px; width: 100%; max-width: 640px; min-width: 0; }
+
+.label {
+  font: 500 11.5px/1 var(--h-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; }
+
+.input {
+  flex: 1 1 260px;
+  min-width: 0;
+  min-height: 56px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--c-fg) 6%, transparent);
+  box-shadow: inset 0 0 0 1px var(--c-line-strong);
+  color: var(--c-fg);
+  font: 500 clamp(16px, 2.6vw, 20px) / 1 var(--h-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: box-shadow 0.25s var(--h-ease, ease), background-color 0.25s var(--h-ease, ease);
+}
+.input::placeholder { color: var(--c-muted); opacity: 0.7; letter-spacing: 0.06em; }
+.input:hover { box-shadow: inset 0 0 0 1px var(--c-fg); }
+.input:focus { outline: none; box-shadow: inset 0 0 0 2px var(--c-accent); background: color-mix(in srgb, var(--c-fg) 9%, transparent); }
+.input:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 3px; }
+.input[aria-invalid="true"] { box-shadow: inset 0 0 0 2px var(--error, #e0503b); }
+
+.button {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 0 28px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--h-blue);
+  color: #fff;
+  font: 600 15px/1 var(--font-instrument-sans), system-ui, sans-serif;
+  cursor: pointer;
+  transition: background-color 0.25s var(--h-ease, ease), transform 0.25s var(--h-ease, ease);
+}
+.button:hover:not(:disabled) { background: var(--h-blue-hi); transform: translateY(-1px); }
+.button:disabled { opacity: 0.7; cursor: progress; }
+.button svg { transition: transform 0.35s var(--h-ease, ease); }
+.button:hover:not(:disabled) svg { transform: translateX(3px); }
+.button:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 3px; }
+/* the same slash shine as every other pill button on the site */
+.button::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: -1;
+  background: linear-gradient(116deg, transparent 35%, rgba(255, 255, 255, 0.22) 50%, transparent 65%);
+  transform: translateX(-110%);
+  transition: transform 0.7s var(--h-ease, ease);
+  pointer-events: none;
+}
+.button:hover:not(:disabled)::after { transform: translateX(110%); }
+
+.hint { font-size: 14px; line-height: 1.5; color: var(--c-muted); }
+
+/* reserved height: showing an error must not push the page around */
+.error { min-height: 21px; font-size: 14px; line-height: 1.5; color: color-mix(in srgb, var(--error, #e0503b) 80%, var(--c-fg)); }
+.error:empty { visibility: hidden; }
+
+.hero .input { min-height: 64px; padding: 0 26px; }
+.hero .button { min-height: 64px; padding: 0 34px; font-size: 16px; }
+.panel { max-width: 520px; }
+.panel .input { min-height: 52px; padding: 0 18px; font-size: 16px; }
+.panel .button { min-height: 52px; padding: 0 24px; }
+
+@media (max-width: 767px) {
+  .button { flex: 1 1 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .input, .button, .button svg { transition: none; }
+  .button::after { display: none; }
+}

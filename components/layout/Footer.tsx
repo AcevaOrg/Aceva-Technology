@@ -42,6 +42,8 @@ const GROUPS: { key: string; title: string; links: FooterLink[] }[] = [
       { href: ROUTES.technology, label: "Technology Stack" },
       { href: ROUTES.insights, label: "Insights" },
       { href: ROUTES.faq, label: "FAQs" },
+      { href: ROUTES.documents, label: "Documents" },
+      { href: ROUTES.verify, label: "Verify a document" },
     ],
   },
 ];
