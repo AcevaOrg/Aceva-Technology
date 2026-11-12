@@ -18,7 +18,7 @@ import { interpretActionResponse, type ApiFailure } from "./editorErrors";
 import { adminQrUrl, isDocumentIdLike } from "./editorModel";
 import { formatDateTimeUtc } from "./editorPreview";
 
-type ActionName = "archive" | "restore" | "revoke" | "reinstate" | "regenerate_code" | "duplicate";
+type ActionName = "archive" | "restore" | "revoke" | "reinstate" | "regenerate_code" | "stamp_file" | "duplicate";
 type DialogName = "regenerate" | "revoke" | "delete" | null;
 
 interface VerificationPanelProps {
@@ -33,6 +33,7 @@ const DONE_MESSAGES: Record<ActionName, string> = {
   revoke: "Revoked. Its code now reports it as revoked.",
   reinstate: "Reinstated. Its code resolves again.",
   regenerate_code: "New code issued. Anything printed with the old QR no longer works.",
+  stamp_file: "The QR and the code are now on the file.",
   duplicate: "Duplicated. You are now editing the copy.",
 };
 
@@ -60,6 +61,10 @@ export function VerificationPanel({ record, publicUrl }: VerificationPanelProps)
 
   const spec = CATEGORIES[record.category];
   const code = record.verificationCode;
+  const primaryFile = record.files.find((file) => file.role === "primary") ?? null;
+  // The file the public downloads carries a QR only if one was drawn on it, and only the current code is a good one.
+  const fileStamp = primaryFile?.stamp ?? null;
+  const stampIsCurrent = fileStamp !== null && fileStamp.code === code;
   const revoked = record.revokedAt !== null;
   const archived = record.status === "archived";
   const id = record.id;
@@ -166,6 +171,32 @@ export function VerificationPanel({ record, publicUrl }: VerificationPanelProps)
                   <p className={ed.metaLabel}>Public link</p>
                   <p className={ed.metaValue}>{publicUrl}</p>
                   <CopyButton value={publicUrl} label="Copy link" />
+                </div>
+              ) : null}
+
+              {primaryFile ? (
+                <div className={ed.linkRow}>
+                  <p className={ed.metaLabel}>QR on the file</p>
+                  <p className={ed.metaValue} data-tone={fileStamp && !stampIsCurrent ? "warn" : undefined}>
+                    {fileStamp
+                      ? stampIsCurrent
+                        ? `Printed on ${primaryFile.filename}`
+                        : "Out of date: the file shows an older code"
+                      : "Not on the file yet"}
+                  </p>
+                  {!stampIsCurrent && !revoked ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      shine={false}
+                      loading={busy === "stamp_file"}
+                      disabled={working}
+                      onClick={() => void run("stamp_file")}
+                      iconLeading={<QrIcon width={16} height={16} />}
+                    >
+                      {fileStamp ? "Refresh QR on file" : "Add QR to file"}
+                    </Button>
+                  ) : null}
                 </div>
               ) : null}
 

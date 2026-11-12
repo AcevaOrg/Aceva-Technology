@@ -4,6 +4,7 @@ import {
   isDocumentAction,
   notFound,
   parseRevokeReason,
+  parseStampOptions,
   planStatusAction,
   resolveDocumentId,
   runStore,
@@ -24,10 +25,11 @@ import {
   getDocument,
   regenerateVerificationCode,
   reinstateDocument,
+  restampDocument,
   revokeDocument,
   setDocumentStatus,
 } from "@/lib/documents/store";
-import type { DocumentRecord } from "@/lib/documents/types";
+import { DEFAULT_STAMP_OPTIONS, type DocumentRecord } from "@/lib/documents/types";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -45,7 +47,9 @@ function isStatusAction(action: DocumentAction): action is StatusAction {
  * publish / unpublish / archive / restore move the record between draft, published and archived
  * (unpublish and restore both land on draft). revoke / reinstate flip the revoked flag, so a
  * printed QR keeps resolving and says "revoked". regenerate_code replaces the verification code,
- * which immediately stops the old one resolving. duplicate answers with the NEW draft copy.
+ * which immediately stops the old one resolving (a file that carries the QR is stamped again with the new code).
+ * stamp_file puts the QR and the code on the stored file now, or draws them again in the placement given
+ * (position, size, pages). duplicate answers with the NEW draft copy.
  * Repeating a status action is a harmless no-op; an action the lifecycle does not allow is a 409.
  */
 export const POST = withDocumentRoute("admin-document-actions", async (request, _requestId, context) => {
@@ -92,6 +96,15 @@ export const POST = withDocumentRoute("admin-document-actions", async (request, 
       if (!updated) throw notFound();
       // Neither the old nor the new code is logged: the log is not a place to keep live credentials.
       await auditDocumentEvent(request, "document.regenerate_code", updated, { hadCode: record.verificationCode !== null });
+      return apiSuccess({ document: updated });
+    }
+    case "stamp_file": {
+      const current = record.files.find((file) => file.role === "primary")?.stamp;
+      const options = parseStampOptions(body, current ?? DEFAULT_STAMP_OPTIONS);
+      const updated = await runStore(() => restampDocument(id, options));
+      if (!updated) throw notFound();
+      // The placement is logged; the code is not (the log is not a place to keep live credentials).
+      await auditDocumentEvent(request, "document.stamp_file", updated, { ...options });
       return apiSuccess({ document: updated });
     }
     case "duplicate": {

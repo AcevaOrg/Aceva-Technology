@@ -51,6 +51,7 @@ const ACTIONS: Record<string, ActionMeta> = {
   "document.revoke": { verb: "Revoked", tone: "danger", label: "Revoked" },
   "document.reinstate": { verb: "Reinstated", tone: "success", label: "Reinstated" },
   "document.regenerate_code": { verb: "Replaced the verification code of", tone: "warning", label: "Codes replaced" },
+  "document.stamp_file": { verb: "Put the QR on the file of", tone: "info", label: "QR added to files" },
   "document.duplicate": { verb: "Duplicated", tone: "neutral", label: "Duplicated" },
 };
 

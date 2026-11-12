@@ -8,8 +8,19 @@ import type {
   DocumentVisibility,
   FieldSpec,
   FieldValue,
+  StampOptions,
 } from "./types";
-import { DOCUMENT_STATUSES, DOCUMENT_VISIBILITIES } from "./types";
+import {
+  DEFAULT_STAMP_OPTIONS,
+  DOCUMENT_STATUSES,
+  DOCUMENT_VISIBILITIES,
+  STAMP_PAGE_LABELS,
+  STAMP_POSITION_LABELS,
+  STAMP_SIZE_LABELS,
+  isStampPages,
+  isStampPosition,
+  isStampSize,
+} from "./types";
 
 /**
  * Server-side validation for the document registry. Pure and isomorphic: it imports no Node API,
@@ -44,6 +55,11 @@ export type DocumentInput = {
    * (use revoke, or make the record private, for that).
    */
   enableVerification: boolean;
+  /**
+   * The QR stamp on the uploaded file. `undefined` = the request said nothing, so stamping is left exactly
+   * as it is; `null` = switched off (a stamped file goes back to the original); options = on, with a code.
+   */
+  stamp?: StampOptions | null;
   /** Only keys declared in the category spec, only fields currently visible, only non-empty values. */
   data: Record<string, FieldValue>;
 };
@@ -549,6 +565,8 @@ export function validateDocumentInput(
   const featured = flag("featured", existing?.featured ?? false);
   const enableVerification = flag("enableVerification", existing ? existing.verificationCode !== null : spec.verifiable);
 
+  const stamp = parseStamp(raw, errors, enableVerification || existing?.verificationCode != null);
+
   let sortOrder = existing?.sortOrder ?? 0;
   if (has(raw, "sortOrder") && raw.sortOrder !== null && raw.sortOrder !== "") {
     const parsed = parseSortOrder(raw.sortOrder);
@@ -574,9 +592,42 @@ export function validateDocumentInput(
       issuedOn: dates.issuedOn,
       expiresOn: dates.expiresOn,
       enableVerification,
+      ...(stamp === undefined ? {} : { stamp }),
       data,
     },
   };
+}
+
+/**
+ * The `stamp` setting of a save: `{ enabled, position?, size?, pages? }`. Absent keeps things as they are.
+ * Switching it on needs a verification code, because the code is what gets printed on the file.
+ */
+function parseStamp(raw: Record<string, unknown>, errors: Record<string, string>, willHaveCode: boolean): StampOptions | null | undefined {
+  if (!has(raw, "stamp")) return undefined;
+  const value = raw.stamp;
+  if (value === null || value === false) return null;
+  if (typeof value !== "object" || Array.isArray(value)) {
+    errors.stamp = "The QR stamp setting is not valid.";
+    return undefined;
+  }
+  const settings = value as Record<string, unknown>;
+  if (has(settings, "enabled") && parseBooleanLike(settings.enabled) !== true) return null;
+
+  const pick = <T extends string>(key: string, valid: (v: unknown) => v is T, fallback: T, labels: Record<T, string>): T => {
+    if (!has(settings, key) || settings[key] === undefined || settings[key] === null || settings[key] === "") return fallback;
+    if (valid(settings[key])) return settings[key];
+    errors.stamp = `Choose one of: ${Object.values(labels).join(", ")}.`;
+    return fallback;
+  };
+  const options: StampOptions = {
+    position: pick("position", isStampPosition, DEFAULT_STAMP_OPTIONS.position, STAMP_POSITION_LABELS),
+    size: pick("size", isStampSize, DEFAULT_STAMP_OPTIONS.size, STAMP_SIZE_LABELS),
+    pages: pick("pages", isStampPages, DEFAULT_STAMP_OPTIONS.pages, STAMP_PAGE_LABELS),
+  };
+  if (!willHaveCode) {
+    errors.stamp = "The QR on the file needs a verification code. Turn on QR verification first, or turn the stamp off.";
+  }
+  return options;
 }
 
 function parseSortOrder(raw: unknown): number | null {

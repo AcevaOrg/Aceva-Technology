@@ -2,15 +2,21 @@ import { createHash } from "node:crypto";
 import { getSql, type SqlRow } from "@/lib/db";
 import { CATEGORIES, isDocumentCategory } from "./categories";
 import { generateVerificationCode, normalizeVerificationCode } from "./codes";
-import type { InspectedUpload } from "./files";
+import { inspectUpload, sanitizeFilename, type InspectedUpload } from "./files";
 import { toPublicDocument, type PublicDocument } from "./public";
 import { ensureDocumentTables } from "./schema";
+import { StampError, stampFile, stampMatches } from "./stamp";
 import {
+  DEFAULT_STAMP_OPTIONS,
   DOCUMENT_CATEGORY_KEYS,
   DOCUMENT_STATUSES,
   DOCUMENT_VISIBILITIES,
+  MAX_STAMPED_BYTES,
   PHOTO_FILE_TYPES,
   PRIMARY_FILE_TYPES,
+  isStampPages,
+  isStampPosition,
+  isStampSize,
   type DocumentCategory,
   type DocumentFileMeta,
   type DocumentRecord,
@@ -18,6 +24,8 @@ import {
   type DocumentVisibility,
   type FieldValue,
   type FileRole,
+  type FileStamp,
+  type StampOptions,
   type VerificationState,
 } from "./types";
 import { cleanText, validatePublishable, type DocumentInput } from "./validate";
@@ -54,6 +62,23 @@ export class PublishBlockedError extends Error {
     super("This document cannot be published yet.");
     this.name = "PublishBlockedError";
     this.errors = errors;
+  }
+}
+
+/**
+ * Another record of the same category already uses this reference number (compared ignoring case and
+ * surrounding spaces). `existing` names it so the message can say which one.
+ */
+export class DuplicateReferenceError extends Error {
+  readonly category: DocumentCategory;
+  readonly referenceNo: string;
+  readonly existing: { id: string; title: string } | null;
+  constructor(category: DocumentCategory, referenceNo: string, existing: { id: string; title: string } | null) {
+    super("This reference number is already in use.");
+    this.name = "DuplicateReferenceError";
+    this.category = category;
+    this.referenceNo = referenceNo;
+    this.existing = existing;
   }
 }
 
@@ -186,6 +211,16 @@ function toData(value: unknown): Record<string, FieldValue> {
   return data;
 }
 
+/** The stamp a file row carries, or null. Anything that is not a complete, valid stamp reads as "not stamped". */
+function toStamp(value: unknown): FileStamp | null {
+  const parsed = parseJson(value);
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) return null;
+  const { code, position, size, pages, at } = parsed as Record<string, unknown>;
+  const canonical = typeof code === "string" ? normalizeVerificationCode(code) : null;
+  if (!canonical || !isStampPosition(position) || !isStampSize(size) || !isStampPages(pages)) return null;
+  return { code: canonical, position, size, pages, at: asString(at) };
+}
+
 function toFiles(value: unknown): DocumentFileMeta[] {
   const parsed = parseJson(value);
   if (!Array.isArray(parsed)) return [];
@@ -201,6 +236,7 @@ function toFiles(value: unknown): DocumentFileMeta[] {
       sizeBytes: asNumber(item.sizeBytes),
       sha256: asString(item.sha256),
       createdAt: asString(item.createdAt),
+      stamp: toStamp(item.stamp),
     });
   }
   return files;
@@ -244,6 +280,14 @@ function isCodeCollision(error: unknown): boolean {
   return /verification_code/.test(`${asString(constraint)} ${asString(message)}`);
 }
 
+/** Postgres unique violation on the reference-number index (another save took the number first). */
+function isReferenceCollision(error: unknown): boolean {
+  if (typeof error !== "object" || error === null) return false;
+  const { code, message, constraint } = error as { code?: unknown; message?: unknown; constraint?: unknown };
+  if (code !== "23505") return false;
+  return /reference/.test(`${asString(constraint)} ${asString(message)}`);
+}
+
 /** Parameters for an optional file in a CTE; `present` switches the whole INSERT on or off. */
 interface FileParams {
   present: boolean;
@@ -252,11 +296,19 @@ interface FileParams {
   size: number;
   sha: string;
   hex: string;
+  /** Hex of the untouched upload kept beside a stamped copy; "" when there is none. */
+  sourceHex: string;
+  /** JSON of the FileStamp when the bytes carry the stamp, else null. */
+  stampJson: string | null;
 }
 
-const NO_FILE: FileParams = { present: false, filename: "", mime: "", size: 0, sha: "", hex: "" };
+const NO_FILE: FileParams = { present: false, filename: "", mime: "", size: 0, sha: "", hex: "", sourceHex: "", stampJson: null };
 
-function fileParams(upload: InspectedUpload | null | undefined, role: FileRole): FileParams {
+function fileParams(
+  upload: InspectedUpload | null | undefined,
+  role: FileRole,
+  extra: { source?: InspectedUpload; stamp?: FileStamp } = {},
+): FileParams {
   if (!upload) return NO_FILE;
   const allowed: readonly string[] = role === "photo" ? PHOTO_FILE_TYPES : PRIMARY_FILE_TYPES;
   if (!allowed.includes(upload.mimeType)) throw new Error(`A ${role} file may not be ${upload.mimeType}.`);
@@ -269,6 +321,8 @@ function fileParams(upload: InspectedUpload | null | undefined, role: FileRole):
     size: upload.bytes.length,
     sha: createHash("sha256").update(upload.bytes).digest("hex"),
     hex: Buffer.from(upload.bytes).toString("hex"),
+    sourceHex: extra.source ? Buffer.from(extra.source.bytes).toString("hex") : "",
+    stampJson: extra.stamp ? JSON.stringify(extra.stamp) : null,
   };
 }
 
@@ -389,7 +443,8 @@ async function selectDocuments(query: DocumentQuery): Promise<{ records: Documen
           'mimeType', f.mime_type,
           'sizeBytes', f.size_bytes,
           'sha256', f.sha256,
-          'createdAt', to_char(f.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')
+          'createdAt', to_char(f.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),
+          'stamp', f.stamp
         ) ORDER BY f.role), '[]'::json)
         FROM document_files f WHERE f.document_id = d.id
       ) AS files,
@@ -524,6 +579,136 @@ export async function listPublicDocuments(options: { category?: DocumentCategory
 }
 
 /* ------------------------------------------------------------------ *
+ * Unique reference numbers                                            *
+ * ------------------------------------------------------------------ */
+
+/** A reference number as the "did it change?" test compares it. The SQL below folds the same way (lower + btrim). */
+function referenceKey(value: string): string {
+  return value.trim().toLowerCase();
+}
+
+async function findReferenceHolder(
+  category: DocumentCategory,
+  referenceNo: string,
+  excludeId: string | null,
+): Promise<{ id: string; title: string } | null> {
+  const sql = getSql();
+  const rows = await sql`
+    SELECT id::text AS id, title
+    FROM documents
+    WHERE category = ${category}::text
+      AND lower(btrim(reference_no)) = lower(btrim(${referenceNo}::text))
+      AND (${excludeId}::uuid IS NULL OR id <> ${excludeId}::uuid)
+    ORDER BY created_at ASC
+    LIMIT 1`;
+  return rows[0] ? { id: asString(rows[0].id), title: asString(rows[0].title) } : null;
+}
+
+/**
+ * Throws `DuplicateReferenceError` when another record of this category already has the number. Skipped
+ * for a category that does not number its papers uniquely, and for an empty number.
+ */
+async function assertReferenceFree(category: DocumentCategory, referenceNo: string, excludeId: string | null): Promise<void> {
+  const reference = referenceNo.trim();
+  // `?.`: an unknown category is not this check's to reject; the insert's own constraint does that.
+  if (reference === "" || !CATEGORIES[category]?.uniqueReference) return;
+  const holder = await findReferenceHolder(category, reference, excludeId);
+  if (holder) throw new DuplicateReferenceError(category, reference, holder);
+}
+
+/** Turns the database's own refusal (two saves racing for one number) into the same error, naming the winner. */
+async function referenceCollision(category: DocumentCategory, referenceNo: string, excludeId: string | null): Promise<DuplicateReferenceError> {
+  const reference = referenceNo.trim();
+  let holder: { id: string; title: string } | null = null;
+  try {
+    holder = await findReferenceHolder(category, reference, excludeId);
+  } catch {
+    // The message is better with the other record's title, but it is not worth failing the explanation over.
+  }
+  return new DuplicateReferenceError(category, reference, holder);
+}
+
+/* ------------------------------------------------------------------ *
+ * The stamped file                                                    *
+ * ------------------------------------------------------------------ */
+
+const MIME_EXTENSION: Record<string, string> = { "application/pdf": "pdf", "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" };
+
+/** The untouched upload kept beside a stamped copy, or null when the file was never stamped. */
+async function getFileSource(documentId: string): Promise<Buffer | null> {
+  const sql = getSql();
+  const rows = await sql`
+    SELECT encode(source_data, 'hex') AS source_hex
+    FROM document_files
+    WHERE document_id = ${documentId}::uuid AND role = 'primary' AND source_data IS NOT NULL`;
+  return rows[0] ? Buffer.from(asString(rows[0].source_hex), "hex") : null;
+}
+
+/**
+ * The file as it was UPLOADED: the kept original when the served copy carries a stamp, otherwise the stored
+ * file itself (a file saved before stamping existed). It is inspected again, so the stamp is only ever drawn
+ * on bytes that pass the same checks as a fresh upload.
+ */
+async function loadOriginal(documentId: string, stored: DocumentFileMeta): Promise<InspectedUpload> {
+  const unreadable = new StampError("unreadable", "The stored file could not be read, so the QR cannot be applied to it. Upload the file again.");
+  const bytes = stored.stamp ? await getFileSource(documentId) : ((await getFile(documentId, "primary"))?.bytes ?? null);
+  if (!bytes) throw unreadable;
+  // Named without an extension: an image that was turned into a PDF is stored as "scan.pdf" but its original is a PNG.
+  const inspected = inspectUpload({ name: "original", bytes }, "primary", { maxBytes: MAX_STAMPED_BYTES });
+  if (!inspected.ok) throw unreadable;
+  const stem = stored.filename.replace(/\.[A-Za-z0-9]{1,8}$/, "");
+  return { ...inspected.file, filename: sanitizeFilename(`${stem}.${MIME_EXTENSION[inspected.file.mimeType] ?? "bin"}`) };
+}
+
+/**
+ * What the primary file should become in a save, given the stamp the editor asked for.
+ *
+ * - A new upload is stamped (when stamping is on and a code exists) and its untouched original is kept.
+ * - With no new upload, a stored file is rewritten only when its stamp no longer matches what is wanted: a
+ *   different placement, a code that was just issued, or the stamp switched off (the original comes back).
+ * - `stamp === undefined` means the request said nothing about stamping: the file is left exactly as it is.
+ */
+async function planPrimaryForUpdate(
+  existing: DocumentRecord,
+  mode: FileMode,
+  upload: InspectedUpload | undefined,
+  code: string | null,
+  stamp: StampOptions | null | undefined,
+): Promise<{ mode: FileMode; params: FileParams }> {
+  if (mode === "remove") return { mode, params: NO_FILE };
+  const wanted = stamp && code ? { ...stamp, code } : null;
+
+  if (mode === "replace" && upload) {
+    if (!wanted || !stamp) return { mode, params: fileParams(upload, "primary") };
+    const stamped = await stampFile(upload, wanted.code, stamp);
+    return { mode, params: fileParams(stamped.upload, "primary", { source: upload, stamp: stamped.stamp }) };
+  }
+
+  const keep = { mode: "keep" as FileMode, params: NO_FILE };
+  if (stamp === undefined) return keep;
+  const stored = existing.files.find((file) => file.role === "primary");
+  if (!stored || stampMatches(stored.stamp ?? null, wanted)) return keep;
+
+  const original = await loadOriginal(existing.id, stored);
+  if (!wanted || !stamp) return { mode: "replace", params: fileParams(original, "primary") };
+  const stamped = await stampFile(original, wanted.code, stamp);
+  return { mode: "replace", params: fileParams(stamped.upload, "primary", { source: original, stamp: stamped.stamp }) };
+}
+
+/**
+ * The stored file stamped again with `code`, in the placement it already has, or null when it carries no stamp.
+ * Used when the code changes (regenerated, or a copy gets its own): the old QR would point at the wrong record.
+ */
+async function restampedPrimary(record: DocumentRecord, code: string): Promise<FileParams | null> {
+  const stored = record.files.find((file) => file.role === "primary");
+  if (!stored?.stamp) return null;
+  const original = await loadOriginal(record.id, stored);
+  const { position, size, pages } = stored.stamp;
+  const stamped = await stampFile(original, code, { position, size, pages });
+  return fileParams(stamped.upload, "primary", { source: original, stamp: stamped.stamp });
+}
+
+/* ------------------------------------------------------------------ *
  * Create / update                                                     *
  * ------------------------------------------------------------------ */
 
@@ -544,9 +729,10 @@ async function insertDocument(input: DocumentInput, code: string | null, primary
       )
       RETURNING id
     ), primary_file AS (
-      INSERT INTO document_files (document_id, role, filename, mime_type, size_bytes, sha256, data)
+      INSERT INTO document_files (document_id, role, filename, mime_type, size_bytes, sha256, data, source_data, stamp)
       SELECT doc.id, 'primary', ${primary.filename}::text, ${primary.mime}::text, ${primary.size}::int,
-             ${primary.sha}::text, decode(${primary.hex}::text, 'hex')
+             ${primary.sha}::text, decode(${primary.hex}::text, 'hex'),
+             decode(NULLIF(${primary.sourceHex}::text, ''), 'hex'), ${primary.stampJson}::jsonb
       FROM doc WHERE ${primary.present}::boolean
       RETURNING id
     ), photo_file AS (
@@ -563,7 +749,11 @@ async function insertDocument(input: DocumentInput, code: string | null, primary
 /**
  * Creates a record (and its files, atomically). A verification code is generated when
  * `input.enableVerification` is set; a collision with an existing code is retried up to five times.
- * Throws `PublishBlockedError` when the payload asks to be published but is not publishable.
+ * When `input.stamp` is set and there is a document file, the QR and the code are drawn onto it, using the
+ * very code that is being saved, and the untouched upload is kept beside the stamped copy.
+ * Throws `PublishBlockedError` when the payload asks to be published but is not publishable,
+ * `DuplicateReferenceError` when another record already has this reference number, and `StampError` when
+ * the file cannot carry a stamp.
  */
 export async function createDocument(
   input: DocumentInput,
@@ -574,12 +764,18 @@ export async function createDocument(
   if (files.primary) metas.push(metaFromUpload(files.primary, "primary"));
   if (files.photo) metas.push(metaFromUpload(files.photo, "photo"));
   assertPublishable(input, metas);
+  await assertReferenceFree(input.category, input.referenceNo, null);
 
-  const primary = fileParams(files.primary, "primary");
   const photo = fileParams(files.photo, "photo");
 
   for (let attempt = 0; attempt < MAX_CODE_ATTEMPTS; attempt += 1) {
     const code = input.enableVerification ? generateVerificationCode() : null;
+    let primary = fileParams(files.primary, "primary");
+    // Stamped inside the loop: if this code collides and a new one is drawn, the file must carry the new one.
+    if (files.primary && code && input.stamp) {
+      const stamped = await stampFile(files.primary, code, input.stamp);
+      primary = fileParams(stamped.upload, "primary", { source: files.primary, stamp: stamped.stamp });
+    }
     try {
       const id = await insertDocument(input, code, primary, photo);
       const created = await getDocument(id);
@@ -587,6 +783,7 @@ export async function createDocument(
       return created;
     } catch (error) {
       if (code && isCodeCollision(error)) continue;
+      if (isReferenceCollision(error)) throw await referenceCollision(input.category, input.referenceNo, null);
       throw error;
     }
   }
@@ -614,6 +811,11 @@ export async function updateDocument(
   const existing = await getDocument(id);
   if (!existing) return null;
   if (existing.category !== input.category) throw new DocumentCategoryChangeError();
+  // Only a number that is being CHANGED is checked, so a record that already shares one (saved before numbers had
+  // to be unique) can still be edited for any other reason.
+  if (referenceKey(input.referenceNo) !== referenceKey(existing.referenceNo)) {
+    await assertReferenceFree(input.category, input.referenceNo, id);
+  }
 
   const expected = options.expectedUpdatedAt ?? null;
   // An unparseable token can never match; refusing it is the safe reading of "stale".
@@ -627,7 +829,6 @@ export async function updateDocument(
   if (modes.photo === "replace" && changes.photo) resulting.push(metaFromUpload(changes.photo, "photo"));
   assertPublishable(input, resulting);
 
-  const primary = fileParams(changes.primary, "primary");
   const photo = fileParams(changes.photo, "photo");
   const needsCode = input.enableVerification && existing.verificationCode === null;
   const json = JSON.stringify(input.data);
@@ -635,6 +836,9 @@ export async function updateDocument(
 
   for (let attempt = 0; attempt < MAX_CODE_ATTEMPTS; attempt += 1) {
     const code = needsCode ? generateVerificationCode() : null;
+    // Worked out per attempt: a code issued in this save is the one that must be printed on the file.
+    const plan = await planPrimaryForUpdate(existing, modes.primary, changes.primary ?? undefined, code ?? existing.verificationCode, input.stamp);
+    const primary = plan.params;
     try {
       const rows = await sql`
         WITH upd AS (
@@ -665,20 +869,22 @@ export async function updateDocument(
           RETURNING id
         ), drop_primary AS (
           DELETE FROM document_files
-          WHERE document_id IN (SELECT id FROM upd) AND role = 'primary' AND ${modes.primary}::text = 'remove'
+          WHERE document_id IN (SELECT id FROM upd) AND role = 'primary' AND ${plan.mode}::text = 'remove'
           RETURNING id
         ), drop_photo AS (
           DELETE FROM document_files
           WHERE document_id IN (SELECT id FROM upd) AND role = 'photo' AND ${modes.photo}::text = 'remove'
           RETURNING id
         ), put_primary AS (
-          INSERT INTO document_files (document_id, role, filename, mime_type, size_bytes, sha256, data)
+          INSERT INTO document_files (document_id, role, filename, mime_type, size_bytes, sha256, data, source_data, stamp)
           SELECT upd.id, 'primary', ${primary.filename}::text, ${primary.mime}::text, ${primary.size}::int,
-                 ${primary.sha}::text, decode(${primary.hex}::text, 'hex')
-          FROM upd WHERE ${modes.primary}::text = 'replace'
+                 ${primary.sha}::text, decode(${primary.hex}::text, 'hex'),
+                 decode(NULLIF(${primary.sourceHex}::text, ''), 'hex'), ${primary.stampJson}::jsonb
+          FROM upd WHERE ${plan.mode}::text = 'replace'
           ON CONFLICT (document_id, role) DO UPDATE SET
             filename = EXCLUDED.filename, mime_type = EXCLUDED.mime_type, size_bytes = EXCLUDED.size_bytes,
-            sha256 = EXCLUDED.sha256, data = EXCLUDED.data, created_at = now()
+            sha256 = EXCLUDED.sha256, data = EXCLUDED.data, source_data = EXCLUDED.source_data,
+            stamp = EXCLUDED.stamp, created_at = now()
           RETURNING id
         ), put_photo AS (
           INSERT INTO document_files (document_id, role, filename, mime_type, size_bytes, sha256, data)
@@ -701,6 +907,7 @@ export async function updateDocument(
       return await getDocument(id);
     } catch (error) {
       if (code && isCodeCollision(error)) continue;
+      if (isReferenceCollision(error)) throw await referenceCollision(input.category, input.referenceNo, id);
       throw error;
     }
   }
@@ -764,20 +971,38 @@ export async function reinstateDocument(id: string): Promise<DocumentRecord | nu
   return rows.length > 0 ? getDocument(id) : null;
 }
 
-/** Replaces the verification code (or issues one). The old code stops resolving immediately. */
+/**
+ * Replaces the verification code (or issues one). The old code stops resolving immediately. A file that carries
+ * the QR is stamped again from its kept original with the new code, in the same statement, so the file never
+ * shows a code that no longer resolves.
+ */
 export async function regenerateVerificationCode(id: string): Promise<DocumentRecord | null> {
   if (!isDocumentId(id)) return null;
   await ensureDocumentTables();
+  const existing = await getDocument(id);
+  if (!existing) return null;
   const sql = getSql();
   for (let attempt = 0; attempt < MAX_CODE_ATTEMPTS; attempt += 1) {
     const code = generateVerificationCode();
+    const restamp = await restampedPrimary(existing, code);
+    const file = restamp ?? NO_FILE;
     try {
       const rows = await sql`
-        UPDATE documents SET
-          verification_code = ${code}::text,
-          updated_at = greatest(date_trunc('milliseconds', clock_timestamp()), date_trunc('milliseconds', updated_at) + interval '1 millisecond')
-        WHERE id = ${id}::uuid
-        RETURNING id::text AS id`;
+        WITH upd AS (
+          UPDATE documents SET
+            verification_code = ${code}::text,
+            updated_at = greatest(date_trunc('milliseconds', clock_timestamp()), date_trunc('milliseconds', updated_at) + interval '1 millisecond')
+          WHERE id = ${id}::uuid
+          RETURNING id
+        ), put AS (
+          UPDATE document_files SET
+            filename = ${file.filename}::text, mime_type = ${file.mime}::text, size_bytes = ${file.size}::int,
+            sha256 = ${file.sha}::text, data = decode(${file.hex}::text, 'hex'), stamp = ${file.stampJson}::jsonb,
+            created_at = now()
+          WHERE document_id IN (SELECT id FROM upd) AND role = 'primary' AND ${file.present}::boolean
+          RETURNING id
+        )
+        SELECT id::text AS id FROM upd`;
       return rows.length > 0 ? await getDocument(id) : null;
     } catch (error) {
       if (isCodeCollision(error)) continue;
@@ -785,6 +1010,44 @@ export async function regenerateVerificationCode(id: string): Promise<DocumentRe
     }
   }
   throw new Error("Could not allocate a unique verification code.");
+}
+
+/**
+ * Puts the QR and the code on the record's stored file now, or draws them again with new options. Works on the
+ * kept original (or, for a file saved before stamping existed, on the stored file itself), so it never stacks a
+ * second QR. Throws `StampError` when the record has no code or no file, or the file cannot carry a stamp.
+ */
+export async function restampDocument(id: string, options: StampOptions = DEFAULT_STAMP_OPTIONS): Promise<DocumentRecord | null> {
+  if (!isDocumentId(id)) return null;
+  await ensureDocumentTables();
+  const record = await getDocument(id);
+  if (!record) return null;
+  if (!record.verificationCode) {
+    throw new StampError("bad_code", "This document has no verification code yet, so there is no QR to add. Turn on QR verification and save first.");
+  }
+  const stored = record.files.find((file) => file.role === "primary");
+  if (!stored) throw new StampError("unreadable", "This document has no file to add the QR to. Upload the file first.");
+
+  const original = await loadOriginal(id, stored);
+  const stamped = await stampFile(original, record.verificationCode, options);
+  const file = fileParams(stamped.upload, "primary", { source: original, stamp: stamped.stamp });
+
+  const sql = getSql();
+  const rows = await sql`
+    WITH put AS (
+      UPDATE document_files SET
+        filename = ${file.filename}::text, mime_type = ${file.mime}::text, size_bytes = ${file.size}::int,
+        sha256 = ${file.sha}::text, data = decode(${file.hex}::text, 'hex'),
+        source_data = decode(NULLIF(${file.sourceHex}::text, ''), 'hex'), stamp = ${file.stampJson}::jsonb,
+        created_at = now()
+      WHERE document_id = ${id}::uuid AND role = 'primary'
+      RETURNING document_id
+    )
+    UPDATE documents SET
+      updated_at = greatest(date_trunc('milliseconds', clock_timestamp()), date_trunc('milliseconds', updated_at) + interval '1 millisecond')
+    WHERE id IN (SELECT document_id FROM put)
+    RETURNING id::text AS id`;
+  return rows.length > 0 ? getDocument(id) : null;
 }
 
 /**
@@ -802,6 +1065,10 @@ export async function duplicateDocument(id: string): Promise<DocumentRecord | nu
 
   for (let attempt = 0; attempt < MAX_CODE_ATTEMPTS; attempt += 1) {
     const code = source.verificationCode ? generateVerificationCode() : null;
+    // The copy gets its own code, so a stamped file must carry THAT code, not the original's (whose QR would open the
+    // original record). Drawn here, from the kept original, and written in place of the copied bytes below.
+    const restamp = code ? await restampedPrimary(source, code) : null;
+    const re = restamp ?? NO_FILE;
     try {
       const rows = await sql`
         WITH src AS (
@@ -819,8 +1086,15 @@ export async function duplicateDocument(id: string): Promise<DocumentRecord | nu
           FROM src
           RETURNING id
         ), copied_files AS (
-          INSERT INTO document_files (document_id, role, filename, mime_type, size_bytes, sha256, data)
-          SELECT copy.id, f.role, f.filename, f.mime_type, f.size_bytes, f.sha256, f.data
+          INSERT INTO document_files (document_id, role, filename, mime_type, size_bytes, sha256, data, source_data, stamp)
+          SELECT copy.id, f.role,
+                 CASE WHEN f.role = 'primary' AND ${re.present}::boolean THEN ${re.filename}::text ELSE f.filename END,
+                 CASE WHEN f.role = 'primary' AND ${re.present}::boolean THEN ${re.mime}::text ELSE f.mime_type END,
+                 CASE WHEN f.role = 'primary' AND ${re.present}::boolean THEN ${re.size}::int ELSE f.size_bytes END,
+                 CASE WHEN f.role = 'primary' AND ${re.present}::boolean THEN ${re.sha}::text ELSE f.sha256 END,
+                 CASE WHEN f.role = 'primary' AND ${re.present}::boolean THEN decode(${re.hex}::text, 'hex') ELSE f.data END,
+                 f.source_data,
+                 CASE WHEN f.role = 'primary' AND ${re.present}::boolean THEN ${re.stampJson}::jsonb ELSE f.stamp END
           FROM copy, document_files f WHERE f.document_id = ${id}::uuid
           RETURNING id
         )
@@ -860,6 +1134,7 @@ export async function getFile(documentId: string, role: FileRole): Promise<{ met
     SELECT
       f.id::text AS id, f.document_id::text AS document_id, f.role, f.filename, f.mime_type, f.size_bytes, f.sha256,
       to_char(f.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS created_at,
+      f.stamp,
       encode(f.data, 'hex') AS data_hex
     FROM document_files f
     WHERE f.document_id = ${documentId}::uuid AND f.role = ${role}::text`;
@@ -876,6 +1151,7 @@ export async function getFile(documentId: string, role: FileRole): Promise<{ met
     sizeBytes: asNumber(row.size_bytes),
     sha256: asString(row.sha256),
     createdAt: asString(row.created_at),
+    stamp: toStamp(row.stamp),
   };
   // Never serve bytes that do not match what was stored: corruption must surface, not be published.
   if (bytes.length !== meta.sizeBytes || createHash("sha256").update(bytes).digest("hex") !== meta.sha256) {

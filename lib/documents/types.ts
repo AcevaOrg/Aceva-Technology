@@ -39,6 +39,54 @@ export type FileRole = "primary" | "photo";
 
 export type FieldValue = string | number | boolean | string[] | null;
 
+/* ------------------------------------------------------------------ *
+ * The verification stamp: the QR and the printed code, placed on the   *
+ * uploaded file itself so whoever holds the paper can check it.        *
+ * ------------------------------------------------------------------ */
+
+export const STAMP_POSITIONS = ["bottom-right", "bottom-left", "top-right", "top-left"] as const;
+export const STAMP_SIZES = ["small", "medium", "large"] as const;
+export const STAMP_PAGES = ["first", "last", "all"] as const;
+
+export type StampPosition = (typeof STAMP_POSITIONS)[number];
+export type StampSize = (typeof STAMP_SIZES)[number];
+export type StampPages = (typeof STAMP_PAGES)[number];
+
+/** Where and how big the stamp is. The same three choices apply to every record. */
+export interface StampOptions {
+  position: StampPosition;
+  size: StampSize;
+  pages: StampPages;
+}
+
+export const DEFAULT_STAMP_OPTIONS: StampOptions = { position: "bottom-right", size: "medium", pages: "first" };
+
+export const STAMP_POSITION_LABELS: Record<StampPosition, string> = {
+  "bottom-right": "Bottom right",
+  "bottom-left": "Bottom left",
+  "top-right": "Top right",
+  "top-left": "Top left",
+};
+export const STAMP_SIZE_LABELS: Record<StampSize, string> = { small: "Small", medium: "Medium", large: "Large" };
+export const STAMP_PAGE_LABELS: Record<StampPages, string> = { first: "First page", last: "Last page", all: "Every page" };
+
+/** What a stored file was stamped with. `code` is the verification code that is printed on it. */
+export interface FileStamp extends StampOptions {
+  code: string;
+  /** ISO timestamp of when the stamp was drawn. */
+  at: string;
+}
+
+export function isStampPosition(value: unknown): value is StampPosition {
+  return typeof value === "string" && (STAMP_POSITIONS as readonly string[]).includes(value);
+}
+export function isStampSize(value: unknown): value is StampSize {
+  return typeof value === "string" && (STAMP_SIZES as readonly string[]).includes(value);
+}
+export function isStampPages(value: unknown): value is StampPages {
+  return typeof value === "string" && (STAMP_PAGES as readonly string[]).includes(value);
+}
+
 export interface DocumentFileMeta {
   id: string;
   documentId: string;
@@ -49,6 +97,11 @@ export interface DocumentFileMeta {
   /** Hex SHA-256 of the stored bytes. Shown on the verify page so a printout can be checked. */
   sha256: string;
   createdAt: string;
+  /**
+   * Set when the stored bytes carry the verification stamp. Compare `stamp.code` with the record's
+   * current code: when they differ the printed QR is out of date and the file needs stamping again.
+   */
+  stamp?: FileStamp | null;
 }
 
 export interface DocumentRecord {
@@ -161,6 +214,12 @@ export interface CategorySpec {
   fileRequired: boolean;
   /** Prefix suggested for reference numbers, e.g. "ACV/EL". */
   referencePrefix: string;
+  /**
+   * Two records of this category may not share a reference number (compared ignoring case and
+   * surrounding spaces). False where one number legitimately appears on several papers, such as a
+   * company registration number quoted on a licence and on a tax certificate.
+   */
+  uniqueReference: boolean;
   base: {
     title: BaseFieldSpec;
     summary: BaseFieldSpec;
@@ -189,6 +248,11 @@ export const PHOTO_FILE_TYPES = ["image/png", "image/jpeg", "image/webp"] as con
 export const MAX_REQUEST_BYTES = 4_400_000;
 export const MAX_PRIMARY_BYTES = 4_000_000;
 export const MAX_PHOTO_BYTES = 1_200_000;
+/**
+ * A stamped file may grow a little past what was uploaded (the QR is added, and an image becomes a
+ * PDF). It is still served in one response, which Vercel caps near 4.5 MB, so this is the ceiling.
+ */
+export const MAX_STAMPED_BYTES = 4_300_000;
 
 export const DOCUMENT_STATUSES: readonly DocumentStatus[] = ["draft", "published", "archived"];
 export const DOCUMENT_VISIBILITIES: readonly DocumentVisibility[] = ["public", "unlisted", "private"];

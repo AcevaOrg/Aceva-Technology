@@ -657,9 +657,9 @@ describe("collectReferenceNumbers", () => {
  * ------------------------------------------------------------------ */
 
 describe("isDocumentAction", () => {
-  it("accepts exactly the eight actions", () => {
+  it("accepts exactly the nine actions", () => {
     expect([...DOCUMENT_ACTIONS].sort()).toEqual(
-      ["archive", "duplicate", "publish", "regenerate_code", "reinstate", "restore", "revoke", "unpublish"].sort(),
+      ["archive", "duplicate", "publish", "regenerate_code", "reinstate", "restore", "revoke", "stamp_file", "unpublish"].sort(),
     );
     for (const action of DOCUMENT_ACTIONS) expect(isDocumentAction(action)).toBe(true);
   });

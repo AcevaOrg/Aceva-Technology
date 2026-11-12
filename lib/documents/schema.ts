@@ -79,6 +79,39 @@ async function createTables(sql: SqlClient): Promise<void> {
   await sql`CREATE INDEX IF NOT EXISTS documents_issued_on_idx ON documents (issued_on DESC)`;
   await sql`CREATE INDEX IF NOT EXISTS verification_events_at_idx ON verification_events (at DESC)`;
   await sql`CREATE INDEX IF NOT EXISTS verification_events_document_idx ON verification_events (document_id)`;
+
+  // The verification stamp. `data` holds the file as served (stamped when it carries the QR); `source_data` keeps the
+  // untouched upload next to it, so a new code or a new placement is applied to the original and never stacked on a
+  // stamped file. `stamp` records what was drawn ({code, position, size, pages, at}); NULL means not stamped.
+  await sql`ALTER TABLE document_files ADD COLUMN IF NOT EXISTS source_data bytea`;
+  await sql`ALTER TABLE document_files ADD COLUMN IF NOT EXISTS stamp jsonb`;
+
+  await createReferenceIndex(sql);
+}
+
+/**
+ * Two records of a category that numbers its papers may not share a reference number, ignoring case and
+ * surrounding spaces. The store checks this before every write (and says which record has the number); this
+ * index is the backstop for two saves racing each other.
+ *
+ * The list of categories is the set with `uniqueReference: true` in categories.ts (a test keeps the two in
+ * step). It is spelled out because an index predicate cannot take parameters. A database that ALREADY holds a
+ * duplicate cannot build the index; that must not take the whole registry down, so it is reported once and
+ * skipped, and the store's own check still protects everything saved from now on.
+ */
+async function createReferenceIndex(sql: SqlClient): Promise<void> {
+  try {
+    await sql`
+      CREATE UNIQUE INDEX IF NOT EXISTS documents_category_reference_uidx
+        ON documents (category, lower(btrim(reference_no)))
+        WHERE btrim(reference_no) <> ''
+          AND category IN ('certification', 'experience_letter', 'financial_report', 'program_record')`;
+  } catch (error) {
+    console.warn(
+      `[documents] reference-number index not created (${error instanceof Error ? error.name : typeof error}): ` +
+        "existing records share a reference number. Fix the duplicates and restart; new saves are still checked.",
+    );
+  }
 }
 
 let ready: Promise<void> | null = null;
